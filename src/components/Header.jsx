@@ -53,11 +53,11 @@ function Header({ searchQuery, setSearchQuery, cartItemCount = 0, onCartClick })
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
               <MdFastfood className="w-8 h-8 text-white" />
             </div>
-            <div>
+            <div className="space-x-12">
               <h1 className="text-2xl font-bold text-gray-800">FoodExpress</h1>
               <p className="text-green-600 text-sm font-medium">Delicious Food Delivered</p>
             </div>
@@ -65,6 +65,15 @@ function Header({ searchQuery, setSearchQuery, cartItemCount = 0, onCartClick })
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
+          {/* <Link to="/" className="flex items-center space-x-2">
+            <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+              <MdFastfood className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">FoodExpress</h1>
+              <p className="text-green-600 text-sm font-medium">Delicious Food Delivered</p>
+            </div>
+          </Link> */}
             <Link 
               to="/" 
               className={`font-medium transition-colors duration-300 ${

@@ -66,7 +66,7 @@ function About() {
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-              <MdFastfood className="w-12 h-12" />
+             <MdFastfood className="w-12 h-12 text-green-600" />
             </div>
           </div>
           <h1 className="text-5xl font-bold mb-4">About FoodExpress</h1>

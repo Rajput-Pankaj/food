@@ -46,32 +46,32 @@ function Footer() {
             <h4 className="text-lg font-semibold text-green-400">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
+                <a href="/" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
                   Home
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
+                <a href="/menu" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
                   Menu
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
+                <a href="/about" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
+                <a href="/contact" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
+                <a href="/blog" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
                   Blog
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
+                <a href="" className="text-gray-300 hover:text-green-400 transition-colors duration-300 text-sm">
                   Careers
                 </a>
               </li>

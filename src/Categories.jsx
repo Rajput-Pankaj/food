@@ -14,32 +14,32 @@ const Categories = [
   },
   {
     id : 2,
-    name : 'breakfast',
+    name : 'Breakfast',
     icon : <MdOutlineFreeBreakfast className="w-[60px] h-[60px] text-green-600" />,
   },
   {
     id : 3,
-    name : 'soup',
+    name : 'Soup',
     icon : <TbSoup className="w-[60px] h-[60px] text-green-600" />,
   },
   {
     id : 4,
-    name : 'pasta',
+    name : 'Pasta',
     icon : <CiBowlNoodles className="w-[60px] h-[60px] text-green-600" />,
   },
   {
     id : 5,
-    name : 'main_course',
+    name : 'Main Course',
     icon : <MdOutlineFoodBank className="w-[60px] h-[60px] text-green-600" />,
   },
   {
     id : 6,
-    name : 'pizza',
+    name : 'Pizza',
     icon : <GiFullPizza className="w-[60px] h-[60px] text-green-600" />,
   },
   {
     id : 7,
-    name : 'burger',
+    name : 'Burger',
     icon : <GiHamburger className="w-[60px] h-[60px] text-green-600" />,
   }
 ];
