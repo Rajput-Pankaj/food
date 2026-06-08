@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+#root {
+  min-height: 100vh;
+}
+
 /* ================= ANIMATION ================= */
 @keyframes slideIn {
   from {
@@ -14,6 +18,63 @@
 
 .animate-slide-in {
   animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-menu-dropdown {
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-nav-panel {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-fade-up {
+  animation: heroFadeUp 0.6s ease-out both;
+}
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide native search clear button if type="search" is used elsewhere */
+.food-search-input::-webkit-search-cancel-button,
+.food-search-input::-webkit-search-decoration,
+.food-search-input::-ms-clear {
+  display: none;
+  appearance: none;
 }
 
 /* ================= SCROLLBAR ================= */
@@ -33,68 +94,4 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
-}
-
-/* ================= LOGIN PAGE ================= */
-.login-container {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f3f4f6;
-}
-
-.login-box {
-  width: 100%;
-  max-width: 350px;
-  padding: 30px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.login-box h2 {
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.login-box input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
-}
-
-.login-box input:focus {
-  border-color: #16a34a;
-}
-
-.login-box button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 10px;
-  border: none;
-  background: #16a34a;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.login-box button:hover {
-  background: #15803d;
-}
-
-.login-box p {
-  margin-top: 15px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.login-box span {
-  color: #16a34a;
-  font-weight: bold;
 }

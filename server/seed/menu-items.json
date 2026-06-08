@@ -1,0 +1,1452 @@
+[
+  {
+    "id": 1,
+    "food_name": "Pancakes",
+    "food_category": "Breakfast",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image1.avif",
+    "price": 499,
+    "description": "Fluffy buttermilk pancakes with maple syrup and butter.",
+    "details": "Served warm with seasonal fruit garnish and whipped cream on request.",
+    "ingredients": "Flour, buttermilk, eggs, butter, sugar, baking powder, maple syrup, salt",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 12,
+    "nutrition": {
+      "calories": 420,
+      "servingSize": "3 pancakes (220g)",
+      "protein": 8,
+      "carbs": 62,
+      "fat": 14,
+      "fiber": 3,
+      "sugar": 22,
+      "sodium": 380
+    },
+    "galleryImages": [
+      "/src/assets/image2.avif",
+      "/src/assets/image3.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 2,
+    "food_name": "Chicken Soup",
+    "food_category": "Soup",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image2.avif",
+    "price": 399,
+    "description": "Hearty clear chicken broth with vegetables and shredded chicken.",
+    "details": "Slow-simmered stock with herbs — light, comforting, and protein-rich.",
+    "ingredients": "Chicken, carrot, celery, onion, garlic, bay leaf, pepper, salt",
+    "allergens": "Contains celery; may contain traces of gluten",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 185,
+      "servingSize": "350ml bowl",
+      "protein": 16,
+      "carbs": 12,
+      "fat": 7,
+      "fiber": 2,
+      "sugar": 3,
+      "sodium": 720
+    },
+    "galleryImages": [
+      "/src/assets/image3.avif",
+      "/src/assets/image4.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 3,
+    "food_name": "Minestrone Soup",
+    "food_category": "Soup",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image3.avif",
+    "price": 349,
+    "description": "Italian vegetable soup with beans, pasta, and tomato broth.",
+    "details": "Topped with parmesan and fresh basil for a rustic finish.",
+    "ingredients": "Tomato, beans, pasta, carrot, celery, zucchini, onion, olive oil, herbs",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 16,
+    "nutrition": {
+      "calories": 210,
+      "servingSize": "350ml bowl",
+      "protein": 9,
+      "carbs": 28,
+      "fat": 6,
+      "fiber": 6,
+      "sugar": 8,
+      "sodium": 640
+    },
+    "galleryImages": [
+      "/src/assets/image4.avif",
+      "/src/assets/image5.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 4,
+    "food_name": "Spaghetti Carbonara",
+    "food_category": "Pasta",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image4.avif",
+    "price": 999,
+    "description": "Classic Roman pasta with egg, pecorino, guanciale, and black pepper.",
+    "details": "Creamy without cream — finished with aged cheese and cracked pepper.",
+    "ingredients": "Spaghetti, egg, pecorino, guanciale, black pepper, garlic, salt",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 22,
+    "nutrition": {
+      "calories": 680,
+      "servingSize": "1 plate (380g)",
+      "protein": 28,
+      "carbs": 72,
+      "fat": 32,
+      "fiber": 4,
+      "sugar": 3,
+      "sodium": 980
+    },
+    "galleryImages": [
+      "/src/assets/image5.avif",
+      "/src/assets/image6.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 5,
+    "food_name": "Veg Alfredo Pasta",
+    "food_category": "Pasta",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image5.avif",
+    "price": 899,
+    "description": "Fettuccine in rich parmesan cream sauce with sautéed vegetables.",
+    "details": "Silky sauce tossed with broccoli, bell pepper, and sweet corn.",
+    "ingredients": "Pasta, cream, parmesan, butter, broccoli, bell pepper, corn, garlic",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 20,
+    "nutrition": {
+      "calories": 620,
+      "servingSize": "1 plate (360g)",
+      "protein": 18,
+      "carbs": 68,
+      "fat": 28,
+      "fiber": 5,
+      "sugar": 6,
+      "sodium": 840
+    },
+    "galleryImages": [
+      "/src/assets/image6.avif",
+      "/src/assets/image7.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 6,
+    "food_name": "Chicken Alfredo Pasta",
+    "food_category": "Pasta",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image6.avif",
+    "price": 1099,
+    "description": "Grilled chicken strips over fettuccine in creamy alfredo sauce.",
+    "details": "Finished with parsley and extra parmesan for a indulgent main.",
+    "ingredients": "Pasta, chicken breast, cream, parmesan, butter, garlic, parsley",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 24,
+    "nutrition": {
+      "calories": 740,
+      "servingSize": "1 plate (400g)",
+      "protein": 42,
+      "carbs": 65,
+      "fat": 34,
+      "fiber": 4,
+      "sugar": 5,
+      "sodium": 920
+    },
+    "galleryImages": [
+      "/src/assets/image7.avif",
+      "/src/assets/image8.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 7,
+    "food_name": "Paneer Butter Masala",
+    "food_category": "Main Course",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image7.avif",
+    "price": 799,
+    "description": "Cottage cheese cubes in rich tomato-butter gravy with fenugreek.",
+    "details": "North Indian favourite — pairs well with naan or jeera rice.",
+    "ingredients": "Paneer, tomato, butter, cream, cashew, onion, ginger-garlic, spices",
+    "allergens": "Contains dairy, nuts",
+    "prepTime": 25,
+    "nutrition": {
+      "calories": 480,
+      "servingSize": "1 bowl (300g)",
+      "protein": 22,
+      "carbs": 18,
+      "fat": 36,
+      "fiber": 4,
+      "sugar": 10,
+      "sodium": 780
+    },
+    "galleryImages": [
+      "/src/assets/image8.avif",
+      "/src/assets/image9.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 8,
+    "food_name": "Chicken Biryani",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image8.avif",
+    "price": 1199,
+    "description": "Fragrant basmati rice layered with spiced chicken and caramelized onions.",
+    "details": "Dum-cooked with saffron, mint, and fried onions — served with raita.",
+    "ingredients": "Basmati rice, chicken, yogurt, onion, saffron, biryani masala, ghee",
+    "allergens": "Contains dairy",
+    "prepTime": 35,
+    "nutrition": {
+      "calories": 650,
+      "servingSize": "1 plate (450g)",
+      "protein": 38,
+      "carbs": 72,
+      "fat": 22,
+      "fiber": 3,
+      "sugar": 4,
+      "sodium": 890
+    },
+    "galleryImages": [
+      "/src/assets/image9.avif",
+      "/src/assets/image10.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 9,
+    "food_name": "Margherita Pizza",
+    "food_category": "Pizza",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image9.avif",
+    "price": 649,
+    "description": "Thin crust pizza with tomato sauce, mozzarella, and fresh basil.",
+    "details": "Wood-fired style crust with San Marzano-style tomato base.",
+    "ingredients": "Flour, tomato, mozzarella, basil, olive oil, yeast, salt",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 720,
+      "servingSize": "10 inch pizza",
+      "protein": 28,
+      "carbs": 82,
+      "fat": 24,
+      "fiber": 4,
+      "sugar": 8,
+      "sodium": 1120
+    },
+    "galleryImages": [
+      "/src/assets/image10.avif",
+      "/src/assets/image11.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 10,
+    "food_name": "Pepperoni Pizza",
+    "food_category": "Pizza",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image10.avif",
+    "price": 749,
+    "description": "Classic pepperoni pizza with mozzarella on a crisp crust.",
+    "details": "Generous pepperoni slices with oregano and chili flakes.",
+    "ingredients": "Flour, tomato, mozzarella, pepperoni, oregano, olive oil, yeast",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 820,
+      "servingSize": "10 inch pizza",
+      "protein": 34,
+      "carbs": 78,
+      "fat": 38,
+      "fiber": 4,
+      "sugar": 6,
+      "sodium": 1380
+    },
+    "galleryImages": [
+      "/src/assets/image11.avif",
+      "/src/assets/image12.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 11,
+    "food_name": "Veggie Burger",
+    "food_category": "Burger",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image11.avif",
+    "price": 499,
+    "description": "Grilled vegetable patty with lettuce, tomato, and house sauce.",
+    "details": "Served in a toasted brioche bun with crispy fries on the side.",
+    "ingredients": "Bun, veg patty, lettuce, tomato, onion, pickles, house sauce",
+    "allergens": "Contains gluten, soy, sesame",
+    "prepTime": 15,
+    "nutrition": {
+      "calories": 540,
+      "servingSize": "1 burger + fries",
+      "protein": 14,
+      "carbs": 58,
+      "fat": 26,
+      "fiber": 6,
+      "sugar": 9,
+      "sodium": 980
+    },
+    "galleryImages": [
+      "/src/assets/image12.avif",
+      "/src/assets/image13.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 12,
+    "food_name": "Chicken Burger",
+    "food_category": "Burger",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image12.avif",
+    "price": 599,
+    "description": "Crispy fried chicken fillet with coleslaw and spicy mayo.",
+    "details": "Double-layer crunch with melted cheese optional on request.",
+    "ingredients": "Bun, chicken breast, lettuce, coleslaw, mayo, pickles",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 16,
+    "nutrition": {
+      "calories": 620,
+      "servingSize": "1 burger + fries",
+      "protein": 32,
+      "carbs": 52,
+      "fat": 30,
+      "fiber": 4,
+      "sugar": 7,
+      "sodium": 1100
+    },
+    "galleryImages": [
+      "/src/assets/image13.avif",
+      "/src/assets/image14.webp"
+    ],
+    "available": true
+  },
+  {
+    "id": 13,
+    "food_name": "Tomato Soup",
+    "food_category": "Soup",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image13.avif",
+    "price": 299,
+    "description": "Creamy roasted tomato soup with a hint of basil.",
+    "details": "Blended smooth and finished with a swirl of cream.",
+    "ingredients": "Tomato, onion, garlic, cream, basil, vegetable stock, butter",
+    "allergens": "Contains dairy",
+    "prepTime": 14,
+    "nutrition": {
+      "calories": 160,
+      "servingSize": "350ml bowl",
+      "protein": 4,
+      "carbs": 18,
+      "fat": 9,
+      "fiber": 3,
+      "sugar": 12,
+      "sodium": 580
+    },
+    "galleryImages": [
+      "/src/assets/image14.webp",
+      "/src/assets/image15.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 14,
+    "food_name": "Egg Sandwich",
+    "food_category": "Breakfast",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image14.webp",
+    "price": 349,
+    "description": "Fluffy scrambled eggs in toasted multigrain bread.",
+    "details": "With cheddar, tomato, and microgreens — perfect morning bite.",
+    "ingredients": "Multigrain bread, eggs, cheddar, tomato, butter, microgreens",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 10,
+    "nutrition": {
+      "calories": 380,
+      "servingSize": "1 sandwich",
+      "protein": 18,
+      "carbs": 34,
+      "fat": 18,
+      "fiber": 4,
+      "sugar": 4,
+      "sodium": 620
+    },
+    "galleryImages": [
+      "/src/assets/image15.avif",
+      "/src/assets/image16.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 15,
+    "food_name": "Mushroom Soup",
+    "food_category": "Soup",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image15.avif",
+    "price": 349,
+    "description": "Creamy wild mushroom soup with thyme and cracked pepper.",
+    "details": "Made with button and shiitake mushrooms for depth of flavour.",
+    "ingredients": "Mushroom, cream, onion, garlic, thyme, butter, vegetable stock",
+    "allergens": "Contains dairy",
+    "prepTime": 16,
+    "nutrition": {
+      "calories": 195,
+      "servingSize": "350ml bowl",
+      "protein": 6,
+      "carbs": 14,
+      "fat": 14,
+      "fiber": 2,
+      "sugar": 4,
+      "sodium": 520
+    },
+    "galleryImages": [
+      "/src/assets/image16.avif",
+      "/src/assets/image17.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 16,
+    "food_name": "Chicken Tikka Masala",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image16.avif",
+    "price": 1199,
+    "description": "Char-grilled chicken tikka in creamy tomato-onion gravy.",
+    "details": "British-Indian classic with bell pepper and kasuri methi.",
+    "ingredients": "Chicken, yogurt, tomato, cream, onion, tikka masala, bell pepper",
+    "allergens": "Contains dairy",
+    "prepTime": 28,
+    "nutrition": {
+      "calories": 520,
+      "servingSize": "1 bowl (320g)",
+      "protein": 40,
+      "carbs": 14,
+      "fat": 32,
+      "fiber": 3,
+      "sugar": 8,
+      "sodium": 860
+    },
+    "galleryImages": [
+      "/src/assets/image17.avif",
+      "/src/assets/image18.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 17,
+    "food_name": "Cheese Omelette",
+    "food_category": "Breakfast",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image17.avif",
+    "price": 399,
+    "description": "Three-egg omelette folded with cheddar and herbs.",
+    "details": "Served with buttered toast and grilled tomato.",
+    "ingredients": "Eggs, cheddar, butter, herbs, toast, tomato",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 8,
+    "nutrition": {
+      "calories": 410,
+      "servingSize": "1 plate",
+      "protein": 24,
+      "carbs": 8,
+      "fat": 32,
+      "fiber": 1,
+      "sugar": 2,
+      "sodium": 740
+    },
+    "galleryImages": [
+      "/src/assets/image18.avif",
+      "/src/assets/image19.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 18,
+    "food_name": "Fettuccine Alfredo",
+    "food_category": "Pasta",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image18.avif",
+    "price": 949,
+    "description": "Wide ribbon pasta in classic butter and parmesan sauce.",
+    "details": "Simple, rich, and finished with nutmeg and parsley.",
+    "ingredients": "Fettuccine, butter, parmesan, cream, nutmeg, parsley, garlic",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 20,
+    "nutrition": {
+      "calories": 590,
+      "servingSize": "1 plate (340g)",
+      "protein": 16,
+      "carbs": 64,
+      "fat": 26,
+      "fiber": 3,
+      "sugar": 4,
+      "sodium": 780
+    },
+    "galleryImages": [
+      "/src/assets/image19.avif",
+      "/src/assets/image20.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 19,
+    "food_name": "Garlic Bread",
+    "food_category": "Pizza",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image19.avif",
+    "price": 299,
+    "description": "Toasted baguette slices with garlic butter and herbs.",
+    "details": "Topped with melted mozzarella — ideal as a side or starter.",
+    "ingredients": "Baguette, butter, garlic, parsley, mozzarella, oregano",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 10,
+    "nutrition": {
+      "calories": 320,
+      "servingSize": "6 pieces",
+      "protein": 10,
+      "carbs": 38,
+      "fat": 14,
+      "fiber": 2,
+      "sugar": 2,
+      "sodium": 680
+    },
+    "galleryImages": [
+      "/src/assets/image20.avif",
+      "/src/assets/image21.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 20,
+    "food_name": "Fish and Chips",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image20.avif",
+    "price": 1099,
+    "description": "Beer-battered cod with golden fries and tartar sauce.",
+    "details": "Crispy outside, flaky inside — pub-style comfort food.",
+    "ingredients": "Cod, flour, beer, potato, tartar sauce, lemon, peas",
+    "allergens": "Contains gluten, fish, eggs",
+    "prepTime": 22,
+    "nutrition": {
+      "calories": 780,
+      "servingSize": "1 plate (420g)",
+      "protein": 36,
+      "carbs": 68,
+      "fat": 38,
+      "fiber": 5,
+      "sugar": 4,
+      "sodium": 1020
+    },
+    "galleryImages": [
+      "/src/assets/image21.avif",
+      "/src/assets/image22.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 21,
+    "food_name": "Hash Browns",
+    "food_category": "Breakfast",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image21.avif",
+    "price": 249,
+    "description": "Crispy shredded potato patties fried until golden.",
+    "details": "Seasoned with salt, pepper, and a touch of onion.",
+    "ingredients": "Potato, onion, salt, pepper, vegetable oil",
+    "allergens": "None declared",
+    "prepTime": 12,
+    "nutrition": {
+      "calories": 280,
+      "servingSize": "3 pieces",
+      "protein": 4,
+      "carbs": 34,
+      "fat": 16,
+      "fiber": 3,
+      "sugar": 1,
+      "sodium": 420
+    },
+    "galleryImages": [
+      "/src/assets/image22.avif",
+      "/src/assets/image23.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 22,
+    "food_name": "Vegetable Soup",
+    "food_category": "Soup",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image22.avif",
+    "price": 329,
+    "description": "Seasonal mixed vegetable soup in light herb broth.",
+    "details": "Low-calorie, colourful, and packed with garden vegetables.",
+    "ingredients": "Carrot, beans, peas, corn, celery, onion, tomato, herbs",
+    "allergens": "None declared",
+    "prepTime": 15,
+    "nutrition": {
+      "calories": 120,
+      "servingSize": "350ml bowl",
+      "protein": 4,
+      "carbs": 22,
+      "fat": 3,
+      "fiber": 5,
+      "sugar": 8,
+      "sodium": 480
+    },
+    "galleryImages": [
+      "/src/assets/image23.avif",
+      "/src/assets/image24.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 23,
+    "food_name": "Egg Fried Rice",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image23.avif",
+    "price": 599,
+    "description": "Wok-tossed jasmine rice with egg, spring onion, and soy.",
+    "details": "Smoky high-heat stir fry with carrots and green peas.",
+    "ingredients": "Rice, egg, spring onion, carrot, peas, soy sauce, sesame oil",
+    "allergens": "Contains gluten, eggs, soy, sesame",
+    "prepTime": 16,
+    "nutrition": {
+      "calories": 440,
+      "servingSize": "1 plate (350g)",
+      "protein": 14,
+      "carbs": 68,
+      "fat": 12,
+      "fiber": 3,
+      "sugar": 3,
+      "sodium": 920
+    },
+    "galleryImages": [
+      "/src/assets/image24.avif",
+      "/src/assets/image25.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 24,
+    "food_name": "Hawaiian Pizza",
+    "food_category": "Pizza",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image24.avif",
+    "price": 799,
+    "description": "Ham and pineapple pizza with mozzarella on tomato base.",
+    "details": "Sweet and savoury combo with a crisp crust edge.",
+    "ingredients": "Flour, tomato, mozzarella, ham, pineapple, oregano",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 760,
+      "servingSize": "10 inch pizza",
+      "protein": 30,
+      "carbs": 80,
+      "fat": 26,
+      "fiber": 4,
+      "sugar": 14,
+      "sodium": 1240
+    },
+    "galleryImages": [
+      "/src/assets/image25.avif",
+      "/src/assets/image1.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 25,
+    "food_name": "Pasta Primavera",
+    "food_category": "Pasta",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image25.avif",
+    "price": 899,
+    "description": "Penne with seasonal vegetables in light olive oil and herb sauce.",
+    "details": "Colourful medley of zucchini, cherry tomato, and asparagus.",
+    "ingredients": "Penne, zucchini, tomato, asparagus, olive oil, garlic, herbs",
+    "allergens": "Contains gluten",
+    "prepTime": 20,
+    "nutrition": {
+      "calories": 480,
+      "servingSize": "1 plate (340g)",
+      "protein": 12,
+      "carbs": 62,
+      "fat": 16,
+      "fiber": 7,
+      "sugar": 8,
+      "sodium": 520
+    },
+    "galleryImages": [
+      "/src/assets/image1.avif",
+      "/src/assets/image2.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 26,
+    "food_name": "French Toast",
+    "food_category": "Breakfast",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image1.avif",
+    "price": 429,
+    "description": "Thick brioche slices dipped in cinnamon custard and pan-fried.",
+    "details": "Dusted with icing sugar and served with berry compote.",
+    "ingredients": "Brioche, eggs, milk, cinnamon, sugar, butter, berry compote",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 12,
+    "nutrition": {
+      "calories": 450,
+      "servingSize": "2 slices",
+      "protein": 12,
+      "carbs": 54,
+      "fat": 18,
+      "fiber": 2,
+      "sugar": 28,
+      "sodium": 420
+    },
+    "galleryImages": [
+      "/src/assets/image2.avif",
+      "/src/assets/image3.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 27,
+    "food_name": "Masala Dosa",
+    "food_category": "Breakfast",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image2.avif",
+    "price": 379,
+    "description": "Crispy rice crepe filled with spiced potato masala.",
+    "details": "Served with coconut chutney and sambar on the side.",
+    "ingredients": "Rice, urad dal, potato, mustard, curry leaves, chutney, sambar",
+    "allergens": "None declared",
+    "prepTime": 15,
+    "nutrition": {
+      "calories": 320,
+      "servingSize": "1 dosa plate",
+      "protein": 8,
+      "carbs": 52,
+      "fat": 8,
+      "fiber": 4,
+      "sugar": 3,
+      "sodium": 580
+    },
+    "galleryImages": [
+      "/src/assets/image3.avif",
+      "/src/assets/image4.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 28,
+    "food_name": "Lentil Soup",
+    "food_category": "Soup",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image6.avif",
+    "price": 319,
+    "description": "Hearty red lentil soup with cumin and lemon.",
+    "details": "Protein-packed, vegan-friendly, and naturally gluten-free.",
+    "ingredients": "Red lentil, onion, carrot, cumin, lemon, vegetable stock",
+    "allergens": "None declared",
+    "prepTime": 20,
+    "nutrition": {
+      "calories": 180,
+      "servingSize": "350ml bowl",
+      "protein": 11,
+      "carbs": 28,
+      "fat": 3,
+      "fiber": 8,
+      "sugar": 4,
+      "sodium": 520
+    },
+    "galleryImages": [
+      "/src/assets/image7.avif",
+      "/src/assets/image8.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 29,
+    "food_name": "Penne Arrabbiata",
+    "food_category": "Pasta",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image11.avif",
+    "price": 849,
+    "description": "Penne in spicy tomato sauce with garlic and chili.",
+    "details": "Vegan option available on request — bold and fiery.",
+    "ingredients": "Penne, tomato, garlic, chili, olive oil, parsley, basil",
+    "allergens": "Contains gluten",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 420,
+      "servingSize": "1 plate (320g)",
+      "protein": 12,
+      "carbs": 68,
+      "fat": 10,
+      "fiber": 5,
+      "sugar": 8,
+      "sodium": 620
+    },
+    "galleryImages": [
+      "/src/assets/image12.avif",
+      "/src/assets/image13.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 30,
+    "food_name": "Pesto Pasta",
+    "food_category": "Pasta",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image12.avif",
+    "price": 879,
+    "description": "Fusilli tossed in fresh basil pesto with pine nuts.",
+    "details": "Topped with cherry tomatoes and shaved parmesan.",
+    "ingredients": "Fusilli, basil, pine nuts, parmesan, olive oil, garlic, tomato",
+    "allergens": "Contains gluten, dairy, nuts",
+    "prepTime": 17,
+    "nutrition": {
+      "calories": 510,
+      "servingSize": "1 plate (330g)",
+      "protein": 14,
+      "carbs": 58,
+      "fat": 22,
+      "fiber": 4,
+      "sugar": 4,
+      "sodium": 580
+    },
+    "galleryImages": [
+      "/src/assets/image13.avif",
+      "/src/assets/image14.webp"
+    ],
+    "available": true
+  },
+  {
+    "id": 31,
+    "food_name": "Dal Makhani",
+    "food_category": "Main Course",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image16.avif",
+    "price": 649,
+    "description": "Slow-cooked black lentils in creamy tomato-butter gravy.",
+    "details": "Overnight simmered for authentic smoky depth.",
+    "ingredients": "Black urad dal, rajma, butter, cream, tomato, spices",
+    "allergens": "Contains dairy",
+    "prepTime": 30,
+    "nutrition": {
+      "calories": 380,
+      "servingSize": "1 bowl (280g)",
+      "protein": 16,
+      "carbs": 42,
+      "fat": 14,
+      "fiber": 10,
+      "sugar": 6,
+      "sodium": 620
+    },
+    "galleryImages": [
+      "/src/assets/image17.avif",
+      "/src/assets/image18.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 32,
+    "food_name": "Butter Chicken",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image17.avif",
+    "price": 999,
+    "description": "Tandoori chicken in velvety tomato-butter masala.",
+    "details": "Mild, creamy curry — our most ordered main course.",
+    "ingredients": "Chicken, tomato, butter, cream, cashew, fenugreek, spices",
+    "allergens": "Contains dairy, nuts",
+    "prepTime": 28,
+    "nutrition": {
+      "calories": 490,
+      "servingSize": "1 bowl (300g)",
+      "protein": 36,
+      "carbs": 12,
+      "fat": 34,
+      "fiber": 2,
+      "sugar": 8,
+      "sodium": 780
+    },
+    "galleryImages": [
+      "/src/assets/image18.avif",
+      "/src/assets/image19.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 33,
+    "food_name": "Palak Paneer",
+    "food_category": "Main Course",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image18.avif",
+    "price": 699,
+    "description": "Cottage cheese cubes in spiced spinach purée.",
+    "details": "Healthy North Indian classic with garlic tempering.",
+    "ingredients": "Paneer, spinach, onion, tomato, cream, garlic, spices",
+    "allergens": "Contains dairy",
+    "prepTime": 22,
+    "nutrition": {
+      "calories": 360,
+      "servingSize": "1 bowl (280g)",
+      "protein": 18,
+      "carbs": 14,
+      "fat": 24,
+      "fiber": 6,
+      "sugar": 5,
+      "sodium": 640
+    },
+    "galleryImages": [
+      "/src/assets/image19.avif",
+      "/src/assets/image20.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 34,
+    "food_name": "Lamb Rogan Josh",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image19.avif",
+    "price": 1299,
+    "description": "Kashmiri-style lamb curry with aromatic whole spices.",
+    "details": "Tender lamb slow-braised in rich red gravy.",
+    "ingredients": "Lamb, yogurt, onion, kashmiri chili, fennel, ginger, spices",
+    "allergens": "Contains dairy",
+    "prepTime": 40,
+    "nutrition": {
+      "calories": 520,
+      "servingSize": "1 bowl (320g)",
+      "protein": 42,
+      "carbs": 10,
+      "fat": 36,
+      "fiber": 2,
+      "sugar": 4,
+      "sodium": 820
+    },
+    "galleryImages": [
+      "/src/assets/image20.avif",
+      "/src/assets/image21.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 35,
+    "food_name": "Grilled Salmon",
+    "food_category": "Main Course",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image20.avif",
+    "price": 1399,
+    "description": "Atlantic salmon fillet with lemon butter and asparagus.",
+    "details": "Pan-seared to medium with herb roasted potatoes.",
+    "ingredients": "Salmon, butter, lemon, asparagus, potato, dill, olive oil",
+    "allergens": "Contains fish, dairy",
+    "prepTime": 20,
+    "nutrition": {
+      "calories": 450,
+      "servingSize": "1 fillet plate",
+      "protein": 40,
+      "carbs": 18,
+      "fat": 28,
+      "fiber": 4,
+      "sugar": 2,
+      "sodium": 580
+    },
+    "galleryImages": [
+      "/src/assets/image21.avif",
+      "/src/assets/image22.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 36,
+    "food_name": "BBQ Chicken Pizza",
+    "food_category": "Pizza",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image21.avif",
+    "price": 849,
+    "description": "Smoky BBQ sauce base with grilled chicken and red onion.",
+    "details": "Topped with mozzarella and fresh cilantro.",
+    "ingredients": "Flour, BBQ sauce, chicken, onion, mozzarella, cilantro",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 20,
+    "nutrition": {
+      "calories": 790,
+      "servingSize": "10 inch pizza",
+      "protein": 36,
+      "carbs": 76,
+      "fat": 28,
+      "fiber": 4,
+      "sugar": 12,
+      "sodium": 1180
+    },
+    "galleryImages": [
+      "/src/assets/image22.avif",
+      "/src/assets/image23.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 37,
+    "food_name": "Four Cheese Pizza",
+    "food_category": "Pizza",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image22.avif",
+    "price": 799,
+    "description": "White base pizza with mozzarella, cheddar, gorgonzola, and parmesan.",
+    "details": "Creamy, indulgent, and baked until golden.",
+    "ingredients": "Flour, mozzarella, cheddar, gorgonzola, parmesan, cream",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 840,
+      "servingSize": "10 inch pizza",
+      "protein": 32,
+      "carbs": 72,
+      "fat": 36,
+      "fiber": 3,
+      "sugar": 4,
+      "sodium": 1320
+    },
+    "galleryImages": [
+      "/src/assets/image23.avif",
+      "/src/assets/image24.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 38,
+    "food_name": "Farmhouse Pizza",
+    "food_category": "Pizza",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image23.avif",
+    "price": 749,
+    "description": "Loaded veggie pizza with bell pepper, corn, olive, and onion.",
+    "details": "Tomato base with generous mozzarella on thin crust.",
+    "ingredients": "Flour, tomato, mozzarella, bell pepper, corn, olive, onion",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 680,
+      "servingSize": "10 inch pizza",
+      "protein": 22,
+      "carbs": 78,
+      "fat": 22,
+      "fiber": 6,
+      "sugar": 10,
+      "sodium": 1060
+    },
+    "galleryImages": [
+      "/src/assets/image24.avif",
+      "/src/assets/image25.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 39,
+    "food_name": "Double Patty Burger",
+    "food_category": "Burger",
+    "food_type": "non_veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image24.avif",
+    "price": 749,
+    "description": "Two smashed beef patties with double cheese and special sauce.",
+    "details": "Stacked high with caramelized onion and pickles.",
+    "ingredients": "Bun, beef patty, cheddar, onion, pickles, special sauce",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 18,
+    "nutrition": {
+      "calories": 820,
+      "servingSize": "1 burger + fries",
+      "protein": 44,
+      "carbs": 48,
+      "fat": 42,
+      "fiber": 3,
+      "sugar": 8,
+      "sodium": 1420
+    },
+    "galleryImages": [
+      "/src/assets/image25.avif",
+      "/src/assets/image1.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 40,
+    "food_name": "Grilled Paneer Burger",
+    "food_category": "Burger",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image25.avif",
+    "price": 549,
+    "description": "Marinated grilled paneer patty with mint mayo and lettuce.",
+    "details": "Spiced tandoori-style paneer in a soft sesame bun.",
+    "ingredients": "Bun, paneer, mint mayo, lettuce, tomato, onion, spices",
+    "allergens": "Contains gluten, dairy, sesame",
+    "prepTime": 15,
+    "nutrition": {
+      "calories": 520,
+      "servingSize": "1 burger + fries",
+      "protein": 20,
+      "carbs": 46,
+      "fat": 24,
+      "fiber": 5,
+      "sugar": 6,
+      "sodium": 880
+    },
+    "galleryImages": [
+      "/src/assets/image1.avif",
+      "/src/assets/image2.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 41,
+    "food_name": "Chocolate Brownie",
+    "food_category": "Dessert",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image3.avif",
+    "price": 299,
+    "description": "Warm fudge brownie with dark chocolate chunks.",
+    "details": "Served with vanilla ice cream scoop optional (+Rs.80).",
+    "ingredients": "Dark chocolate, butter, flour, eggs, sugar, cocoa",
+    "allergens": "Contains gluten, dairy, eggs, nuts may be present",
+    "prepTime": 8,
+    "nutrition": {
+      "calories": 420,
+      "servingSize": "1 piece (120g)",
+      "protein": 5,
+      "carbs": 52,
+      "fat": 22,
+      "fiber": 3,
+      "sugar": 38,
+      "sodium": 180
+    },
+    "galleryImages": [
+      "/src/assets/image4.avif",
+      "/src/assets/image5.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 42,
+    "food_name": "Gulab Jamun",
+    "food_category": "Dessert",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image4.avif",
+    "price": 249,
+    "description": "Soft milk-solid dumplings soaked in cardamom sugar syrup.",
+    "details": "Served warm — two pieces per portion.",
+    "ingredients": "Milk solids, flour, sugar, cardamom, ghee, rose water",
+    "allergens": "Contains gluten, dairy",
+    "prepTime": 5,
+    "nutrition": {
+      "calories": 380,
+      "servingSize": "2 pieces",
+      "protein": 6,
+      "carbs": 58,
+      "fat": 14,
+      "fiber": 0,
+      "sugar": 48,
+      "sodium": 120
+    },
+    "galleryImages": [
+      "/src/assets/image5.avif",
+      "/src/assets/image6.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 43,
+    "food_name": "Ice Cream Sundae",
+    "food_category": "Dessert",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image5.avif",
+    "price": 349,
+    "description": "Vanilla ice cream with chocolate sauce, nuts, and cherry.",
+    "details": "Classic diner-style sundae in a glass bowl.",
+    "ingredients": "Vanilla ice cream, chocolate sauce, nuts, cherry, wafer",
+    "allergens": "Contains dairy, nuts, gluten",
+    "prepTime": 5,
+    "nutrition": {
+      "calories": 450,
+      "servingSize": "1 sundae",
+      "protein": 7,
+      "carbs": 58,
+      "fat": 20,
+      "fiber": 2,
+      "sugar": 42,
+      "sodium": 140
+    },
+    "galleryImages": [
+      "/src/assets/image6.avif",
+      "/src/assets/image7.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 44,
+    "food_name": "New York Cheesecake",
+    "food_category": "Dessert",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image6.avif",
+    "price": 399,
+    "description": "Creamy baked cheesecake on a buttery biscuit base.",
+    "details": "Topped with berry compote and mint.",
+    "ingredients": "Cream cheese, biscuit, butter, egg, sugar, berry compote",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 5,
+    "nutrition": {
+      "calories": 480,
+      "servingSize": "1 slice",
+      "protein": 8,
+      "carbs": 42,
+      "fat": 32,
+      "fiber": 1,
+      "sugar": 28,
+      "sodium": 320
+    },
+    "galleryImages": [
+      "/src/assets/image7.avif",
+      "/src/assets/image8.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 45,
+    "food_name": "Tiramisu",
+    "food_category": "Dessert",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image7.avif",
+    "price": 429,
+    "description": "Espresso-soaked ladyfingers with mascarpone cream.",
+    "details": "Dusted with cocoa — Italian classic done right.",
+    "ingredients": "Mascarpone, ladyfinger, espresso, egg, cocoa, sugar",
+    "allergens": "Contains gluten, dairy, eggs",
+    "prepTime": 5,
+    "nutrition": {
+      "calories": 390,
+      "servingSize": "1 portion",
+      "protein": 6,
+      "carbs": 38,
+      "fat": 24,
+      "fiber": 1,
+      "sugar": 22,
+      "sodium": 95
+    },
+    "galleryImages": [
+      "/src/assets/image8.avif",
+      "/src/assets/image9.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 46,
+    "food_name": "Mango Lassi",
+    "food_category": "Beverages",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image8.avif",
+    "price": 199,
+    "description": "Thick yogurt smoothie blended with Alphonso mango.",
+    "details": "Refreshing, cooling, and lightly sweetened.",
+    "ingredients": "Yogurt, mango pulp, sugar, cardamom, ice",
+    "allergens": "Contains dairy",
+    "prepTime": 3,
+    "nutrition": {
+      "calories": 220,
+      "servingSize": "300ml glass",
+      "protein": 8,
+      "carbs": 38,
+      "fat": 4,
+      "fiber": 1,
+      "sugar": 32,
+      "sodium": 85
+    },
+    "galleryImages": [
+      "/src/assets/image9.avif",
+      "/src/assets/image10.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 47,
+    "food_name": "Cold Coffee",
+    "food_category": "Beverages",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image9.avif",
+    "price": 179,
+    "description": "Chilled espresso blended with milk, ice, and vanilla.",
+    "details": "Topped with whipped cream on request.",
+    "ingredients": "Espresso, milk, ice, sugar, vanilla",
+    "allergens": "Contains dairy",
+    "prepTime": 4,
+    "nutrition": {
+      "calories": 180,
+      "servingSize": "350ml glass",
+      "protein": 6,
+      "carbs": 24,
+      "fat": 6,
+      "fiber": 0,
+      "sugar": 20,
+      "sodium": 95
+    },
+    "galleryImages": [
+      "/src/assets/image10.avif",
+      "/src/assets/image11.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 48,
+    "food_name": "Fresh Lime Soda",
+    "food_category": "Beverages",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image10.avif",
+    "price": 149,
+    "description": "Freshly squeezed lime with soda — sweet or salted.",
+    "details": "Perfect palate cleanser with mint leaves.",
+    "ingredients": "Lime, soda, sugar or salt, mint, ice",
+    "allergens": "None declared",
+    "prepTime": 3,
+    "nutrition": {
+      "calories": 60,
+      "servingSize": "300ml glass",
+      "protein": 0,
+      "carbs": 16,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 14,
+      "sodium": 120
+    },
+    "galleryImages": [
+      "/src/assets/image11.avif",
+      "/src/assets/image12.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 49,
+    "food_name": "Masala Chai",
+    "food_category": "Beverages",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image11.avif",
+    "price": 129,
+    "description": "Indian spiced tea brewed with milk, ginger, and cardamom.",
+    "details": "Served hot in a traditional cutting glass.",
+    "ingredients": "Tea, milk, ginger, cardamom, cinnamon, sugar",
+    "allergens": "Contains dairy",
+    "prepTime": 5,
+    "nutrition": {
+      "calories": 120,
+      "servingSize": "200ml cup",
+      "protein": 3,
+      "carbs": 18,
+      "fat": 4,
+      "fiber": 0,
+      "sugar": 14,
+      "sodium": 65
+    },
+    "galleryImages": [
+      "/src/assets/image12.avif",
+      "/src/assets/image13.avif"
+    ],
+    "available": true
+  },
+  {
+    "id": 50,
+    "food_name": "Berry Smoothie",
+    "food_category": "Beverages",
+    "food_type": "veg",
+    "food_quantity": 1,
+    "food_image": "/src/assets/image12.avif",
+    "price": 219,
+    "description": "Mixed berry smoothie with banana, yogurt, and honey.",
+    "details": "Packed with antioxidants — no added artificial flavours.",
+    "ingredients": "Strawberry, blueberry, banana, yogurt, honey, ice",
+    "allergens": "Contains dairy",
+    "prepTime": 4,
+    "nutrition": {
+      "calories": 190,
+      "servingSize": "350ml glass",
+      "protein": 5,
+      "carbs": 36,
+      "fat": 3,
+      "fiber": 4,
+      "sugar": 28,
+      "sodium": 55
+    },
+    "galleryImages": [
+      "/src/assets/image13.avif",
+      "/src/assets/image14.webp"
+    ],
+    "available": true
+  }
+]

@@ -1,11 +1,12 @@
-import React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { MdFastfood, MdDeliveryDining, MdRestaurant, MdStar } from "react-icons/md";
-import { FaUsers, FaAward, FaHeart } from "react-icons/fa";
-import { LuClock, LuMapPin, LuPhone } from "react-icons/lu";
+import { Link } from 'react-router-dom';
+import PageLayout from '../components/PageLayout';
+import { MdFastfood, MdDeliveryDining, MdRestaurant, MdStar } from 'react-icons/md';
+import { FaUsers, FaAward, FaHeart } from 'react-icons/fa';
+import { LuClock } from 'react-icons/lu';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function About() {
+  useDocumentTitle('About');
   const stats = [
     { icon: <FaUsers className="w-8 h-8" />, number: "10K+", label: "Happy Customers" },
     { icon: <MdDeliveryDining className="w-8 h-8" />, number: "50K+", label: "Deliveries Made" },
@@ -53,14 +54,7 @@ function About() {
   ];
 
   return (
-    <div className="bg-slate-200 min-h-screen flex flex-col">
-      <Header 
-        searchQuery="" 
-        setSearchQuery={() => {}} 
-        cartItemCount={0}
-        onCartClick={() => {}}
-      />
-
+    <PageLayout>
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
@@ -206,18 +200,23 @@ function About() {
             Join thousands of satisfied customers who trust FoodExpress for their daily meals
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            <Link
+              to="/menu"
+              className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+            >
               Order Now
-            </button>
-            <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors">
+            </Link>
+            <Link
+              to="/contact"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors"
+            >
               Contact Us
-            </button>
+            </Link>
           </div>
         </div>
       </div>
 
-      <Footer />
-    </div>
+    </PageLayout>
   );
 }
 

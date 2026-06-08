@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { MdLocationOn, MdPhone, MdEmail, MdAccessTime } from "react-icons/md";
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { LuSend } from "react-icons/lu";
+import { useState } from 'react';
+import PageLayout from '../components/PageLayout';
+import { MdLocationOn, MdPhone, MdEmail, MdAccessTime } from 'react-icons/md';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 function Contact() {
+  useDocumentTitle('Contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -98,14 +97,7 @@ function Contact() {
   ];
 
   return (
-    <div className="bg-slate-200 min-h-screen flex flex-col">
-      <Header 
-        searchQuery="" 
-        setSearchQuery={() => {}} 
-        cartItemCount={0}
-        onCartClick={() => {}}
-      />
-
+    <PageLayout>
       {/* Hero */}
       <div className="bg-green-600 text-white py-16 text-center">
         <h1 className="text-5xl font-bold">Contact Us</h1>
@@ -116,12 +108,18 @@ function Contact() {
 
       {/* Info */}
       <div className="py-10 px-4 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {contactInfo.map((info, i) => (
-          <div key={i} className="bg-white p-6 rounded shadow text-center">
-            <div className="text-green-500 mb-2">{info.icon}</div>
+        {contactInfo.map((info) => (
+          <a
+            key={info.title}
+            href={info.link}
+            target={info.link.startsWith('http') ? '_blank' : undefined}
+            rel={info.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+            className="bg-white p-6 rounded shadow text-center hover:shadow-md transition-shadow block"
+          >
+            <div className="text-green-500 mb-2 flex justify-center">{info.icon}</div>
             <h3 className="font-bold">{info.title}</h3>
-            <p>{info.details}</p>
-          </div>
+            <p className="text-gray-600 text-sm">{info.details}</p>
+          </a>
         ))}
       </div>
 
@@ -187,9 +185,14 @@ function Contact() {
         </div>
 
         {/* Right side */}
-        <div className="bg-white p-6 rounded shadow text-center">
-          <MdLocationOn className="mx-auto text-4xl text-gray-400" />
-          <p>Map Section</p>
+        <div className="bg-white p-2 rounded shadow overflow-hidden min-h-[300px]">
+          <iframe
+            title="FoodExpress location map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3600.0!2d80.3066651!3d26.4270233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399c47b7cd158bc5%3A0x4eba4d74c7aeae75!2sGood%20Food%20Restaurant!5e0!3m2!1sen!2sin!4v1700000000000"
+            className="w-full h-[300px] border-0 rounded"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </div>
 
@@ -207,8 +210,7 @@ function Contact() {
         ))}
       </div>
 
-      <Footer />
-    </div>
+    </PageLayout>
   );
 }
 
