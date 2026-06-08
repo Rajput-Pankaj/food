@@ -1,21 +1,40 @@
 {
   "name": "food-delivery",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Pankaj Kumar Rajput <pankajkumarrajput1116@gmail.com>",
+  "contributors": [
+    "Amit Kumar"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pankajkumarrajput1116-glitch/food.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed:validate": "node scripts/validate-menu-seed.mjs",
+    "export:seeds": "node scripts/export-seeds.mjs",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "api:dev": "npm --prefix server run dev",
+    "api:start": "npm --prefix server start"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.12",
+    "formik": "^2.4.6",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.3",
-    "tailwindcss": "^4.0.12"
+    "tailwindcss": "^4.0.12",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
