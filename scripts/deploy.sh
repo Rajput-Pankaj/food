@@ -16,6 +16,12 @@ ok()   { echo -e "${GREEN}[deploy]${NC} $*"; }
 warn() { echo -e "${YELLOW}[deploy]${NC} $*"; }
 fail() { echo -e "${RED}[deploy]${NC} $*" >&2; exit 1; }
 
+detect_public_ip() {
+  curl -sf --max-time 3 ifconfig.me 2>/dev/null \
+    || hostname -I 2>/dev/null | awk '{print $1}' \
+    || echo "127.0.0.1"
+}
+
 random_secret() {
   if command -v openssl >/dev/null 2>&1; then
     openssl rand -base64 48 | tr -d '/+=' | head -c 48
@@ -68,24 +74,29 @@ fi
 TRAEFIK_DETECTED=false
 TRAEFIK_NETWORK=""
 TRAEFIK_CERT_RESOLVER="letsencrypt"
+FORCE_STANDALONE="${FORCE_STANDALONE:-$(get_env_value FORCE_STANDALONE)}"
 
-if docker ps --format '{{.Names}}' 2>/dev/null | grep -qiE '^traefik$|traefik'; then
-  TRAEFIK_DETECTED=true
-  log "Traefik container detected."
-fi
-
-for net in traefik proxy web; do
-  if docker network inspect "$net" >/dev/null 2>&1; then
-    TRAEFIK_NETWORK="$net"
+if [[ "$FORCE_STANDALONE" == "1" || "$FORCE_STANDALONE" == "true" ]]; then
+  log "FORCE_STANDALONE set — skipping Traefik (port mode only)."
+else
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qiE 'traefik'; then
     TRAEFIK_DETECTED=true
-    log "Traefik network found: ${net}"
-    break
+    log "Traefik container detected."
   fi
-done
+
+  for net in traefik proxy web; do
+    if docker network inspect "$net" >/dev/null 2>&1; then
+      TRAEFIK_NETWORK="$net"
+      TRAEFIK_DETECTED=true
+      log "Traefik network found: ${net}"
+      break
+    fi
+  done
+fi
 
 if [[ "$TRAEFIK_DETECTED" == true && -z "$TRAEFIK_NETWORK" ]]; then
   TRAEFIK_NETWORK="traefik"
-  warn "Traefik detected but no standard network — will try to create/use 'traefik'."
+  warn "Traefik detected but no standard network — will try 'traefik'."
 fi
 
 # ─── Git pull (optional) ─────────────────────────────────────────────────────
@@ -146,18 +157,59 @@ else
   set_env_value TRAEFIK_AVAILABLE "false"
 fi
 
+# ─── Hostinger / Traefik auto-subdomain (like Hermes agent) ───────────────────
+TRAEFIK_HOST="${TRAEFIK_HOST:-$(get_env_value TRAEFIK_HOST)}"
+if [[ -z "$TRAEFIK_HOST" && "$TRAEFIK_DETECTED" == true ]]; then
+  HOST_FQDN="$(hostname -f 2>/dev/null || true)"
+  if [[ -n "$HOST_FQDN" && "$HOST_FQDN" == *.* ]]; then
+    TRAEFIK_HOST="$HOST_FQDN"
+    set_env_value TRAEFIK_HOST "$TRAEFIK_HOST"
+    log "Detected TRAEFIK_HOST=${TRAEFIK_HOST}"
+  fi
+fi
+
 DOMAIN="${DOMAIN:-$(get_env_value DOMAIN)}"
+if [[ -z "$DOMAIN" && "$TRAEFIK_DETECTED" == true && -n "$TRAEFIK_HOST" ]]; then
+  TRAEFIK_SUBDOMAIN="$(get_env_value TRAEFIK_SUBDOMAIN)"
+  if [[ -z "$TRAEFIK_SUBDOMAIN" ]]; then
+    TRAEFIK_SUBDOMAIN="${COMPOSE_PROJECT_NAME:-$(basename "$ROOT")}"
+    set_env_value TRAEFIK_SUBDOMAIN "$TRAEFIK_SUBDOMAIN"
+  fi
+  DOMAIN="${TRAEFIK_SUBDOMAIN}.${TRAEFIK_HOST}"
+  set_env_value DOMAIN "$DOMAIN"
+  ok "Auto Traefik subdomain: https://${DOMAIN}"
+fi
+
 if [[ -n "$DOMAIN" ]]; then
   set_env_value DOMAIN "$DOMAIN"
   if [[ "$TRAEFIK_DETECTED" == true ]]; then
     set_env_value CORS_ORIGIN "https://${DOMAIN}"
     set_env_value USE_TRAEFIK "true"
   else
+    # Custom domain without Traefik — still expose host port
+    set_env_value USE_TRAEFIK "false"
     set_env_value CORS_ORIGIN "http://${DOMAIN}:$(get_env_value APP_PORT)"
   fi
+
+  # Dual Host() rule during custom domain migration (setup wizard keeps legacy .hstgr.cloud)
+  TRAEFIK_LEGACY_DOMAIN="$(get_env_value TRAEFIK_LEGACY_DOMAIN)"
+  if [[ -n "$TRAEFIK_LEGACY_DOMAIN" && "$TRAEFIK_LEGACY_DOMAIN" != "$DOMAIN" ]]; then
+    TRAEFIK_HOST_RULE="Host(\`${DOMAIN}\`) || Host(\`${TRAEFIK_LEGACY_DOMAIN}\`)"
+    ok "Traefik dual-host: ${DOMAIN} + legacy ${TRAEFIK_LEGACY_DOMAIN}"
+  else
+    TRAEFIK_HOST_RULE="Host(\`${DOMAIN}\`)"
+  fi
+  set_env_value TRAEFIK_HOST_RULE "$TRAEFIK_HOST_RULE"
 else
-  [[ -z "$(get_env_value CORS_ORIGIN)" ]] && set_env_value CORS_ORIGIN "http://localhost:$(get_env_value APP_PORT)"
   set_env_value USE_TRAEFIK "false"
+  PUBLIC_IP="$(detect_public_ip)"
+  APP_PORT_VAL="$(get_env_value APP_PORT)"
+  set_env_value CORS_ORIGIN "http://${PUBLIC_IP}:${APP_PORT_VAL}"
+  set_env_value APP_URL "http://${PUBLIC_IP}:${APP_PORT_VAL}"
+  set_env_value COOKIE_SECURE "false"
+  if [[ "$TRAEFIK_DETECTED" != true ]]; then
+    log "Traefik not installed — using http://${PUBLIC_IP}:${APP_PORT_VAL}"
+  fi
 fi
 
 [[ -z "$(get_env_value TRAEFIK_NETWORK)" && -n "$TRAEFIK_NETWORK" ]] && set_env_value TRAEFIK_NETWORK "$TRAEFIK_NETWORK"
@@ -165,20 +217,45 @@ fi
 
 USE_TRAEFIK_VAL="$(get_env_value USE_TRAEFIK)"
 
+# Never use Traefik routing unless Traefik is actually present
+if [[ "$USE_TRAEFIK_VAL" == "true" && "$TRAEFIK_DETECTED" != true ]]; then
+  warn "USE_TRAEFIK was true but Traefik is not available — forcing standalone port mode."
+  USE_TRAEFIK_VAL="false"
+  set_env_value USE_TRAEFIK "false"
+fi
+
 # Cookie / URL settings for HTTP vs HTTPS
-if [[ -n "$DOMAIN" && "$USE_TRAEFIK_VAL" == "true" ]]; then
+if [[ -n "$DOMAIN" && "$USE_TRAEFIK_VAL" == "true" && "$TRAEFIK_DETECTED" == true ]]; then
   set_env_value APP_URL "https://${DOMAIN}"
   set_env_value COOKIE_SECURE "true"
-else
-  [[ -z "$(get_env_value APP_URL)" ]] && set_env_value APP_URL "http://localhost:$(get_env_value APP_PORT)"
-  [[ -z "$(get_env_value COOKIE_SECURE)" ]] && set_env_value COOKIE_SECURE "false"
+elif [[ "$USE_TRAEFIK_VAL" != "true" ]]; then
+  PUBLIC_IP="$(detect_public_ip)"
+  APP_PORT_VAL="$(get_env_value APP_PORT)"
+  if [[ -z "$(get_env_value APP_URL)" || "$(get_env_value APP_URL)" == https://* ]]; then
+    set_env_value APP_URL "http://${PUBLIC_IP}:${APP_PORT_VAL}"
+  fi
+  set_env_value COOKIE_SECURE "false"
 fi
 
 # ─── Traefik external network (Compose manages foodexpress_net) ────────────────
 if [[ "$TRAEFIK_DETECTED" == true && -n "$TRAEFIK_NETWORK" ]]; then
   if ! docker network inspect "$TRAEFIK_NETWORK" >/dev/null 2>&1; then
     log "Creating Traefik network: ${TRAEFIK_NETWORK}"
-    docker network create "$TRAEFIK_NETWORK"
+    docker network create "$TRAEFIK_NETWORK" 2>/dev/null || true
+  fi
+fi
+
+# Final check: only use Traefik routing if network is reachable
+if [[ "$USE_TRAEFIK_VAL" == "true" && "$TRAEFIK_DETECTED" == true ]]; then
+  if ! docker network inspect "${TRAEFIK_NETWORK:-traefik}" >/dev/null 2>&1; then
+    warn "Traefik network unavailable — falling back to http://$(detect_public_ip):$(get_env_value APP_PORT)"
+    USE_TRAEFIK_VAL="false"
+    set_env_value USE_TRAEFIK "false"
+    PUBLIC_IP="$(detect_public_ip)"
+    APP_PORT_VAL="$(get_env_value APP_PORT)"
+    set_env_value CORS_ORIGIN "http://${PUBLIC_IP}:${APP_PORT_VAL}"
+    set_env_value APP_URL "http://${PUBLIC_IP}:${APP_PORT_VAL}"
+    set_env_value COOKIE_SECURE "false"
   fi
 fi
 
@@ -193,13 +270,16 @@ services:
     ports: !reset []
 YAML
   COMPOSE_FILES+=(-f docker-compose.override.generated.yml)
-  ok "Traefik SSL mode enabled for https://${DOMAIN}"
+  ok "Traefik SSL mode — https://${DOMAIN} (port $(get_env_value APP_PORT) not exposed publicly)"
 else
   rm -f docker-compose.override.generated.yml
   if [[ "$TRAEFIK_DETECTED" == true && -z "$DOMAIN" ]]; then
-    warn "Traefik detected but DOMAIN is not set. Set DOMAIN=your.domain.com in .env for HTTPS."
+    warn "Traefik detected but DOMAIN could not be set. Using port $(get_env_value APP_PORT) — set TRAEFIK_HOST or DOMAIN in .env for HTTPS."
+  elif [[ "$TRAEFIK_DETECTED" != true ]]; then
+    ok "Standalone mode — Traefik not installed, app on http://$(detect_public_ip):$(get_env_value APP_PORT)"
+  else
+    log "Standalone mode — app on port $(get_env_value APP_PORT)"
   fi
-  log "Standalone mode — app on port $(get_env_value APP_PORT)"
 fi
 
 # ─── Build & start ───────────────────────────────────────────────────────────
@@ -208,8 +288,20 @@ docker compose "${COMPOSE_FILES[@]}" up --build -d
 
 log "Waiting for API health..."
 for i in $(seq 1 30); do
-  PORT="$(get_env_value APP_PORT)"
-  if curl -sf "http://localhost:${PORT}/api/health" >/dev/null 2>&1; then
+  HEALTH_OK=false
+  if [[ "$USE_TRAEFIK_VAL" == "true" && -n "$DOMAIN" ]]; then
+    if docker compose "${COMPOSE_FILES[@]}" exec -T api node -e \
+      "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" \
+      >/dev/null 2>&1; then
+      HEALTH_OK=true
+    fi
+  else
+    PORT="$(get_env_value APP_PORT)"
+    if curl -sf "http://localhost:${PORT}/api/health" >/dev/null 2>&1; then
+      HEALTH_OK=true
+    fi
+  fi
+  if [[ "$HEALTH_OK" == true ]]; then
     ok "API is healthy."
     break
   fi
@@ -227,15 +319,22 @@ ok "═════════════════════════�
 
 if [[ "$USE_TRAEFIK_VAL" == "true" && -n "$DOMAIN" ]]; then
   echo -e "  URL:      ${GREEN}https://${DOMAIN}${NC}"
+  echo -e "  Setup:    ${GREEN}https://${DOMAIN}/setup${NC}"
+  echo -e "  Routing:  Traefik (HTTPS) — no public port $(get_env_value APP_PORT) binding"
 else
   PUBLIC_IP="$(curl -sf --max-time 3 ifconfig.me 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}' || echo localhost)"
   echo -e "  URL:      ${GREEN}http://${PUBLIC_IP}:$(get_env_value APP_PORT)${NC}"
+  echo -e "  Setup:    ${GREEN}http://${PUBLIC_IP}:$(get_env_value APP_PORT)/setup${NC}"
+  echo -e "  Routing:  Direct port $(get_env_value APP_PORT) (Traefik not installed or disabled)"
 fi
 
-echo -e "  Setup:    ${GREEN}Open /setup in your browser — no manual token needed${NC}"
-
-echo "  Network:  foodexpress_net (managed by Docker Compose)"
+echo -e "  Network:  foodexpress_net (managed by Docker Compose)"
 docker compose "${COMPOSE_FILES[@]}" ps
+
+if [[ "$USE_TRAEFIK_VAL" == "true" && -n "$DOMAIN" ]]; then
+  echo ""
+  ok "Traefik mode: same pattern as Hostinger Hermes — Host(\`${DOMAIN}\`) with Let's Encrypt."
+fi
 
 if [[ "$SETUP_TOKEN_GENERATED" == true ]]; then
   echo ""

@@ -36,12 +36,11 @@ const passwordSchema = Yup.string()
 
 const domainField = Yup.string()
   .trim()
-  .transform((v) => v || undefined)
   .matches(
-    /^$|^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/,
-    'Enter a valid domain like food.example.com'
+    /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/,
+    'Enter a valid domain like foodexpress.com'
   )
-  .optional();
+  .required('Domain is required');
 
 const schemas = [
   Yup.object({}),
@@ -103,6 +102,91 @@ function StatusRow({ ok, label, detail }) {
   );
 }
 
+function SetupCompletePanel({ result, traefikAvailable, onContinue }) {
+  const customDomain = result.domainChanged && result.domain;
+  const loginUrl = result.appUrl ? `${result.appUrl.replace(/\/$/, '')}/login` : '/login';
+
+  return (
+    <div>
+      <StepHeader
+        icon={LuRocket}
+        title="Setup complete"
+        description="Your store is configured. One quick server step applies your domain with HTTPS."
+      />
+
+      <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-4 mb-5 text-sm">
+        <p className="font-medium text-green-900 dark:text-green-100 mb-1">Saved successfully</p>
+        <p className="text-green-800 dark:text-green-200">
+          Admin account and store settings are ready.
+          {customDomain && (
+            <>
+              {' '}
+              Domain set to <strong>{result.domain}</strong>
+              {result.legacyDomain && (
+                <> — old URL <strong>{result.legacyDomain}</strong> stays active until redeploy</>
+              )}
+              .
+            </>
+          )}
+        </p>
+      </div>
+
+      {result.redeployRequired && (
+        <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-4 mb-5 text-sm">
+          <p className="font-semibold text-amber-900 dark:text-amber-100 mb-2">Run on your VPS (SSH)</p>
+          <pre className="text-xs font-mono bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-800 rounded-lg p-3 overflow-x-auto text-gray-800 dark:text-gray-100">
+            cd ~/foodexpress{'\n'}
+            {result.redeployCommand || './scripts/redeploy-domain.sh'}
+          </pre>
+          <p className="text-amber-800 dark:text-amber-200 mt-2 text-xs">
+            This updates Traefik HTTPS, CORS, and cookies for your domain — usually under a minute downtime.
+          </p>
+        </div>
+      )}
+
+      {customDomain && traefikAvailable && (
+        <div className="rounded-xl border border-gray-200 dark:border-gray-600 p-4 mb-5 text-sm">
+          <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">DNS for {result.domain}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
+            Add an <strong>A record</strong> pointing to your VPS IP before or right after redeploy:
+          </p>
+          <dl className="text-xs font-mono bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-1">
+            <div className="flex gap-2">
+              <dt className="text-gray-500 shrink-0">Type</dt>
+              <dd>A</dd>
+            </div>
+            <div className="flex gap-2">
+              <dt className="text-gray-500 shrink-0">Name</dt>
+              <dd>@ or www (match your domain)</dd>
+            </div>
+            <div className="flex gap-2">
+              <dt className="text-gray-500 shrink-0">Value</dt>
+              <dd>Your VPS public IP</dd>
+            </div>
+          </dl>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={onContinue}
+        className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-sm"
+      >
+        Continue to sign in
+        <LuArrowRight className="w-4 h-4" />
+      </button>
+      {result.appUrl && (
+        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-3">
+          After redeploy, open{' '}
+          <a href={loginUrl} className="text-green-600 font-medium hover:underline">
+            {loginUrl}
+          </a>
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function Setup() {
   useDocumentTitle('Setup');
   const navigate = useNavigate();
@@ -112,7 +196,7 @@ export default function Setup() {
   const [bootStatus, setBootStatus] = useState('loading');
   const [bootMessage, setBootMessage] = useState('');
   const [context, setContext] = useState(null);
-  const [redeployNote, setRedeployNote] = useState('');
+  const [completeResult, setCompleteResult] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -136,18 +220,16 @@ export default function Setup() {
       try {
         const { confirmPassword: _confirm, ...payload } = values;
         if (!payload.storeEmail?.trim()) delete payload.storeEmail;
-        if (!payload.domain?.trim()) delete payload.domain;
 
         const result = await setupApi.complete(payload);
         setNeedsSetup(false);
 
-        let message = 'Setup complete. Sign in with your admin account.';
         if (result.redeployRequired) {
-          message = `Setup complete! Run "${result.redeployCommand}" on your server to apply HTTPS/domain, then sign in.`;
-          setRedeployNote(message);
+          setCompleteResult(result);
+          return;
         }
 
-        navigate('/login', { replace: true, state: { message } });
+        navigate('/login', { replace: true, state: { message: 'Setup complete. Sign in with your admin account.' } });
       } catch (err) {
         setError(err.message || 'Setup failed.');
       } finally {
@@ -179,6 +261,10 @@ export default function Setup() {
 
         setBootStatus('ready');
         setBootMessage('Server verified. Database is ready. Continue to configure your restaurant.');
+
+        if (ctx.defaultDomain || ctx.domain) {
+          formik.setFieldValue('domain', ctx.defaultDomain || ctx.domain);
+        }
       } catch (err) {
         if (cancelled) return;
         setBootStatus('error');
@@ -233,17 +319,30 @@ export default function Setup() {
   const isLastStep = step === STEPS.length - 1;
   const showContinue = !isLastStep && (step !== 0 || bootStatus === 'ready');
 
+  const handleFinishLogin = () => {
+    const message = completeResult?.domainChanged
+      ? `Setup complete! Run "${completeResult.redeployCommand}" on your server, then sign in at ${completeResult.appUrl || 'your domain'}.`
+      : 'Setup complete. Sign in with your admin account.';
+    navigate('/login', { replace: true, state: { message } });
+  };
+
+  if (completeResult) {
+    return (
+      <SetupLayout steps={STEPS} currentStep={STEPS.length - 1}>
+        <SetupCompletePanel
+          result={completeResult}
+          traefikAvailable={context?.traefikAvailable}
+          onContinue={handleFinishLogin}
+        />
+      </SetupLayout>
+    );
+  }
+
   return (
     <SetupLayout steps={STEPS} currentStep={step}>
       {error && (
         <div className="mb-5 text-red-600 text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
           {error}
-        </div>
-      )}
-
-      {redeployNote && (
-        <div className="mb-5 text-amber-800 text-sm bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-          {redeployNote}
         </div>
       )}
 
@@ -427,15 +526,23 @@ export default function Setup() {
             <StepHeader
               icon={LuGlobe}
               title="Domain & launch"
-              description="Optionally connect your domain. Traefik will enable HTTPS automatically when detected."
+              description="Deploy auto-fills your Hostinger URL. Change it to your custom domain (e.g. foodexpress.com) — we update HTTPS settings automatically."
             />
 
+            {context?.defaultDomain && (
+              <p className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 mb-4">
+                Current deploy URL:{' '}
+                <code className="font-mono text-green-700 dark:text-green-300">{context.defaultDomain}</code>
+                {context.traefikAvailable && ' — edit below to switch to your own domain.'}
+              </p>
+            )}
+
             <AuthFormField
-              label="Custom domain (optional)"
+              label="Public domain"
               id="domain"
               name="domain"
               type="text"
-              placeholder="food.yourdomain.com"
+              placeholder="foodexpress.com"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.domain}
@@ -445,13 +552,25 @@ export default function Setup() {
 
             {context?.traefikAvailable ? (
               <p className="text-xs text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-5">
-                Traefik is available. After setup, run <code className="font-mono">./scripts/deploy.sh</code> on the server to apply HTTPS for your domain.
+                Traefik will request a Let&apos;s Encrypt certificate for your domain after you run{' '}
+                <code className="font-mono">./scripts/redeploy-domain.sh</code> on the server. The old Hostinger URL
+                stays active briefly during DNS propagation.
               </p>
             ) : (
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
-                Point your domain DNS to this server. Without Traefik, the app stays on port {context?.appPort || '8080'}.
+                Point your domain DNS A record to this server. Without Traefik, the app stays on port{' '}
+                {context?.appPort || '8080'}.
               </p>
             )}
+
+            {formik.values.domain &&
+              context?.defaultDomain &&
+              formik.values.domain.trim().toLowerCase() !== context.defaultDomain.toLowerCase() && (
+                <p className="text-xs text-blue-800 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2 mb-5">
+                  Switching to <strong>{formik.values.domain}</strong> — setup will update DOMAIN, CORS, cookies, and
+                  Traefik in <code className="font-mono">.env</code>. Run redeploy on the server to go live.
+                </p>
+              )}
 
             {formik.values.domain && context?.deployEnvWritable === false && (
               <p className="text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 mb-5">
@@ -468,12 +587,10 @@ export default function Setup() {
                 <dt className="text-gray-500 dark:text-gray-400">Admin</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.adminEmail}</dd>
               </div>
-              {formik.values.domain && (
-                <div className="flex justify-between gap-4 px-4 py-3">
-                  <dt className="text-gray-500 dark:text-gray-400">Domain</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.domain}</dd>
-                </div>
-              )}
+              <div className="flex justify-between gap-4 px-4 py-3">
+                <dt className="text-gray-500 dark:text-gray-400">Domain</dt>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.domain}</dd>
+              </div>
             </dl>
 
             <label className="flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-600 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">

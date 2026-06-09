@@ -54,6 +54,7 @@ router.get('/context', async (req, res) => {
   const authorized = verifySetupSessionToken(req.cookies?.[SETUP_SESSION_COOKIE]);
   const traefikAvailable = process.env.TRAEFIK_AVAILABLE === 'true';
   const domain = process.env.DOMAIN || '';
+  const traefikHost = process.env.TRAEFIK_HOST || '';
 
   return res.json({
     setupComplete: complete,
@@ -65,6 +66,8 @@ router.get('/context', async (req, res) => {
     publicUrl: process.env.APP_URL || '',
     appPort: process.env.APP_PORT || '8080',
     domain,
+    defaultDomain: domain,
+    traefikHost,
     dbReady: true,
   });
 });
@@ -187,8 +190,10 @@ router.post('/complete', setupLimiter, async (req, res) => {
     }
 
     let domainResult = null;
-    if (domain?.trim()) {
-      domainResult = applyDomainDeployConfig(domain);
+    const previousDomain = process.env.DOMAIN || '';
+    const domainToApply = domain?.trim() || previousDomain;
+    if (domainToApply) {
+      domainResult = applyDomainDeployConfig(domainToApply, { previousDomain });
     }
 
     clearSetupSessionCookie(res);
@@ -197,14 +202,22 @@ router.post('/complete', setupLimiter, async (req, res) => {
       userId: null,
       action: 'setup.complete',
       resource: 'system',
-      details: { adminEmail: normalizedEmail, domain: domain || null },
+      details: {
+        adminEmail: normalizedEmail,
+        domain: domainToApply || null,
+        domainChanged: domainResult?.domainChanged || false,
+      },
       ip: getClientIp(req),
     });
 
     return res.status(201).json({
       ok: true,
-      message: 'Setup complete. Please sign in.',
+      message: domainResult?.message || 'Setup complete. Please sign in.',
       domainConfigured: Boolean(domainResult?.ok),
+      domainChanged: Boolean(domainResult?.domainChanged),
+      domain: domainResult?.domain || domainToApply || null,
+      previousDomain: domainResult?.previousDomain || null,
+      legacyDomain: domainResult?.legacyDomain || null,
       appUrl: domainResult?.appUrl || process.env.APP_URL || '',
       redeployRequired: Boolean(domainResult?.redeployRequired),
       redeployCommand: domainResult?.redeployCommand || './scripts/deploy.sh',

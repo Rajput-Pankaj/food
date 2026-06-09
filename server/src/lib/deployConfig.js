@@ -10,6 +10,17 @@ export function isDeployEnvWritable() {
   return envWriteEnabled() && fs.existsSync(ENV_PATH);
 }
 
+export function buildTraefikHostRule(primary, legacy) {
+  const p = primary?.trim().toLowerCase();
+  if (!p) return '';
+  const primaryRule = `Host(\`${p}\`)`;
+  const l = legacy?.trim().toLowerCase();
+  if (l && l !== p) {
+    return `${primaryRule} || Host(\`${l}\`)`;
+  }
+  return primaryRule;
+}
+
 export function updateDeployEnv(updates) {
   if (!envWriteEnabled()) {
     return { ok: false, skipped: true, reason: 'Env write disabled or path not configured.' };
@@ -34,21 +45,36 @@ export function updateDeployEnv(updates) {
   return { ok: true, updated: Object.keys(updates) };
 }
 
-export function applyDomainDeployConfig(domain) {
+/**
+ * Apply public domain from setup wizard — updates .env for Traefik, CORS, cookies.
+ * Keeps Hostinger subdomain as legacy host during switch to reduce downtime.
+ */
+export function applyDomainDeployConfig(domain, options = {}) {
   const normalized = domain.trim().toLowerCase();
   if (!normalized) {
     return { ok: false, skipped: true, reason: 'No domain provided.' };
   }
 
+  const previousDomain = (options.previousDomain || process.env.DOMAIN || '').trim().toLowerCase();
   const useTraefik = process.env.TRAEFIK_AVAILABLE === 'true';
   const appPort = process.env.APP_PORT || '8080';
+  const domainChanged = Boolean(previousDomain && normalized !== previousDomain);
+
+  // Keep auto Hostinger URL working while DNS propagates to custom domain
+  const keepLegacy =
+    domainChanged && previousDomain.includes('.hstgr.cloud') && !normalized.includes('.hstgr.cloud');
+  const legacyDomain = keepLegacy ? previousDomain : '';
+
   const appUrl = useTraefik ? `https://${normalized}` : `http://${normalized}:${appPort}`;
+  const hostRule = buildTraefikHostRule(normalized, legacyDomain);
 
   const updates = {
     DOMAIN: normalized,
     APP_URL: appUrl,
     CORS_ORIGIN: appUrl,
     COOKIE_SECURE: useTraefik ? 'true' : 'false',
+    TRAEFIK_HOST_RULE: hostRule,
+    TRAEFIK_LEGACY_DOMAIN: legacyDomain,
   };
 
   if (useTraefik) {
@@ -61,9 +87,16 @@ export function applyDomainDeployConfig(domain) {
   return {
     ok: true,
     domain: normalized,
+    previousDomain: previousDomain || null,
+    legacyDomain: legacyDomain || null,
+    domainChanged,
     appUrl,
     useTraefik,
+    hostRule,
     redeployRequired: true,
-    redeployCommand: './scripts/deploy.sh',
+    redeployCommand: './scripts/redeploy-domain.sh',
+    message: domainChanged
+      ? `Domain updated to ${normalized}. Run ./scripts/deploy.sh on the server to apply Traefik HTTPS (old URL kept briefly if applicable).`
+      : `Domain confirmed as ${normalized}. Run ./scripts/deploy.sh if Traefik labels need refresh.`,
   };
 }

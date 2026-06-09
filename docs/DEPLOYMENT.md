@@ -46,9 +46,36 @@ The script will:
 5. **Build & start** — `db` → `api` → `web` with health checks
 6. **Migrate & seed** — schema, 50 menu items, blogs, optional demo users
 
-### Traefik SSL
+### Traefik SSL (Hostinger / Hermes-style)
 
-If Traefik is already running on the server:
+If Traefik is already running on the server (Hostinger VPS), **`./scripts/deploy.sh` auto-configures HTTPS** — no need to expose port 8080 publicly.
+
+**Automatic (Hostinger VPS):**
+
+```bash
+./scripts/deploy.sh
+# → https://foodexpress.srv1710536.hstgr.cloud/setup
+```
+
+The script detects Traefik, sets `TRAEFIK_HOST` from `hostname -f`, and builds:
+
+```text
+DOMAIN=${TRAEFIK_SUBDOMAIN}.${TRAEFIK_HOST}
+```
+
+Traefik labels match the Hostinger Hermes pattern:
+
+```yaml
+traefik.enable=true
+traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${DOMAIN}`)
+traefik.http.routers.${COMPOSE_PROJECT_NAME}.entrypoints=websecure
+traefik.http.routers.${COMPOSE_PROJECT_NAME}.tls.certresolver=letsencrypt
+traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=80
+```
+
+Public port `8080` is **not** bound when Traefik mode is active.
+
+**Custom domain:**
 
 ```bash
 DOMAIN=food.yourdomain.com ./scripts/deploy.sh

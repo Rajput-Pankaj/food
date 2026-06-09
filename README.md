@@ -64,18 +64,61 @@ The **setup wizard** (4 steps):
 | **1. Welcome** | Automatic — server + database verified, secure session started |
 | **2. Store** | Restaurant name, address, phone |
 | **3. Admin** | Owner email, password (with confirm + show/hide) |
-| **4. Domain & launch** | Optional domain, sample menu toggle, finish |
+| **4. Domain & launch** | Pre-filled Hostinger URL — change to `foodexpress.com`, sample menu, finish |
 
 **No `SETUP_TOKEN` to copy.** The token stays in `.env` for internal security; the browser uses a short-lived setup session instead.
 
-If you enter a **custom domain** and Traefik is detected, setup updates `.env` automatically. Then run once on the server:
+Deploy auto-sets `DOMAIN=foodexpress.srv1710536.hstgr.cloud`. On the last setup step, change it to your custom domain (e.g. `foodexpress.com`). Setup updates `.env` (`DOMAIN`, `CORS_ORIGIN`, `APP_URL`, Traefik host rule) and keeps the old Hostinger URL as a legacy host during DNS propagation. Then run once on the server:
 
 ```bash
 cd ~/foodexpress
-./scripts/deploy.sh
+./scripts/redeploy-domain.sh
 ```
 
-Point your domain’s DNS **A record** to the server IP before redeploying.
+Point your domain’s DNS **A record** to the server IP before or right after redeploy (Hostinger `*.hstgr.cloud` subdomains work automatically without DNS changes).
+
+---
+
+## Traefik on Hostinger (like Hermes agent)
+
+If **Traefik is already running** on your VPS (Hostinger installs it for Docker Manager / Hermes), `./scripts/deploy.sh` now:
+
+1. Detects Traefik and `TRAEFIK_HOST` (e.g. `srv1710536.hstgr.cloud`)
+2. Auto-creates subdomain: **`foodexpress.srv1710536.hstgr.cloud`**
+3. Attaches Traefik labels (same pattern as Hermes):
+   - `traefik.enable=true`
+   - `Host(\`foodexpress.srv1710536.hstgr.cloud\`)`
+   - `websecure` + Let's Encrypt
+4. **Removes public port `8080` binding** — app is only on HTTPS via Traefik
+
+You get URLs like:
+
+```text
+https://foodexpress.srv1710536.hstgr.cloud/setup
+```
+
+**Why IP:8080 existed before:** fallback when Traefik was not configured or `DOMAIN` was missing. SSH deploy now prefers Traefik HTTPS when available.
+
+**If Traefik is not installed**, deploy automatically uses **`http://YOUR_IP:8080`** (port exposed, CORS/APP_URL set to your public IP).
+
+| Condition | How you access the app |
+|-----------|-------------------------|
+| Traefik installed (Hostinger VPS) | `https://foodexpress.srv….hstgr.cloud` |
+| Traefik **not** installed | `http://YOUR_IP:8080` |
+| Force port mode | Set `FORCE_STANDALONE=true` in `.env` |
+
+**Custom subdomain** (optional in `.env`):
+
+```env
+TRAEFIK_SUBDOMAIN=foodexpress-e38b
+TRAEFIK_HOST=srv1710536.hstgr.cloud
+```
+
+**Custom domain** (your own DNS):
+
+```bash
+DOMAIN=food.yourdomain.com ./scripts/deploy.sh
+```
 
 ---
 
@@ -84,10 +127,10 @@ Point your domain’s DNS **A record** to the server IP before redeploying.
 - Checks Docker, memory, and disk
 - Pulls latest git (when the tree is clean)
 - Creates or updates `.env` with strong random secrets
-- Detects **Traefik** → sets `TRAEFIK_AVAILABLE=true`
+- Detects **Traefik** → auto HTTPS subdomain on Hostinger (`foodexpress.srv….hstgr.cloud`) or custom `DOMAIN`
 - Builds and starts **PostgreSQL + API + Nginx web**
 - Waits for `/api/health`
-- Prints your public URL and `/setup` link
+- Prints **HTTPS** URL via Traefik, or **HTTP IP:port** if Traefik is unavailable
 
 ### Deploy options
 
@@ -95,6 +138,7 @@ Point your domain’s DNS **A record** to the server IP before redeploying.
 |--------|---------|
 | One-line install | `curl -fsSL …/scripts/install.sh \| bash` |
 | SSH redeploy | `./scripts/deploy.sh` |
+| Apply domain after setup | `./scripts/redeploy-domain.sh` |
 | Docker Compose only | `docker compose up --build -d` |
 | Traefik + domain (CLI) | `DOMAIN=food.yourdomain.com ./scripts/deploy.sh` |
 | Generate secrets (Coolify/Git) | `./scripts/generate-secrets.sh` |
@@ -112,9 +156,9 @@ Details: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
 
 ### Stack
 
-| Service | Description | Port |
-|---------|-------------|------|
-| `web` | Nginx — React SPA + `/api` proxy | `8080` (host) |
+| Service | Description | Public access |
+|---------|-------------|---------------|
+| `web` | Nginx — React SPA + `/api` proxy | Traefik HTTPS **or** host `:8080` |
 | `api` | Express REST API | internal `3001` |
 | `db` | PostgreSQL 16 | internal `5432` |
 
@@ -197,7 +241,9 @@ Copy `.env.example` to `.env`, or let `./scripts/deploy.sh` generate secrets aut
 | `CORS_ORIGIN` | Allowed browser origin | auto from `DOMAIN` |
 | `APP_URL` | Public URL (cookies, emails) | auto from `DOMAIN` |
 | `COOKIE_SECURE` | Secure cookies for HTTPS | `false` (HTTP) / `true` (HTTPS) |
-| `DOMAIN` | Public domain | optional — set in setup or CLI |
+| `DOMAIN` | Public hostname | auto: `{TRAEFIK_SUBDOMAIN}.{TRAEFIK_HOST}` |
+| `TRAEFIK_HOST` | Hostinger VPS host | auto: `hostname -f` |
+| `TRAEFIK_SUBDOMAIN` | Subdomain prefix | default: `foodexpress` |
 | `USE_TRAEFIK` | Route via Traefik | `false` / `true` with domain |
 | `TRAEFIK_AVAILABLE` | Traefik detected on host | set by deploy script |
 | `TRAEFIK_NETWORK` | Traefik Docker network | `traefik` |

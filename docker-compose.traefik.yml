@@ -1,5 +1,5 @@
-# Traefik overlay — used when DOMAIN is set and Traefik is detected
-# Auto-applied by scripts/deploy.sh
+# Traefik overlay — Hostinger / Coolify / custom domain
+# TRAEFIK_HOST_RULE supports dual Host() during domain migration (see deployConfig.js)
 
 services:
   web:
@@ -9,17 +9,16 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=${TRAEFIK_NETWORK:-traefik}
-      - traefik.http.routers.foodexpress.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.foodexpress.entrypoints=websecure
-      - traefik.http.routers.foodexpress.tls=true
-      - traefik.http.routers.foodexpress.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}
-      - traefik.http.services.foodexpress.loadbalancer.server.port=80
-      # HTTP → HTTPS redirect
-      - traefik.http.routers.foodexpress-http.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.foodexpress-http.entrypoints=web
-      - traefik.http.routers.foodexpress-http.middlewares=foodexpress-redirect
-      - traefik.http.middlewares.foodexpress-redirect.redirectscheme.scheme=https
-      - traefik.http.middlewares.foodexpress-redirect.redirectscheme.permanent=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}.rule=${TRAEFIK_HOST_RULE:-Host(`${DOMAIN}`)}
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}.entrypoints=websecure
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}.tls=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}
+      - traefik.http.services.${COMPOSE_PROJECT_NAME:-foodexpress}.loadbalancer.server.port=80
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}-http.rule=${TRAEFIK_HOST_RULE:-Host(`${DOMAIN}`)}
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}-http.entrypoints=web
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-foodexpress}-http.middlewares=${COMPOSE_PROJECT_NAME:-foodexpress}-redirect
+      - traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-foodexpress}-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.${COMPOSE_PROJECT_NAME:-foodexpress}-redirect.redirectscheme.permanent=true
 
 networks:
   traefik_public:
