@@ -60,9 +60,8 @@ export function applyDomainDeployConfig(domain, options = {}) {
   const appPort = process.env.APP_PORT || '8080';
   const domainChanged = Boolean(previousDomain && normalized !== previousDomain);
 
-  // Keep auto Hostinger URL working while DNS propagates to custom domain
-  const keepLegacy =
-    domainChanged && previousDomain.includes('.hstgr.cloud') && !normalized.includes('.hstgr.cloud');
+  // Keep previous auto-deploy URL working while DNS propagates to a custom domain
+  const keepLegacy = domainChanged && Boolean(previousDomain);
   const legacyDomain = keepLegacy ? previousDomain : '';
 
   const appUrl = useTraefik ? `https://${normalized}` : `http://${normalized}:${appPort}`;

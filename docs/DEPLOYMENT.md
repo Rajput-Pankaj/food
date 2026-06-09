@@ -54,7 +54,7 @@ If Traefik is already running on the server (Hostinger VPS), **`./scripts/deploy
 
 ```bash
 ./scripts/deploy.sh
-# → https://foodexpress.srv1710536.hstgr.cloud/setup
+# → https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_HOST}/setup  (auto-detected per VPS)
 ```
 
 The script detects Traefik, sets `TRAEFIK_HOST` from `hostname -f`, and builds:

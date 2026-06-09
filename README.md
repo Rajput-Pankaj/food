@@ -68,7 +68,7 @@ The **setup wizard** (4 steps):
 
 **No `SETUP_TOKEN` to copy.** The token stays in `.env` for internal security; the browser uses a short-lived setup session instead.
 
-Deploy auto-sets `DOMAIN=foodexpress.srv1710536.hstgr.cloud`. On the last setup step, change it to your custom domain (e.g. `foodexpress.com`). Setup updates `.env` (`DOMAIN`, `CORS_ORIGIN`, `APP_URL`, Traefik host rule) and keeps the old Hostinger URL as a legacy host during DNS propagation. Then run once on the server:
+Deploy **auto-detects** your VPS hostname and sets `DOMAIN=${TRAEFIK_SUBDOMAIN}.${TRAEFIK_HOST}` (e.g. `foodexpress.srv123456.hstgr.cloud` on Hostinger — **different on every VPS**). On the last setup step, change it to your custom domain (e.g. `foodexpress.com`). Setup updates `.env` (`DOMAIN`, `CORS_ORIGIN`, `APP_URL`, Traefik host rule) and keeps the previous auto URL as a legacy host during DNS propagation. Then run once on the server:
 
 ```bash
 cd ~/foodexpress
@@ -83,18 +83,18 @@ Point your domain’s DNS **A record** to the server IP before or right after re
 
 If **Traefik is already running** on your VPS (Hostinger installs it for Docker Manager / Hermes), `./scripts/deploy.sh` now:
 
-1. Detects Traefik and `TRAEFIK_HOST` (e.g. `srv1710536.hstgr.cloud`)
-2. Auto-creates subdomain: **`foodexpress.srv1710536.hstgr.cloud`**
+1. Detects Traefik and `TRAEFIK_HOST` from `hostname -f` (e.g. `srv123456.hstgr.cloud` — **your VPS, not hardcoded**)
+2. Auto-creates subdomain: **`${TRAEFIK_SUBDOMAIN}.${TRAEFIK_HOST}`** (default subdomain: project folder name, usually `foodexpress`)
 3. Attaches Traefik labels (same pattern as Hermes):
    - `traefik.enable=true`
-   - `Host(\`foodexpress.srv1710536.hstgr.cloud\`)`
+   - `Host(\`${DOMAIN}\`)` — built from detected host
    - `websecure` + Let's Encrypt
 4. **Removes public port `8080` binding** — app is only on HTTPS via Traefik
 
 You get URLs like:
 
 ```text
-https://foodexpress.srv1710536.hstgr.cloud/setup
+https://foodexpress.<your-vps-host>/setup
 ```
 
 **Why IP:8080 existed before:** fallback when Traefik was not configured or `DOMAIN` was missing. SSH deploy now prefers Traefik HTTPS when available.
@@ -103,7 +103,7 @@ https://foodexpress.srv1710536.hstgr.cloud/setup
 
 | Condition | How you access the app |
 |-----------|-------------------------|
-| Traefik installed (Hostinger VPS) | `https://foodexpress.srv….hstgr.cloud` |
+| Traefik installed (Hostinger VPS) | `https://{subdomain}.{your-vps-host}` (auto-detected) |
 | Traefik **not** installed | `http://YOUR_IP:8080` |
 | Force port mode | Set `FORCE_STANDALONE=true` in `.env` |
 
@@ -111,7 +111,8 @@ https://foodexpress.srv1710536.hstgr.cloud/setup
 
 ```env
 TRAEFIK_SUBDOMAIN=foodexpress-e38b
-TRAEFIK_HOST=srv1710536.hstgr.cloud
+# TRAEFIK_HOST is auto-detected; override only if needed:
+# TRAEFIK_HOST=srv123456.hstgr.cloud
 ```
 
 **Custom domain** (your own DNS):
@@ -127,7 +128,7 @@ DOMAIN=food.yourdomain.com ./scripts/deploy.sh
 - Checks Docker, memory, and disk
 - Pulls latest git (when the tree is clean)
 - Creates or updates `.env` with strong random secrets
-- Detects **Traefik** → auto HTTPS subdomain on Hostinger (`foodexpress.srv….hstgr.cloud`) or custom `DOMAIN`
+- Detects **Traefik** → auto HTTPS subdomain from `hostname -f` (`{subdomain}.{vps-host}`) or custom `DOMAIN`
 - Builds and starts **PostgreSQL + API + Nginx web**
 - Waits for `/api/health`
 - Prints **HTTPS** URL via Traefik, or **HTTP IP:port** if Traefik is unavailable

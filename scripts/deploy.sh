@@ -191,7 +191,7 @@ if [[ -n "$DOMAIN" ]]; then
     set_env_value CORS_ORIGIN "http://${DOMAIN}:$(get_env_value APP_PORT)"
   fi
 
-  # Dual Host() rule during custom domain migration (setup wizard keeps legacy .hstgr.cloud)
+  # Dual Host() rule during custom domain migration (setup wizard keeps previous DOMAIN)
   TRAEFIK_LEGACY_DOMAIN="$(get_env_value TRAEFIK_LEGACY_DOMAIN)"
   if [[ -n "$TRAEFIK_LEGACY_DOMAIN" && "$TRAEFIK_LEGACY_DOMAIN" != "$DOMAIN" ]]; then
     TRAEFIK_HOST_RULE="Host(\`${DOMAIN}\`) || Host(\`${TRAEFIK_LEGACY_DOMAIN}\`)"
