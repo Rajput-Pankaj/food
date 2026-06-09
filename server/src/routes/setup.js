@@ -49,6 +49,19 @@ async function isSetupAuthorized(req) {
   return verifySetupSessionToken(session);
 }
 
+router.get('/status', async (req, res) => {
+  try {
+    const complete = await isSetupComplete();
+    return res.json({
+      setupComplete: complete,
+      needsSetup: !complete,
+    });
+  } catch (err) {
+    console.error('[setup/status]', err);
+    return res.status(500).json({ error: 'Could not read setup status.' });
+  }
+});
+
 router.get('/context', async (req, res) => {
   const complete = await isSetupComplete();
   const authorized = verifySetupSessionToken(req.cookies?.[SETUP_SESSION_COOKIE]);
