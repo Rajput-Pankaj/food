@@ -31,7 +31,7 @@
     "api:start": "npm --prefix server start"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.0.12",
+    "@tailwindcss/vite": "^4.3.0",
     "formik": "^2.4.6",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
