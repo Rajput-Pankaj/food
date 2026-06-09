@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { LuArrowLeft, LuArrowRight, LuRocket, LuShieldCheck, LuStore } from 'react-icons/lu';
+import { LuArrowLeft, LuArrowRight, LuCheck, LuLoader, LuRocket, LuShieldCheck, LuStore, LuX } from 'react-icons/lu';
 import { setupApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -61,13 +61,42 @@ function StepHeader({ icon, title, description }) {
   );
 }
 
+function TokenStatusMessage({ tokenCheck }) {
+  if (tokenCheck.status === 'idle') return null;
+
+  const styles = {
+    checking: 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100',
+    valid: 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100',
+    invalid: 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-100',
+  };
+
+  const icons = {
+    checking: LuLoader,
+    valid: LuCheck,
+    invalid: LuX,
+  };
+
+  const Icon = icons[tokenCheck.status];
+
+  return (
+    <div
+      className={`mt-3 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm ${styles[tokenCheck.status]}`}
+      role="status"
+      aria-live="polite"
+    >
+      <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${tokenCheck.status === 'checking' ? 'animate-spin' : ''}`} />
+      <span>{tokenCheck.message}</span>
+    </div>
+  );
+}
+
 export default function Setup() {
   useDocumentTitle('Setup');
   const navigate = useNavigate();
   const { setNeedsSetup } = useAuth();
   const [step, setStep] = useState(0);
   const [error, setError] = useState('');
-  const [verifying, setVerifying] = useState(false);
+  const [tokenCheck, setTokenCheck] = useState({ status: 'idle', message: '' });
 
   const formik = useFormik({
     initialValues: {
@@ -129,20 +158,9 @@ export default function Setup() {
     const valid = await validateCurrentStep();
     if (!valid) return;
 
-    if (step === 0) {
-      setVerifying(true);
-      try {
-        const result = await setupApi.verifyToken(formik.values.setupToken.trim());
-        if (!result.valid) {
-          setError('Invalid setup token. Copy the full SETUP_TOKEN from your server .env file.');
-          return;
-        }
-      } catch (err) {
-        setError(err.message || 'Could not verify setup token.');
-        return;
-      } finally {
-        setVerifying(false);
-      }
+    if (step === 0 && tokenCheck.status !== 'valid') {
+      setError(tokenCheck.message || 'Verify your setup token before continuing.');
+      return;
     }
 
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -154,10 +172,54 @@ export default function Setup() {
   };
 
   useEffect(() => {
+    if (step !== 0) return undefined;
+
+    const trimmed = formik.values.setupToken.trim();
+
+    if (!trimmed) {
+      setTokenCheck({ status: 'idle', message: '' });
+      return undefined;
+    }
+
+    if (trimmed.length < 32) {
+      setTokenCheck({
+        status: 'invalid',
+        message: 'Token looks too short. Paste the full SETUP_TOKEN from your server (usually 48 characters).',
+      });
+      return undefined;
+    }
+
+    setTokenCheck({ status: 'checking', message: 'Verifying token with server…' });
+
+    const timer = setTimeout(async () => {
+      try {
+        const result = await setupApi.verifyToken(trimmed);
+        if (result.valid) {
+          setTokenCheck({ status: 'valid', message: 'Token verified. You can continue to the next step.' });
+        } else {
+          setTokenCheck({
+            status: 'invalid',
+            message: result.error || 'Invalid setup token. Check grep SETUP_TOKEN .env on your server.',
+          });
+        }
+      } catch (err) {
+        setTokenCheck({
+          status: 'invalid',
+          message: err.message || 'Could not verify token. Check your connection and try again.',
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [formik.values.setupToken, step]);
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
 
   const isLastStep = step === STEPS.length - 1;
+  const canContinueFromToken = step !== 0 || tokenCheck.status === 'valid';
+  const showContinue = !isLastStep && canContinueFromToken;
 
   return (
     <SetupLayout steps={STEPS} currentStep={step}>
@@ -192,9 +254,15 @@ export default function Setup() {
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.setupToken}
-              error={formik.errors.setupToken}
+              error={formik.touched.setupToken && !formik.values.setupToken.trim() ? formik.errors.setupToken : undefined}
               touched={formik.touched.setupToken}
             />
+            <TokenStatusMessage tokenCheck={tokenCheck} />
+            {step === 0 && formik.values.setupToken.trim() && tokenCheck.status !== 'valid' && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Continue will appear once your token is verified.
+              </p>
+            )}
           </>
         )}
 
@@ -388,17 +456,17 @@ export default function Setup() {
               <LuRocket className="w-5 h-5" />
               {formik.isSubmitting ? 'Setting up...' : 'Complete setup'}
             </button>
-          ) : (
+          ) : showContinue ? (
             <button
               type="button"
               onClick={handleNext}
-              disabled={verifying}
+              disabled={tokenCheck.status === 'checking'}
               className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-60 transition-colors shadow-sm"
             >
-              {verifying ? 'Verifying token...' : 'Continue'}
-              {!verifying && <LuArrowRight className="w-4 h-4" />}
+              Continue
+              <LuArrowRight className="w-4 h-4" />
             </button>
-          )}
+          ) : null}
         </div>
       </form>
     </SetupLayout>
