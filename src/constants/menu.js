@@ -1,3 +1,5 @@
+import { MEDIA_PLACEHOLDER } from './media';
+
 export const FOOD_CATEGORIES = [
   'Breakfast',
   'Soup',
@@ -14,5 +16,4 @@ export const FOOD_TYPES = [
   { value: 'non_veg', label: 'Non-Veg' },
 ];
 
-export const MENU_PLACEHOLDER_IMAGE =
-  'https://placehold.co/400x300/f3f4f6/9ca3af?text=Food+Image';
+export const MENU_PLACEHOLDER_IMAGE = MEDIA_PLACEHOLDER;

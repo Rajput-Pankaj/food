@@ -1,7 +1,142 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    @apply antialiased;
+    scroll-behavior: smooth;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply transition-colors duration-200;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
 #root {
   min-height: 100vh;
+}
+
+/* ================= DARK MODE SURFACES ================= */
+.dark .bg-white {
+  background-color: #1f2937;
+}
+
+.dark .bg-slate-50 {
+  background-color: #111827;
+}
+
+.dark .bg-slate-200 {
+  background-color: #030712;
+}
+
+.dark .bg-gray-50 {
+  background-color: #1f2937;
+}
+
+.dark .bg-gray-50\/80 {
+  background-color: rgb(31 41 55 / 0.8);
+}
+
+.dark .bg-gray-100 {
+  background-color: #374151;
+}
+
+.dark .text-gray-900 {
+  color: #f3f4f6;
+}
+
+.dark .text-gray-800 {
+  color: #f3f4f6;
+}
+
+.dark .text-gray-700 {
+  color: #e5e7eb;
+}
+
+.dark .text-gray-600 {
+  color: #d1d5db;
+}
+
+.dark .text-gray-500 {
+  color: #9ca3af;
+}
+
+.dark .text-gray-400 {
+  color: #9ca3af;
+}
+
+.dark .border-gray-100 {
+  border-color: #374151;
+}
+
+.dark .border-gray-200 {
+  border-color: #4b5563;
+}
+
+.dark .border-gray-300 {
+  border-color: #4b5563;
+}
+
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark .shadow-2xl,
+.dark .shadow-sm {
+  --tw-shadow-color: rgb(0 0 0 / 0.4);
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background-color: #374151;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #374151;
+}
+
+.dark .hover\:bg-green-50:hover {
+  background-color: rgb(22 163 74 / 0.15);
+}
+
+.dark .focus-within\:bg-white:focus-within {
+  background-color: #1f2937;
+}
+
+.dark .focus-within\:ring-green-100:focus-within {
+  --tw-ring-color: rgb(22 163 74 / 0.25);
+}
+
+.dark select,
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.dark .from-white {
+  --tw-gradient-from: #1f2937;
+}
+
+.dark mark.bg-yellow-200 {
+  background-color: #854d0e;
+  color: #fef3c7;
 }
 
 /* ================= ANIMATION ================= */
@@ -94,4 +229,16 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: #374151;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { customerApi } from '../api';
+import { USE_API } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 import { getCustomerProfile } from '../utils/customerStorage';
 
@@ -7,10 +9,27 @@ export function useDietaryFilter() {
   const [dietaryFilter, setDietaryFilter] = useState('all');
   const [hasProfilePreference, setHasProfilePreference] = useState(false);
 
-  const syncFromProfile = useCallback(() => {
+  const syncFromProfile = useCallback(async () => {
     if (!isCustomer || !user) {
       setDietaryFilter('all');
       setHasProfilePreference(false);
+      return;
+    }
+
+    if (USE_API) {
+      try {
+        const profile = await customerApi.getProfile();
+        if (profile.dietaryPreference) {
+          setDietaryFilter(profile.dietaryPreference);
+          setHasProfilePreference(true);
+        } else {
+          setDietaryFilter('all');
+          setHasProfilePreference(false);
+        }
+      } catch {
+        setDietaryFilter('all');
+        setHasProfilePreference(false);
+      }
       return;
     }
 

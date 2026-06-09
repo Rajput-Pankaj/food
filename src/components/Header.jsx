@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MdFastfood, MdMenu, MdClose } from 'react-icons/md';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
-import { LuShoppingBag, LuUser, LuPhone } from 'react-icons/lu';
+import { LuShoppingBag, LuUser, LuPhone, LuSun, LuMoon } from 'react-icons/lu';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import UserMenu from './UserMenu';
 import FoodSearch from './FoodSearch';
 import { getNameInitial, getUserGreeting } from '../utils/userDisplay';
+import { useStoreSettings } from '../hooks/useStoreSettings';
+import { useTheme } from '../context/ThemeContext';
+import StoreLogo from './StoreLogo';
 
 const NAV_LINKS = [
   { path: '/', label: 'Home' },
@@ -19,23 +22,27 @@ const NAV_LINKS = [
 
 function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { settings } = useStoreSettings();
   const { isAuthenticated, isAdmin, isCustomer, logout, user } = useAuth();
   const { cartItemCount, setIsCartOpen } = useCart();
+  const { toggleTheme, isDark, darkModeAllowed } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
 
   const navLinkClass = (path) =>
-    `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+    `block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 ${
       isActive(path)
-        ? 'text-green-600 bg-green-50 font-semibold'
-        : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
+        ? 'text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400 font-semibold'
+        : 'text-gray-700 dark:text-gray-200 hover:text-green-600 hover:bg-gray-50 dark:hover:bg-gray-800'
     }`;
 
   const desktopNavClass = (path) =>
-    `text-sm font-medium whitespace-nowrap transition-colors ${
-      isActive(path) ? 'text-green-600 font-semibold' : 'text-gray-700 hover:text-green-600'
+    `text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
+      isActive(path)
+        ? 'text-green-600 dark:text-green-400 font-semibold'
+        : 'text-gray-700 dark:text-gray-200 hover:text-green-600'
     }`;
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -66,7 +73,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
   }, []);
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-40">
+    <header className="bg-white dark:bg-gray-900 shadow-lg dark:shadow-black/20 sticky top-0 z-40 transition-colors duration-200">
       {/* Top announcement bar */}
       <div className="bg-green-600 text-white">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
@@ -74,7 +81,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
             <p className="truncate flex-1 font-medium">
               <span className="hidden sm:inline">Free Delivery on Orders Above </span>
               <span className="sm:hidden">Free delivery above </span>
-              Rs.500
+              Rs.{settings.freeDeliveryThreshold}
             </p>
 
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
@@ -114,12 +121,10 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
         <div className="flex items-center justify-between gap-2 sm:gap-4 h-14 sm:h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 bg-green-500 rounded-lg flex items-center justify-center shrink-0">
-              <MdFastfood className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
-            </div>
+            <StoreLogo settings={settings} size="sm" showName={false} />
             <div className="min-w-0 hidden min-[400px]:block">
-              <p className="text-base sm:text-xl font-bold text-gray-800 leading-tight truncate">
-                FoodExpress
+              <p className="text-base sm:text-xl font-bold text-gray-800 dark:text-gray-100 leading-tight truncate">
+                {settings.storeName || 'FoodExpress'}
               </p>
               <p className="text-green-600 text-[10px] sm:text-xs truncate hidden sm:block">
                 Delicious Food Delivered
@@ -147,20 +152,31 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-1 sm:gap-1.5 text-gray-700 hover:text-green-600 px-2 sm:px-3 py-2 rounded-lg hover:bg-green-50 transition-colors text-sm font-medium"
+                className="flex items-center gap-1 sm:gap-1.5 text-gray-700 dark:text-gray-200 hover:text-green-600 px-2 sm:px-3 py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200 text-sm font-medium"
               >
                 <LuUser className="w-5 h-5 shrink-0" />
                 <span className="hidden sm:inline">Login</span>
               </Link>
             )}
 
+            {darkModeAllowed && (
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 text-gray-600 dark:text-gray-300 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500 focus-visible:outline-offset-2"
+                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                title={isDark ? 'Light mode' : 'Dark mode'}
+              >
+                {isDark ? <LuSun className="w-5 h-5" /> : <LuMoon className="w-5 h-5" />}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500 focus-visible:outline-offset-2"
               aria-label={`Open cart${cartItemCount > 0 ? `, ${cartItemCount} items` : ''}`}
             >
-              <LuShoppingBag size={20} className="text-gray-700 sm:w-[22px] sm:h-[22px]" />
+              <LuShoppingBag size={20} className="text-gray-700 dark:text-gray-200 sm:w-[22px] sm:h-[22px]" />
               {cartItemCount > 0 && (
                 <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
                   {cartItemCount > 99 ? '99+' : cartItemCount}
@@ -171,7 +187,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMobileMenuOpen}
             >
@@ -197,7 +213,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
             aria-label="Close menu overlay"
           />
           <nav
-            className="relative bg-white h-full overflow-y-auto mobile-nav-panel shadow-xl"
+            className="relative bg-white dark:bg-gray-900 h-full overflow-y-auto mobile-nav-panel shadow-xl transition-colors duration-200"
             aria-label="Mobile navigation"
           >
             <div className="px-4 py-4 max-w-lg mx-auto">
@@ -222,7 +238,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">
                     Account
                   </p>
-                  <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-gray-50 rounded-xl">
+                  <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
                     <span
                       className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${
                         isAdmin ? 'bg-purple-500' : 'bg-green-500'
@@ -231,7 +247,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
                       {getNameInitial(user?.name)}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">
+                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
                         {getUserGreeting(user?.name)}
                       </p>
                       <p
@@ -288,7 +304,7 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
                   </button>
                 </div>
               ) : (
-                <div className="border-t border-gray-100 pt-4 px-3">
+                <div className="border-t border-gray-100 dark:border-gray-700 pt-4 px-3">
                   <Link
                     to="/login"
                     onClick={closeMobileMenu}
@@ -299,8 +315,8 @@ function Header({ searchQuery = '', setSearchQuery, showSearch = true }) {
                 </div>
               )}
 
-              <div className="mt-6 px-3 py-4 bg-green-50 rounded-xl text-center">
-                <p className="text-sm text-green-800 font-medium">Need help ordering?</p>
+              <div className="mt-6 px-3 py-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-center">
+                <p className="text-sm text-green-800 dark:text-green-300 font-medium">Need help ordering?</p>
                 <a
                   href="tel:+918429168953"
                   className="text-green-600 font-semibold text-sm mt-1 inline-block hover:underline"

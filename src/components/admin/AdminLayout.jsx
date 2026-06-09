@@ -8,6 +8,7 @@ import {
   MdStar,
   MdArticle,
   MdSettings,
+  MdPermMedia,
   MdLogout,
   MdFastfood,
   MdMenu,
@@ -15,14 +16,21 @@ import {
 } from 'react-icons/md';
 import { useAuth } from '../../context/AuthContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import { useTheme } from '../../context/ThemeContext';
 import { getUserGreeting } from '../../utils/userDisplay';
+import { LuSun, LuMoon } from 'react-icons/lu';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', shortLabel: 'Home', icon: MdDashboard, end: true },
   { path: '/admin/orders', label: 'Orders', shortLabel: 'Orders', icon: MdReceiptLong },
+  { path: '/admin/kitchen', label: 'Kitchen', shortLabel: 'Kitchen', icon: MdFastfood },
   { path: '/admin/menu', label: 'Menu', shortLabel: 'Menu', icon: MdRestaurantMenu },
+  { path: '/admin/promos', label: 'Promos', shortLabel: 'Promos', icon: MdStar },
   { path: '/admin/reviews', label: 'Reviews', shortLabel: 'Reviews', icon: MdStar },
   { path: '/admin/blogs', label: 'Blogs', shortLabel: 'Blogs', icon: MdArticle },
+  { path: '/admin/media', label: 'Media', shortLabel: 'Media', icon: MdPermMedia },
+  { path: '/admin/contacts', label: 'Inbox', shortLabel: 'Inbox', icon: MdPeople },
+  { path: '/admin/audit', label: 'Audit Log', shortLabel: 'Audit', icon: MdReceiptLong },
   { path: '/admin/users', label: 'Users', shortLabel: 'Users', icon: MdPeople },
   { path: '/admin/settings', label: 'Settings', shortLabel: 'Setup', icon: MdSettings },
 ];
@@ -30,6 +38,7 @@ const navItems = [
 export default function AdminLayout() {
   useDocumentTitle('Admin');
   const { user, logout } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -121,7 +130,7 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-slate-100 dark:bg-gray-950 flex flex-col lg:flex-row transition-colors duration-200">
       {/* Mobile top bar */}
       <header className="lg:hidden sticky top-0 z-40 bg-gray-900 text-white border-b border-gray-800">
         <div className="flex items-center justify-between px-3 sm:px-4 h-14">
@@ -178,9 +187,19 @@ export default function AdminLayout() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-0">
-        <div className="hidden lg:block bg-white border-b px-6 py-4">
-          <h1 className="text-xl font-semibold text-gray-800">{currentPage}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">FoodExpress administration</p>
+        <div className="hidden lg:flex items-center justify-between bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-6 py-4 transition-colors duration-200">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{currentPage}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">FoodExpress administration</p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? <LuSun className="w-5 h-5" /> : <LuMoon className="w-5 h-5" />}
+          </button>
         </div>
         <main className="flex-1 p-4 sm:p-6 overflow-x-hidden">
           <Outlet />
@@ -192,7 +211,7 @@ export default function AdminLayout() {
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-gray-900 border-t border-gray-800 safe-area-pb"
         aria-label="Admin navigation"
       >
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-4">
           {navItems.map((item) => {
             const NavIcon = item.icon;
             const active = isActive(item.path, item.end);

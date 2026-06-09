@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { authApi } from '../api';
-import { setToken, getToken } from '../api/client';
+import { authApi, setupApi } from '../api';
+import { ensureCsrf, setCsrfToken, setAccessToken, clearAccessToken } from '../api/client';
 import { USE_API } from '../config/api';
 import { ROLES } from '../constants/roles';
 import {
@@ -19,20 +19,33 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [needsSetup, setNeedsSetup] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       if (USE_API) {
         try {
-          if (getToken()) {
+          const status = await setupApi.status();
+          setNeedsSetup(status.needsSetup);
+          if (status.needsSetup) {
+            setLoading(false);
+            return;
+          }
+          await ensureCsrf();
+          const { user: sessionUser } = await authApi.me();
+          setUser(sessionUser);
+        } catch {
+          try {
+            await ensureCsrf();
+            const session = await authApi.refresh();
+            if (session?.token) setAccessToken(session.token);
             const { user: sessionUser } = await authApi.me();
             setUser(sessionUser);
+          } catch {
+            setUser(null);
           }
-        } catch {
-          setToken(null);
-          setUser(null);
         }
-      } else {
+      } else if (!import.meta.env.PROD) {
         await seedDefaultUsers();
         setUser(getSessionUser());
       }
@@ -43,8 +56,9 @@ export function AuthProvider({ children }) {
 
   const signup = useCallback(async (credentials) => {
     if (USE_API) {
-      const { user: sessionUser, token } = await authApi.register(credentials);
-      setToken(token);
+      const { user: sessionUser, csrfToken, token } = await authApi.register(credentials);
+      if (csrfToken) setCsrfToken(csrfToken);
+      if (token) setAccessToken(token);
       setUser(sessionUser);
       return sessionUser;
     }
@@ -56,9 +70,11 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (credentials) => {
     if (USE_API) {
-      const { user: sessionUser, token } = await authApi.login(credentials);
-      setToken(token);
+      const { user: sessionUser, csrfToken, token } = await authApi.login(credentials);
+      if (csrfToken) setCsrfToken(csrfToken);
+      if (token) setAccessToken(token);
       setUser(sessionUser);
+      setNeedsSetup(false);
       return sessionUser;
     }
     const sessionUser = await loginUser(credentials);
@@ -67,14 +83,22 @@ export function AuthProvider({ children }) {
     return sessionUser;
   }, []);
 
-  const logout = useCallback(() => {
-    if (USE_API) setToken(null);
-    else clearSession();
+  const logout = useCallback(async () => {
+    if (USE_API) {
+      try {
+        await authApi.logout();
+      } catch {
+        /* ignore */
+      }
+      clearAccessToken();
+    } else {
+      clearSession();
+    }
     setUser(null);
   }, []);
 
   const refreshUser = useCallback(async () => {
-    if (USE_API && getToken()) {
+    if (USE_API) {
       const { user: sessionUser } = await authApi.me();
       setUser(sessionUser);
       return sessionUser;
@@ -110,6 +134,7 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       loading,
+      needsSetup,
       role: user?.role ?? null,
       isAuthenticated: Boolean(user),
       isAdmin: user?.role === ROLES.ADMIN,
@@ -119,8 +144,9 @@ export function AuthProvider({ children }) {
       logout,
       refreshUser,
       updateProfile,
+      setNeedsSetup,
     }),
-    [user, loading, signup, login, logout, refreshUser, updateProfile]
+    [user, loading, needsSetup, signup, login, logout, refreshUser, updateProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

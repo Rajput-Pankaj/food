@@ -1,173 +1,160 @@
 import { Link } from 'react-router-dom';
-import {
-  MdReceiptLong,
-  MdPeople,
-  MdCurrencyRupee,
-  MdRestaurantMenu,
-  MdStar,
-  MdArticle,
-  MdNotificationsActive,
-} from 'react-icons/md';
-import { useAdminStats } from '../../hooks/useAdminStats';
+import { MdReceiptLong, MdCurrencyRupee, MdNotificationsActive, MdTrendingUp } from 'react-icons/md';
+import { RevenueBarChart, StatusBarChart, StatusDonut } from '../../components/admin/DashboardCharts';
 import { ORDER_STATUS_LABELS } from '../../constants/roles';
-
-function StarRow({ rating }) {
-  return (
-    <span className="text-yellow-400 text-xs">
-      {'★'.repeat(rating)}
-      <span className="text-gray-300">{'★'.repeat(5 - rating)}</span>
-    </span>
-  );
-}
+import { useAdminStats } from '../../hooks/useAdminStats';
+import { formatINR, formatINRCompact, formatINRFull } from '../../utils/currency';
 
 export default function AdminDashboard() {
   const { stats, loading } = useAdminStats();
-  const menuStats = stats.menuStats || { total: stats.menuCount || 0 };
-  const blogStats = stats.blogStats || { published: stats.blogCount || 0 };
-  const reviewStats = stats.reviewStats || { total: stats.reviewCount || 0, recent: [] };
-  const customers = stats.customerCount || 0;
 
   if (loading) {
-    return <div className="text-sm text-gray-500">Loading dashboard...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <p className="text-sm text-gray-500">Loading dashboard...</p>
+      </div>
+    );
   }
+
+  const revenue = stats.revenue || 0;
+  const trend = stats.revenueTrend || [];
+  const weekRevenue = trend.reduce((sum, day) => sum + day.revenue, 0);
+  const weekOrders = trend.reduce((sum, day) => sum + day.orders, 0);
 
   const cards = [
     {
       label: 'Pending Orders',
       value: stats.pendingCount || 0,
+      sub: 'Awaiting confirmation',
       icon: MdNotificationsActive,
-      color: 'bg-amber-500',
+      accent: 'from-amber-500 to-orange-500',
+      bg: 'bg-amber-50',
       link: '/admin/orders',
     },
     {
       label: 'Total Orders',
-      value: stats.totalOrders,
+      value: stats.totalOrders || 0,
+      sub: `${weekOrders} this week`,
       icon: MdReceiptLong,
-      color: 'bg-blue-500',
+      accent: 'from-blue-500 to-indigo-500',
+      bg: 'bg-blue-50',
       link: '/admin/orders',
     },
     {
-      label: 'Revenue',
-      value: `Rs.${stats.revenue}/-`,
+      label: 'Total Revenue',
+      value: formatINRCompact(revenue),
+      fullValue: formatINRFull(revenue),
+      sub: stats.avgOrderValue
+        ? `Avg. ${formatINRCompact(stats.avgOrderValue)} / order`
+        : 'No completed sales yet',
       icon: MdCurrencyRupee,
-      color: 'bg-green-500',
+      accent: 'from-green-500 to-emerald-600',
+      bg: 'bg-green-50',
       link: '/admin/orders',
-    },
-    {
-      label: 'Customers',
-      value: customers,
-      icon: MdPeople,
-      color: 'bg-purple-500',
-      link: '/admin/users',
-    },
-    {
-      label: 'Menu Items',
-      value: menuStats.total,
-      icon: MdRestaurantMenu,
-      color: 'bg-orange-500',
-      link: '/admin/menu',
-    },
-    {
-      label: 'Reviews',
-      value: reviewStats.total,
-      icon: MdStar,
-      color: 'bg-amber-500',
-      link: '/admin/reviews',
-    },
-    {
-      label: 'Blog Posts',
-      value: blogStats.published,
-      icon: MdArticle,
-      color: 'bg-teal-500',
-      link: '/admin/blogs',
+      large: true,
     },
   ];
 
   return (
     <div className="space-y-6 sm:space-y-8">
       <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard Overview</h2>
         <p className="text-sm sm:text-base text-gray-500 mt-1">
-          Monitor orders, menu, reviews, and restaurant activity
+          Track orders, revenue, and daily performance
         </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {cards.map((card) => {
           const StatIcon = card.icon;
           return (
             <Link
               key={card.label}
               to={card.link}
-              className="bg-white rounded-xl shadow p-4 sm:p-5 hover:shadow-md transition-shadow"
+              className={`relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 hover:shadow-md transition-shadow ${
+                card.large ? 'sm:col-span-1' : ''
+              }`}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="min-w-0 order-2 sm:order-1">
-                  <p className="text-xs sm:text-sm text-gray-500 truncate">{card.label}</p>
-                  <p className="text-lg sm:text-2xl font-bold text-gray-800 mt-0.5 truncate">
-                    {card.value}
-                  </p>
-                </div>
+              <div className={`absolute top-0 right-0 w-24 h-24 ${card.bg} rounded-bl-[3rem] opacity-80`} />
+              <div className="relative">
                 <div
-                  className={`w-10 h-10 sm:w-12 sm:h-12 ${card.color} rounded-lg flex items-center justify-center text-white shrink-0 order-1 sm:order-2`}
+                  className={`inline-flex w-11 h-11 rounded-xl bg-gradient-to-br ${card.accent} text-white items-center justify-center mb-4 shadow-sm`}
                 >
-                  <StatIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <StatIcon className="w-6 h-6" />
                 </div>
+                <p className="text-sm text-gray-500">{card.label}</p>
+                <p
+                  className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 tracking-tight"
+                  title={card.fullValue || String(card.value)}
+                >
+                  {card.value}
+                </p>
+                {card.fullValue && card.fullValue !== card.value && (
+                  <p className="text-xs text-gray-400 mt-0.5">{card.fullValue}</p>
+                )}
+                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                  {card.label === 'Total Revenue' && <MdTrendingUp className="w-3.5 h-3.5 text-green-600" />}
+                  {card.sub}
+                </p>
               </div>
             </Link>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white rounded-xl shadow p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Orders by Status</h3>
-          {Object.keys(stats.byStatus).length === 0 ? (
-            <p className="text-gray-500 text-sm">No orders yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(stats.byStatus).map(([status, count]) => (
-                <div key={status} className="flex items-center justify-between gap-2">
-                  <span className="text-sm text-gray-600 truncate">
-                    {ORDER_STATUS_LABELS[status] || status}
-                  </span>
-                  <span className="font-semibold bg-gray-100 px-2.5 py-1 rounded-full text-xs sm:text-sm shrink-0">
-                    {count}
-                  </span>
-                </div>
-              ))}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+        <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+            <div>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Revenue — Last 7 Days</h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Week total: <span className="font-semibold text-green-600">{formatINRFull(weekRevenue)}</span>
+              </p>
             </div>
-          )}
+          </div>
+          <RevenueBarChart data={trend} />
         </div>
 
-        <div className="bg-white rounded-xl shadow p-4 sm:p-6">
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Orders by Status</h3>
+          <StatusDonut byStatus={stats.byStatus} total={stats.totalOrders} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Status Breakdown</h3>
+          <StatusBarChart byStatus={stats.byStatus} labels={ORDER_STATUS_LABELS} />
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-2 mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800">Recent Orders</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">Recent Orders</h3>
             <Link
               to="/admin/orders"
-              className="text-green-600 text-xs sm:text-sm font-medium hover:underline shrink-0"
+              className="text-green-600 text-xs sm:text-sm font-semibold hover:underline shrink-0"
             >
               View all
             </Link>
           </div>
           {stats.recentOrders.length === 0 ? (
-            <p className="text-gray-500 text-sm">No recent orders.</p>
+            <p className="text-gray-500 text-sm py-8 text-center">No orders yet.</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {stats.recentOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="flex items-start sm:items-center justify-between gap-2 border-b border-gray-100 pb-3 last:border-0"
+                  className="flex items-center justify-between gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100/80 transition-colors"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-gray-800 text-sm">
+                    <p className="font-semibold text-gray-900 text-sm">
                       #{order.id.slice(0, 8).toUpperCase()}
                     </p>
                     <p className="text-xs text-gray-500 truncate">{order.userEmail}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-semibold text-green-600 text-sm">Rs.{order.total}/-</p>
-                    <p className="text-[10px] sm:text-xs text-gray-500">
+                    <p className="font-bold text-green-600 text-sm">{formatINR(order.total)}</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wide">
                       {ORDER_STATUS_LABELS[order.status] || order.status}
                     </p>
                   </div>
@@ -176,105 +163,6 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-
-        <div className="bg-white rounded-xl shadow p-4 sm:p-6">
-          <div className="flex items-center justify-between gap-2 mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800">Recent Reviews</h3>
-            <Link
-              to="/admin/reviews"
-              className="text-green-600 text-xs sm:text-sm font-medium hover:underline shrink-0"
-            >
-              Manage
-            </Link>
-          </div>
-          {reviewStats.recent.length === 0 ? (
-            <p className="text-gray-500 text-sm">No reviews yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {reviewStats.recent.map((review) => (
-                <div
-                  key={review.id}
-                  className="border-b border-gray-100 pb-3 last:border-0"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium text-gray-800 text-sm truncate">{review.foodName}</p>
-                    <StarRow rating={review.rating} />
-                  </div>
-                  {review.comment && (
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">{review.comment}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-          {reviewStats.total > 0 && (
-            <p className="text-xs text-gray-400 mt-4">
-              Average rating: {reviewStats.averageRating} / 5
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-      <div className="bg-white rounded-xl shadow p-4 sm:p-6">
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-800">Menu Snapshot</h3>
-          <Link
-            to="/admin/menu"
-            className="text-green-600 text-xs sm:text-sm font-medium hover:underline shrink-0"
-          >
-            Manage menu
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-gray-800">{menuStats.total}</p>
-            <p className="text-xs text-gray-500">Total</p>
-          </div>
-          <div className="bg-green-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-green-700">{menuStats.available}</p>
-            <p className="text-xs text-gray-500">Available</p>
-          </div>
-          <div className="bg-red-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-red-600">{menuStats.hidden}</p>
-            <p className="text-xs text-gray-500">Hidden</p>
-          </div>
-          <div className="bg-blue-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-blue-700">{menuStats.custom}</p>
-            <p className="text-xs text-gray-500">Custom</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow p-4 sm:p-6">
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-800">Blog Snapshot</h3>
-          <Link
-            to="/admin/blogs"
-            className="text-green-600 text-xs sm:text-sm font-medium hover:underline shrink-0"
-          >
-            Manage blogs
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-gray-800">{blogStats.total}</p>
-            <p className="text-xs text-gray-500">Total</p>
-          </div>
-          <div className="bg-green-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-green-700">{blogStats.published}</p>
-            <p className="text-xs text-gray-500">Published</p>
-          </div>
-          <div className="bg-amber-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-amber-700">{blogStats.drafts}</p>
-            <p className="text-xs text-gray-500">Drafts</p>
-          </div>
-          <div className="bg-blue-50 rounded-lg p-3 text-center">
-            <p className="text-lg font-bold text-blue-700">{blogStats.custom}</p>
-            <p className="text-xs text-gray-500">Custom</p>
-          </div>
-        </div>
-      </div>
       </div>
     </div>
   );

@@ -36,19 +36,19 @@ function About() {
     {
       name: "Sarah Johnson",
       role: "Founder & CEO",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+      image: '/assets/media/image18.avif',
       description: "Passionate about bringing authentic flavors to your doorstep."
     },
     {
       name: "Michael Chen",
       role: "Head Chef",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      image: '/assets/media/image19.avif',
       description: "Award-winning chef with 15+ years of culinary experience."
     },
     {
       name: "Emily Rodriguez",
       role: "Operations Manager",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      image: '/assets/media/image21.avif',
       description: "Ensuring smooth operations and exceptional customer service."
     }
   ];

@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Install API dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Validate menu seed
+        run: npm run seed:validate
+
+      - name: Test API and build frontend
+        run: npm run verify
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run: |
+          docker compose -f docker-compose.yml build
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start stack and health check
+        run: |
+          cp .env.example .env
+          POSTGRES_PASSWORD=ci_test_secret_32chars_minimum!!
+          JWT_SECRET=ci_jwt_secret_32chars_minimum_here!!
+          SETUP_TOKEN=ci_setup_token_for_smoke_test_only
+          {
+            echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+            echo "JWT_SECRET=${JWT_SECRET}"
+            echo "SETUP_TOKEN=${SETUP_TOKEN}"
+            echo "SEED_DEMO_USERS=false"
+            echo "CORS_ORIGIN=http://localhost:8080"
+          } >> .env
+          docker compose -f docker-compose.yml up -d
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8080/api/health; then
+              echo "Health check passed"
+              docker compose -f docker-compose.yml down -v
+              exit 0
+            fi
+            sleep 5
+          done
+          docker compose -f docker-compose.yml logs
+          docker compose -f docker-compose.yml down -v
+          exit 1

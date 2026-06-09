@@ -8,6 +8,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { getPostLoginPath } from '../utils/authRedirect';
 import AuthLayout from '../components/auth/AuthLayout';
 import AuthFormField from '../components/auth/AuthFormField';
+import { USE_API } from '../config/api';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Enter a valid email').required('Email is required'),
@@ -19,6 +20,8 @@ const DEMO_ACCOUNTS = [
   { role: 'Customer', email: 'customer@foodexpress.com', password: 'Customer@123', color: 'green' },
 ];
 
+const showDemo = !import.meta.env.PROD && !USE_API;
+
 export default function Login() {
   useDocumentTitle('Login');
   const { login, isAuthenticated, user } = useAuth();
@@ -27,6 +30,7 @@ export default function Login() {
   const [submitError, setSubmitError] = useState('');
 
   const from = location.state?.from?.pathname;
+  const flashMessage = location.state?.message;
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -61,32 +65,40 @@ export default function Login() {
       title="Welcome Back"
       subtitle="Sign in to checkout, track orders, and manage your account"
     >
-      <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4">
-        <p className="text-sm font-semibold text-green-800 mb-3">Try a demo account</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          {DEMO_ACCOUNTS.map((account) => (
-            <button
-              key={account.role}
-              type="button"
-              onClick={() => fillDemo(account.email, account.password)}
-              className={`flex-1 text-left px-3 py-2.5 rounded-lg border bg-white text-sm hover:shadow-sm transition-all ${
-                account.color === 'purple'
-                  ? 'border-purple-200 hover:border-purple-300'
-                  : 'border-green-200 hover:border-green-300'
-              }`}
-            >
-              <span
-                className={`text-xs font-bold uppercase ${
-                  account.color === 'purple' ? 'text-purple-600' : 'text-green-600'
+      {flashMessage && (
+        <div className="mb-5 text-green-700 text-sm bg-green-50 border border-green-200 rounded-lg p-3">
+          {flashMessage}
+        </div>
+      )}
+
+      {showDemo && (
+        <div className="mb-6 rounded-xl border border-green-200 bg-green-50 p-4">
+          <p className="text-sm font-semibold text-green-800 mb-3">Try a demo account (dev only)</p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            {DEMO_ACCOUNTS.map((account) => (
+              <button
+                key={account.role}
+                type="button"
+                onClick={() => fillDemo(account.email, account.password)}
+                className={`flex-1 text-left px-3 py-2.5 rounded-lg border bg-white text-sm hover:shadow-sm transition-all ${
+                  account.color === 'purple'
+                    ? 'border-purple-200 hover:border-purple-300'
+                    : 'border-green-200 hover:border-green-300'
                 }`}
               >
-                {account.role}
-              </span>
-              <p className="text-gray-600 text-xs mt-0.5 truncate">{account.email}</p>
-            </button>
-          ))}
+                <span
+                  className={`text-xs font-bold uppercase ${
+                    account.color === 'purple' ? 'text-purple-600' : 'text-green-600'
+                  }`}
+                >
+                  {account.role}
+                </span>
+                <p className="text-gray-600 text-xs mt-0.5 truncate">{account.email}</p>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {submitError && (
         <div className="mb-5 text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">
@@ -122,6 +134,12 @@ export default function Login() {
           error={formik.errors.password}
           touched={formik.touched.password}
         />
+
+        <div className="text-right">
+          <Link to="/forgot-password" className="text-sm text-green-600 font-semibold hover:underline">
+            Forgot password?
+          </Link>
+        </div>
 
         <button
           type="submit"

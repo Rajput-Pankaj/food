@@ -18,7 +18,7 @@ export default function PageLayout({
   const setSearchQuery = controlledSetQuery ?? setLocalQuery;
 
   return (
-    <div className="bg-slate-200 min-h-screen flex flex-col">
+    <div className="bg-slate-200 dark:bg-gray-950 min-h-screen flex flex-col transition-colors duration-200">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} showSearch={showSearch} />
       <main className={`flex-1 w-full ${mainClassName}`}>{children}</main>
       <Footer />

@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MdDelete, MdSearch, MdStar } from 'react-icons/md';
+import { customerApi } from '../../api';
+import { USE_API } from '../../config/api';
 import { getPublicUsers } from '../../utils/authStorage';
 import {
   deleteReview,
@@ -20,14 +22,50 @@ function StarDisplay({ rating }) {
   );
 }
 
+function computeStats(reviews) {
+  const total = reviews.length;
+  const averageRating =
+    total > 0
+      ? Math.round((reviews.reduce((sum, review) => sum + review.rating, 0) / total) * 10) / 10
+      : 0;
+  const byRating = reviews.reduce((acc, review) => {
+    acc[review.rating] = (acc[review.rating] || 0) + 1;
+    return acc;
+  }, {});
+  return { total, averageRating, byRating };
+}
+
 export default function AdminReviews() {
-  const [reviews, setReviews] = useState(() => getReviewsForAdmin(getPublicUsers()));
+  const [reviews, setReviews] = useState(() =>
+    USE_API ? [] : getReviewsForAdmin(getPublicUsers())
+  );
+  const [loading, setLoading] = useState(USE_API);
+  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [ratingFilter, setRatingFilter] = useState('all');
 
-  const stats = getReviewStats();
+  const loadReviews = async () => {
+    if (USE_API) {
+      try {
+        const data = await customerApi.getReviews();
+        setReviews(data);
+        setError('');
+      } catch (err) {
+        setError(err.message || 'Failed to load reviews.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+    setReviews(getReviewsForAdmin(getPublicUsers()));
+    setLoading(false);
+  };
 
-  const refresh = () => setReviews(getReviewsForAdmin(getPublicUsers()));
+  useEffect(() => {
+    loadReviews();
+  }, []);
+
+  const stats = USE_API ? computeStats(reviews) : getReviewStats();
 
   const filteredReviews = useMemo(() => {
     return reviews.filter((review) => {
@@ -42,11 +80,25 @@ export default function AdminReviews() {
     });
   }, [reviews, search, ratingFilter]);
 
-  const handleDelete = (reviewId) => {
+  const handleDelete = async (reviewId) => {
     if (!window.confirm('Remove this customer review?')) return;
-    deleteReview(reviewId);
-    refresh();
+
+    try {
+      if (USE_API) {
+        await customerApi.deleteReview(reviewId);
+        await loadReviews();
+      } else {
+        deleteReview(reviewId);
+        setReviews(getReviewsForAdmin(getPublicUsers()));
+      }
+    } catch (err) {
+      alert(err.message || 'Could not delete review.');
+    }
   };
+
+  if (loading) {
+    return <div className="text-sm text-gray-500">Loading reviews...</div>;
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -56,6 +108,10 @@ export default function AdminReviews() {
           View and moderate customer food reviews
         </p>
       </div>
+
+      {error && (
+        <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-white rounded-xl shadow p-4">

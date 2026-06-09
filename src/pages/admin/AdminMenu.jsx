@@ -9,7 +9,6 @@ import {
   MdVisibilityOff,
 } from 'react-icons/md';
 import MenuItemModal from '../../components/admin/MenuItemModal';
-import SeedDataPanel from '../../components/admin/SeedDataPanel';
 import { FOOD_TYPES, MENU_PLACEHOLDER_IMAGE } from '../../constants/menu';
 import { useMenuItems } from '../../hooks/useMenuItems';
 import {
@@ -152,8 +151,6 @@ export default function AdminMenu() {
           </div>
         ))}
       </div>
-
-      <SeedDataPanel onSeeded={refresh} />
 
       <div className="bg-white rounded-xl shadow p-3 sm:p-4 space-y-3">
         <div className="relative">

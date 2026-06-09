@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -18,6 +19,11 @@ const DEFAULT_SETTINGS = {
   enabledPaymentMethods: ['cod', 'upi', 'razorpay'],
   upi: { vpa: '', payeeName: 'FoodExpress' },
   razorpay: { keyId: '', enabled: false },
+  guestCheckoutEnabled: true,
+  deliveryZones: [],
+  storeEmail: '',
+  storeLogo: '',
+  darkModeEnabled: true,
   updatedAt: null,
 };
 
@@ -38,16 +44,22 @@ export async function seedDatabase() {
     return;
   }
 
+  const seedDemoUsers =
+    process.env.NODE_ENV === 'production'
+      ? process.env.SEED_DEMO_USERS === 'true'
+      : process.env.SEED_DEMO_USERS !== 'false';
   console.log('Seeding database...');
 
-  for (const user of SEED_USERS) {
-    const passwordHash = await bcrypt.hash(user.password, 10);
-    await query(
-      `INSERT INTO users (name, email, password_hash, role, is_seed)
-       VALUES ($1, $2, $3, $4, TRUE)
-       ON CONFLICT (email) DO NOTHING`,
-      [user.name, user.email, passwordHash, user.role]
-    );
+  if (seedDemoUsers) {
+    for (const user of SEED_USERS) {
+      const passwordHash = await bcrypt.hash(user.password, 12);
+      await query(
+        `INSERT INTO users (name, email, password_hash, role, is_seed)
+         VALUES ($1, $2, $3, $4, TRUE)
+         ON CONFLICT (email) DO NOTHING`,
+        [user.name, user.email, passwordHash, user.role]
+      );
+    }
   }
 
   const menuItems = readJson('menu-items.json');
@@ -77,9 +89,9 @@ export async function seedDatabase() {
     [JSON.stringify(DEFAULT_SETTINGS)]
   );
 
-  const { rows: customerRows } = await query(
-    `SELECT id FROM users WHERE email = 'customer@foodexpress.com'`
-  );
+  const { rows: customerRows } = seedDemoUsers
+    ? await query(`SELECT id FROM users WHERE email = 'customer@foodexpress.com'`)
+    : { rows: [] };
   if (customerRows[0]) {
     const userId = customerRows[0].id;
     await query(

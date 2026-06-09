@@ -26,7 +26,61 @@ This guide covers every way to deploy FoodExpress: **Docker Compose** (recommend
 
 ---
 
-## Docker Compose (Production)
+## One-Command Auto Deploy (Recommended)
+
+After cloning on a VPS with Docker:
+
+```bash
+git clone <your-repo-url> foodexpress
+cd foodexpress
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
+```
+
+The script will:
+
+1. **Check system** — Docker version, available RAM/disk
+2. **Detect Traefik** — if a Traefik container/network exists, enables HTTPS mode when `DOMAIN` is set
+3. **Generate `.env`** — strong random `POSTGRES_PASSWORD`, `JWT_SECRET`, DB user/db name
+4. **Create network** — `foodexpress_net` (all services connected)
+5. **Build & start** — `db` → `api` → `web` with health checks
+6. **Migrate & seed** — schema, 50 menu items, blogs, optional demo users
+
+### Traefik SSL
+
+If Traefik is already running on the server:
+
+```bash
+DOMAIN=food.yourdomain.com ./scripts/deploy.sh
+```
+
+Required Traefik setup on the server:
+
+- External network named `traefik` (or set `TRAEFIK_NETWORK` in `.env`)
+- Entrypoints: `web` (80) and `websecure` (443)
+- Certificate resolver named `letsencrypt` (or set `TRAEFIK_CERT_RESOLVER`)
+
+### Git-based redeploy
+
+On the server after `git pull`:
+
+```bash
+./scripts/deploy.sh
+```
+
+Or use GitHub Actions: **Actions → Deploy → Run workflow** (configure `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH` secrets).
+
+### Post-receive hook (optional)
+
+```bash
+# On server: ~/foodexpress.git/hooks/post-receive
+#!/bin/sh
+cd ~/foodexpress && git pull --ff-only && ./scripts/deploy.sh
+```
+
+---
+
+## Docker Compose (Manual)
 
 ### Step 1 — Clone and configure
 
@@ -36,14 +90,7 @@ cd foodexpress
 cp .env.example .env
 ```
 
-Edit `.env` and set strong values:
-
-```env
-APP_PORT=8080
-POSTGRES_PASSWORD=your-strong-db-password
-JWT_SECRET=your-long-random-jwt-secret-min-32-chars
-CORS_ORIGIN=http://your-domain.com
-```
+Edit `.env` and set strong values, or run `./scripts/deploy.sh` to auto-generate.
 
 ### Step 2 — Build and start
 
@@ -51,10 +98,10 @@ CORS_ORIGIN=http://your-domain.com
 docker compose up --build -d
 ```
 
-Or use the npm script:
+Or:
 
 ```bash
-npm run docker:up
+npm run deploy
 ```
 
 ### Step 3 — Verify

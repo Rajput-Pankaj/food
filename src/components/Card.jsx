@@ -46,13 +46,13 @@ function Card({
 
   if (variant === 'list') {
     return (
-      <div className="w-full bg-white p-4 rounded-lg flex flex-col sm:flex-row gap-4 shadow-lg hover:shadow-xl transition-all duration-300">
-        <div className="relative w-full sm:w-40 h-40 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+      <div className="w-full bg-white dark:bg-gray-800 p-4 rounded-lg flex flex-col sm:flex-row gap-4 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div className="relative w-full sm:w-40 h-40 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
           {imageBlock}
         </div>
         <div className="flex-1 flex flex-col justify-between">
           <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">{title}</h3>
             <div className="flex flex-wrap items-center gap-2 text-sm font-medium mb-2">
               {isVeg ? (
                 <span className="flex items-center gap-1 text-green-600">
@@ -77,7 +77,7 @@ function Card({
               {detailPath && (
                 <Link
                   to={detailPath}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:border-green-500 hover:text-green-600 text-sm font-semibold"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:border-green-500 hover:text-green-600 text-sm font-semibold transition-colors duration-200 cursor-pointer"
                 >
                   Details
                 </Link>
@@ -96,11 +96,11 @@ function Card({
   }
 
   return (
-    <div className="group w-full max-w-[300px] bg-white p-3 rounded-lg flex flex-col gap-3 shadow-lg hover:shadow-xl transition-all duration-300">
-      <div className="relative w-full h-44 sm:h-48 overflow-hidden rounded-lg bg-gray-100 shrink-0">
+    <div className="group w-full max-w-[300px] bg-white dark:bg-gray-800 p-3 rounded-lg flex flex-col gap-3 shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="relative w-full h-44 sm:h-48 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 shrink-0">
         {imageBlock}
       </div>
-      <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+      <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{title}</h3>
       <div className="w-full flex justify-between items-center gap-2">
         <div className="text-lg font-bold text-green-600">Rs.{price}/-</div>
         <div className="flex flex-col items-end gap-1">
@@ -125,7 +125,7 @@ function Card({
         {detailPath && (
           <Link
             to={detailPath}
-            className="flex-1 py-2.5 text-center border border-gray-300 text-gray-700 rounded-lg hover:border-green-500 hover:text-green-600 text-sm font-semibold"
+            className="flex-1 py-2.5 text-center border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:border-green-500 hover:text-green-600 text-sm font-semibold transition-colors duration-200"
           >
             Details
           </Link>

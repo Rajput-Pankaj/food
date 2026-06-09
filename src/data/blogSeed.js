@@ -28,6 +28,19 @@ function createPost({
   };
 }
 
+import { MEDIA_BLOG_PREFIX } from '../constants/media';
+
+const BLOG_IMAGES = [
+  `${MEDIA_BLOG_PREFIX}/image1.avif`,
+  `${MEDIA_BLOG_PREFIX}/image6.avif`,
+  `${MEDIA_BLOG_PREFIX}/image10.avif`,
+  `${MEDIA_BLOG_PREFIX}/image15.avif`,
+  `${MEDIA_BLOG_PREFIX}/image20.avif`,
+  `${MEDIA_BLOG_PREFIX}/image22.avif`,
+  `${MEDIA_BLOG_PREFIX}/image8.avif`,
+  `${MEDIA_BLOG_PREFIX}/image12.avif`,
+];
+
 const seedPosts = [
   createPost({
     id: 1,
@@ -36,7 +49,7 @@ const seedPosts = [
       'Start your day right with nutritious breakfast options that take less than 15 minutes to prepare.',
     author: 'Chef Sarah Johnson',
     category: 'Recipes',
-    image: 'https://images.unsplash.com/photo-1494859802809-d069c3b71a8a?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[0],
     publishedAt: '2024-03-15T08:00:00.000Z',
     tags: ['breakfast', 'healthy', 'quick meals'],
     content: `Breakfast fuels your morning focus, energy, and mood. When time is tight, these ten ideas keep nutrition high without slowing you down.
@@ -68,7 +81,7 @@ Blend frozen mango, spinach, and yogurt. Pour into a bowl and add seeds, nuts, a
       'Learn the secrets to making restaurant-quality pizza dough at home with our step-by-step guide.',
     author: 'Chef Michael Chen',
     category: 'Recipes',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[1],
     publishedAt: '2024-03-12T09:30:00.000Z',
     tags: ['pizza', 'baking', 'dough'],
     content: `Great pizza begins with great dough. This guide walks you through hydration, fermentation, and baking for a crisp crust and airy crumb.
@@ -97,7 +110,7 @@ Bring dough to room temperature before shaping. Use a light hand—overworking c
       'Discover how FoodExpress is reducing environmental impact through smarter sourcing and packaging.',
     author: 'Emily Rodriguez',
     category: 'Restaurant News',
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[2],
     publishedAt: '2024-03-10T11:00:00.000Z',
     tags: ['sustainability', 'company'],
     content: `Sustainability is not a marketing slogan for us—it is an operating principle. Here is how FoodExpress is building a greener delivery model.
@@ -125,7 +138,7 @@ We publish quarterly progress updates and welcome feedback from customers who ca
       'Master fundamental techniques to elevate everyday cooking and build restaurant-worthy flavor at home.',
     author: 'Chef Sarah Johnson',
     category: 'Food Tips',
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[3],
     publishedAt: '2024-03-08T07:45:00.000Z',
     tags: ['cooking', 'techniques'],
     content: `Small habits create big improvements in the kitchen. These five techniques will immediately upgrade your results.
@@ -156,7 +169,7 @@ Prep ingredients before heat goes on. Calm setup leads to better timing and fewe
       'Explore the health benefits and delicious patterns behind one of the world’s most recommended eating styles.',
     author: 'Dr. Lisa Martinez',
     category: 'Healthy Eating',
-    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[4],
     publishedAt: '2024-03-05T10:15:00.000Z',
     tags: ['nutrition', 'wellness'],
     content: `The Mediterranean diet emphasizes whole foods, healthy fats, and joyful eating—not restriction. Research links it with heart health, metabolic balance, and longevity.
@@ -185,7 +198,7 @@ Always consult a healthcare professional for personalized nutrition advice.`,
       'Introducing seasonal dishes celebrating fresh spring produce and bright, balanced flavors.',
     author: 'Chef Michael Chen',
     category: 'Restaurant News',
-    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[5],
     publishedAt: '2024-03-03T12:00:00.000Z',
     tags: ['menu', 'seasonal'],
     content: `Spring menus are here—and they are built around freshness, color, and lighter comfort food.
@@ -208,7 +221,7 @@ Browse the full menu on FoodExpress and filter by category to explore every new 
       'Mix proteins, greens, and crowd-pleasers so everyone at the table gets a meal they enjoy.',
     author: 'Emily Rodriguez',
     category: 'Food Tips',
-    image: 'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[6],
     publishedAt: '2024-02-28T08:20:00.000Z',
     tags: ['ordering', 'family'],
     content: `Family orders work best with a simple framework: one protein anchor, one vegetable-forward dish, one carb everyone likes, and one treat.
@@ -234,7 +247,7 @@ Use dietary filters on our menu to quickly separate veg and non-veg options when
       'From mild comfort food to bold chili-forward dishes—how to choose heat that suits your palate.',
     author: 'Chef Sarah Johnson',
     category: 'Healthy Eating',
-    image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=1200&h=630&fit=crop',
+    image: BLOG_IMAGES[7],
     publishedAt: '2024-02-22T14:00:00.000Z',
     tags: ['spices', 'ordering'],
     content: `Heat should enhance flavor, not overwhelm it. Understanding spice levels helps you order confidently every time.

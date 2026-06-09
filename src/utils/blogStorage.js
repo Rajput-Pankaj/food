@@ -35,7 +35,7 @@ function mergePost(basePost, override = {}) {
     content,
     author: override.author ?? basePost.author ?? 'FoodExpress Team',
     category: override.category ?? basePost.category,
-    image: override.image_url || basePost.image || BLOG_PLACEHOLDER_IMAGE,
+    image: override.image || override.image_url || basePost.image || BLOG_PLACEHOLDER_IMAGE,
     publishedAt: override.publishedAt ?? basePost.publishedAt,
     tags: override.tags ?? basePost.tags ?? [],
     readTime: estimateReadTime(content),
@@ -107,7 +107,7 @@ function buildPostPayload(formData = {}) {
     content,
     author: formData.author?.trim() || 'FoodExpress Team',
     category: formData.category,
-    image_url: formData.image_url?.trim() || '',
+    image: formData.image?.trim() || formData.image_url?.trim() || '',
     publishedAt: formData.publishedAt || new Date().toISOString(),
     tags: formData.tagsText
       ? formData.tagsText.split(',').map((tag) => tag.trim()).filter(Boolean)
@@ -130,7 +130,7 @@ export async function addCustomBlogPost(formData) {
     const saved = await blogsApi.create({
       id: `blog-${Date.now()}`,
       ...payload,
-      image: payload.image_url || BLOG_PLACEHOLDER_IMAGE,
+      image: payload.image || BLOG_PLACEHOLDER_IMAGE,
       isCustom: true,
     });
     dispatchBlogUpdated();
@@ -144,7 +144,7 @@ export async function addCustomBlogPost(formData) {
   const newPost = {
     id,
     ...payload,
-    image: payload.image_url || BLOG_PLACEHOLDER_IMAGE,
+    image: payload.image || BLOG_PLACEHOLDER_IMAGE,
     readTime: estimateReadTime(payload.content),
     isCustom: true,
     createdAt: new Date().toISOString(),
@@ -164,7 +164,7 @@ export async function updateBlogPost(postId, formData) {
     const payload = buildPostPayload(formData);
     await blogsApi.update(postId, {
       ...payload,
-      image: payload.image_url || BLOG_PLACEHOLDER_IMAGE,
+      image: payload.image || BLOG_PLACEHOLDER_IMAGE,
     });
     dispatchBlogUpdated();
     return;
@@ -180,7 +180,7 @@ export async function updateBlogPost(postId, formData) {
       return {
         ...post,
         ...payload,
-        image: payload.image_url || post.image,
+        image: payload.image || post.image,
         readTime: estimateReadTime(payload.content),
       };
     });

@@ -3,6 +3,7 @@ import { MdDateRange, MdPerson } from 'react-icons/md';
 import { LuArrowRight, LuClock3 } from 'react-icons/lu';
 import { BLOG_CATEGORY_COLORS } from '../../constants/blog';
 import { formatBlogDate } from '../../utils/blogContent';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 export default function BlogCard({ post, featured = false }) {
   const categoryClass =
@@ -12,7 +13,7 @@ export default function BlogCard({ post, featured = false }) {
     return (
       <article className="group relative overflow-hidden rounded-3xl bg-gray-900 shadow-xl">
         <img
-          src={post.image}
+          src={resolveMediaUrl(post.image)}
           alt={post.title}
           className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
@@ -60,7 +61,7 @@ export default function BlogCard({ post, featured = false }) {
     <article className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-green-100 transition-all overflow-hidden h-full flex flex-col">
       <Link to={`/blog/${post.slug}`} className="block relative h-44 sm:h-48 overflow-hidden bg-gray-100">
         <img
-          src={post.image}
+          src={resolveMediaUrl(post.image)}
           alt={post.title}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           loading="lazy"

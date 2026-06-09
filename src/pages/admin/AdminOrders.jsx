@@ -3,10 +3,13 @@ import { MdNotificationsActive } from 'react-icons/md';
 import AdminOrderCard from '../../components/admin/AdminOrderCard';
 import { useOrders } from '../../hooks/useOrders';
 import { ADMIN_ORDER_TABS } from '../../constants/orders';
+import { downloadApiFile } from '../../api/client';
+import { USE_API } from '../../config/api';
 
 export default function AdminOrders() {
   const { orders } = useOrders();
   const [activeTab, setActiveTab] = useState('pending');
+  const [search, setSearch] = useState('');
 
   const tabCounts = useMemo(() => {
     return ADMIN_ORDER_TABS.reduce((acc, tab) => {
@@ -17,9 +20,24 @@ export default function AdminOrders() {
 
   const filteredOrders = useMemo(() => {
     const tab = ADMIN_ORDER_TABS.find((item) => item.id === activeTab);
-    if (!tab) return orders;
-    return orders.filter(tab.filter);
-  }, [orders, activeTab]);
+    let list = tab ? orders.filter(tab.filter) : orders;
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(
+        (o) =>
+          o.id.toLowerCase().includes(q) ||
+          (o.phone || '').includes(q) ||
+          (o.userEmail || o.guestEmail || '').toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [orders, activeTab, search]);
+
+  const exportCsv = async () => {
+    if (USE_API) {
+      await downloadApiFile('/admin/export/orders', 'orders-export.csv');
+    }
+  };
 
   const pendingCount = tabCounts.pending || 0;
 
@@ -32,13 +50,30 @@ export default function AdminOrders() {
             Accept, reject, and track orders through every stage
           </p>
         </div>
-        {pendingCount > 0 && (
-          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 rounded-xl text-sm font-semibold">
-            <MdNotificationsActive className="w-5 h-5" />
-            {pendingCount} pending order{pendingCount !== 1 ? 's' : ''}
-          </div>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {pendingCount > 0 && (
+            <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 rounded-xl text-sm font-semibold">
+              <MdNotificationsActive className="w-5 h-5" />
+              {pendingCount} pending order{pendingCount !== 1 ? 's' : ''}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={exportCsv}
+            className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold hover:bg-gray-50"
+          >
+            Export CSV
+          </button>
+        </div>
       </div>
+
+      <input
+        type="search"
+        placeholder="Search by order ID, phone, email..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full max-w-md border rounded-xl px-4 py-2.5 text-sm"
+      />
 
       <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {ADMIN_ORDER_TABS.map((tab) => (

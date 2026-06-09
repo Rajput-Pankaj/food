@@ -9,14 +9,26 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "build": "node -e \"console.log('API has no compile step (runs with Node directly). Run npm run build from the project root for the frontend.')\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.3"
+    "multer": "^2.1.1",
+    "nodemailer": "^6.10.1",
+    "pg": "^8.13.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.5"
   }
 }

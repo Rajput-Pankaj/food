@@ -1,3 +1,5 @@
+import { MEDIA_PLACEHOLDER } from './media';
+
 export const BLOG_CATEGORIES = [
   'Recipes',
   'Food Tips',
@@ -5,8 +7,7 @@ export const BLOG_CATEGORIES = [
   'Healthy Eating',
 ];
 
-export const BLOG_PLACEHOLDER_IMAGE =
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop';
+export const BLOG_PLACEHOLDER_IMAGE = MEDIA_PLACEHOLDER;
 
 export const BLOG_CATEGORY_COLORS = {
   Recipes: 'bg-orange-100 text-orange-700 border-orange-200',

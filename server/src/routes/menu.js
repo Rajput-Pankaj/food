@@ -2,6 +2,7 @@ import { readFile } from 'fs/promises';
 import { Router } from 'express';
 import { query } from '../db.js';
 import { adminRequired, authRequired } from '../middleware/auth.js';
+import { parseBody, menuItemSchema } from '../lib/validation.js';
 
 const router = Router();
 
@@ -27,7 +28,10 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', authRequired, adminRequired, async (req, res) => {
-  const item = req.body;
+  const parsed = parseBody(menuItemSchema, req.body);
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+
+  const item = parsed.data;
   const id = Number(item.id) || Date.now();
   await query(
     `INSERT INTO menu_items (id, payload, is_custom) VALUES ($1, $2, TRUE)
@@ -42,7 +46,10 @@ router.patch('/:id', authRequired, adminRequired, async (req, res) => {
   const { rows } = await query('SELECT * FROM menu_items WHERE id = $1', [id]);
   if (!rows[0]) return res.status(404).json({ error: 'Menu item not found.' });
 
-  const updated = { ...rows[0].payload, ...req.body, id };
+  const parsed = parseBody(menuItemSchema.partial(), { ...rows[0].payload, ...req.body, id });
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+
+  const updated = { ...parsed.data, id };
   await query('UPDATE menu_items SET payload = $1, updated_at = NOW() WHERE id = $2', [
     JSON.stringify(updated),
     id,
@@ -57,6 +64,9 @@ router.delete('/:id', authRequired, adminRequired, async (req, res) => {
 });
 
 router.post('/reset-seed', authRequired, adminRequired, async (_req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'Menu reset is disabled in production.' });
+  }
   await query('DELETE FROM menu_items WHERE is_custom = TRUE');
   const menuItems = JSON.parse(
     await readFile(new URL('../../seed/menu-items.json', import.meta.url), 'utf8')
