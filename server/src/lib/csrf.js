@@ -18,6 +18,8 @@ const EXEMPT_PATHS = [
   '/auth/register',
   '/auth/forgot-password',
   '/auth/reset-password',
+  '/setup/complete',
+  '/setup/verify-token',
   '/contact',
   '/promos/validate',
   '/orders/track',

@@ -28,6 +28,18 @@ router.get('/status', async (_req, res) => {
   return res.json({ setupComplete: complete, needsSetup: !complete });
 });
 
+router.post('/verify-token', setupLimiter, async (req, res) => {
+  if (await isSetupComplete()) {
+    return res.status(403).json({ valid: false, error: 'Setup already completed.' });
+  }
+  const setupToken = req.body?.setupToken || req.headers['x-setup-token'];
+  const valid = await verifySetupToken(setupToken);
+  if (!valid) {
+    return res.status(403).json({ valid: false, error: 'Invalid setup token.' });
+  }
+  return res.json({ valid: true });
+});
+
 router.post('/complete', setupLimiter, async (req, res) => {
   try {
     const parsed = parseBody(setupSchema, req.body);
@@ -109,6 +121,8 @@ router.post('/complete', setupLimiter, async (req, res) => {
          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
         [JSON.stringify({ done: true, at: new Date().toISOString() })]
       );
+
+      await client.query(`DELETE FROM app_meta WHERE key = 'setup_token_hash'`);
     });
 
     if (loadSampleMenu) {

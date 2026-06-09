@@ -17,6 +17,11 @@ export const authApi = {
 
 export const setupApi = {
   status: () => apiRequest('/setup/status'),
+  verifyToken: (setupToken) =>
+    apiRequest('/setup/verify-token', {
+      method: 'POST',
+      body: JSON.stringify({ setupToken }),
+    }),
   complete: (body) => apiRequest('/setup/complete', { method: 'POST', body: JSON.stringify(body) }),
 };
 

@@ -69,9 +69,9 @@ async function issueSession(res, user, req) {
   await storeRefreshToken(user.id, refreshToken);
 
   const csrfToken = generateCsrfToken();
-  setAccessCookie(res, accessToken);
-  setRefreshCookie(res, refreshToken);
-  setCsrfCookie(res, csrfToken);
+  setAccessCookie(res, accessToken, req);
+  setRefreshCookie(res, refreshToken, req);
+  setCsrfCookie(res, csrfToken, req);
 
   await logAudit({
     userId: user.id,
@@ -84,9 +84,9 @@ async function issueSession(res, user, req) {
   return { user, csrfToken, token: accessToken };
 }
 
-router.get('/csrf', (_req, res) => {
+router.get('/csrf', (req, res) => {
   const csrfToken = generateCsrfToken();
-  setCsrfCookie(res, csrfToken);
+  setCsrfCookie(res, csrfToken, req);
   return res.json({ csrfToken });
 });
 

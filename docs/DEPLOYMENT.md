@@ -293,6 +293,38 @@ The API auto-migrates and seeds on startup.
 
 ## Cloud Platforms
 
+### Coolify / Hostinger Docker (Git URL deploy)
+
+These platforms deploy from your **git repository URL** using the root `docker-compose.yml`.
+
+1. **Create a new project** and paste the repo URL:
+   `https://github.com/pankajkumarrajput1116-glitch/food.git`
+
+2. **Generate secrets** (locally or on the server):
+   ```bash
+   ./scripts/generate-secrets.sh
+   ```
+
+3. **Set required environment variables** in the platform UI:
+
+   | Variable | Required | Notes |
+   |----------|----------|-------|
+   | `POSTGRES_PASSWORD` | Yes | Strong random string |
+   | `JWT_SECRET` | Yes | 32+ random characters |
+   | `SETUP_TOKEN` | Yes | One-time token for `/setup` wizard |
+   | `NODE_ENV` | Yes | `production` |
+   | `SEED_DEMO_USERS` | No | `false` (default) |
+   | `APP_PORT` | No | `8080` — map in platform if needed |
+   | `CORS_ORIGIN` | Yes | Your public URL, e.g. `https://food.example.com` |
+   | `APP_URL` | Yes | Same as public URL |
+   | `COOKIE_SECURE` | Yes | `true` for HTTPS, `false` for plain HTTP |
+
+4. **Deploy** — the platform builds `web`, `api`, and `db` services.
+
+5. **Open `/setup`** in the browser and complete the **step-by-step wizard** using your `SETUP_TOKEN`.
+
+> **Tip:** Do not truncate the setup token. Copy the full value from your environment variables.
+
 ### Railway / Render / Fly.io
 
 General pattern:
@@ -335,6 +367,9 @@ Same as [VPS Docker](#option-a--docker-on-vps-recommended). Works on AWS EC2, Di
 | `JWT_SECRET` | **Yes** | Signing key for auth tokens |
 | `JWT_EXPIRES_IN` | No | Token TTL (default `7d`) |
 | `CORS_ORIGIN` | No | Frontend origin for CORS |
+| `APP_URL` | No | Public app URL (cookies, emails) |
+| `COOKIE_SECURE` | No | `true` for HTTPS, `false` for HTTP (default `false`) |
+| `SETUP_TOKEN` | **Yes** (prod) | One-time token for `/setup` wizard |
 | `VITE_API_URL` | No | Only for local Vite builds; Docker sets `/api` |
 
 ### Server `.env` (manual API)
@@ -360,7 +395,9 @@ Same as [VPS Docker](#option-a--docker-on-vps-recommended). Works on AWS EC2, Di
 ## Post-Deploy Checklist
 
 - [ ] Changed `POSTGRES_PASSWORD` and `JWT_SECRET` from defaults
-- [ ] Set `CORS_ORIGIN` to your real domain
+- [ ] Completed `/setup` wizard with full `SETUP_TOKEN`
+- [ ] Set `CORS_ORIGIN` and `APP_URL` to your real domain
+- [ ] Set `COOKIE_SECURE=true` when using HTTPS
 - [ ] HTTPS enabled on production domain
 - [ ] Logged in as admin and configured **Store Settings** (UPI VPA, Razorpay key)
 - [ ] Placed a test order and verified admin accept/reject flow
@@ -398,6 +435,12 @@ Common issues:
 ### CORS errors
 
 Set `CORS_ORIGIN` to exact frontend URL (including port), e.g. `http://localhost:8080`
+
+### Invalid CSRF token on setup (HTTP deploy)
+
+If you access the app over plain HTTP (`http://ip:8080`), ensure `COOKIE_SECURE=false` in API environment.
+With HTTPS, set `COOKIE_SECURE=true` and `APP_URL=https://yourdomain.com`.
+Setup routes are protected by `SETUP_TOKEN` and no longer require CSRF.
 
 ### Reset all demo data
 

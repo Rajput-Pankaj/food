@@ -124,10 +124,12 @@ if [[ -z "$current_jwt" ]] || echo "$current_jwt" | grep -qiE "^(${WEAK_PASSWORD
 fi
 
 current_setup="$(get_env_value SETUP_TOKEN)"
+SETUP_TOKEN_GENERATED=false
 if [[ -z "$current_setup" ]]; then
   new_setup="$(random_secret)"
   set_env_value SETUP_TOKEN "$new_setup"
-  log "Generated SETUP_TOKEN — use this in the setup wizard (Admin → first run /setup)"
+  SETUP_TOKEN_GENERATED=true
+  log "Generated SETUP_TOKEN — use this in the setup wizard (shown once below)"
 fi
 
 [[ -z "$(get_env_value POSTGRES_USER)" ]] && set_env_value POSTGRES_USER "foodexpress"
@@ -154,15 +156,18 @@ fi
 [[ -z "$(get_env_value TRAEFIK_NETWORK)" && -n "$TRAEFIK_NETWORK" ]] && set_env_value TRAEFIK_NETWORK "$TRAEFIK_NETWORK"
 [[ -z "$(get_env_value TRAEFIK_CERT_RESOLVER)" ]] && set_env_value TRAEFIK_CERT_RESOLVER "$TRAEFIK_CERT_RESOLVER"
 
-# ─── Docker network ──────────────────────────────────────────────────────────
-NETWORK_NAME="foodexpress_net"
-if ! docker network inspect "$NETWORK_NAME" >/dev/null 2>&1; then
-  log "Creating Docker network: ${NETWORK_NAME}"
-  docker network create "$NETWORK_NAME"
+USE_TRAEFIK_VAL="$(get_env_value USE_TRAEFIK)"
+
+# Cookie / URL settings for HTTP vs HTTPS
+if [[ -n "$DOMAIN" && "$USE_TRAEFIK_VAL" == "true" ]]; then
+  set_env_value APP_URL "https://${DOMAIN}"
+  set_env_value COOKIE_SECURE "true"
 else
-  log "Docker network exists: ${NETWORK_NAME}"
+  [[ -z "$(get_env_value APP_URL)" ]] && set_env_value APP_URL "http://localhost:$(get_env_value APP_PORT)"
+  [[ -z "$(get_env_value COOKIE_SECURE)" ]] && set_env_value COOKIE_SECURE "false"
 fi
 
+# ─── Traefik external network (Compose manages foodexpress_net) ────────────────
 if [[ "$TRAEFIK_DETECTED" == true && -n "$TRAEFIK_NETWORK" ]]; then
   if ! docker network inspect "$TRAEFIK_NETWORK" >/dev/null 2>&1; then
     log "Creating Traefik network: ${TRAEFIK_NETWORK}"
@@ -172,7 +177,6 @@ fi
 
 # ─── Compose files ───────────────────────────────────────────────────────────
 COMPOSE_FILES=(-f docker-compose.yml)
-USE_TRAEFIK_VAL="$(get_env_value USE_TRAEFIK)"
 
 if [[ "$USE_TRAEFIK_VAL" == "true" && -n "$DOMAIN" ]]; then
   COMPOSE_FILES+=(-f docker-compose.traefik.yml)
@@ -220,13 +224,20 @@ else
   echo -e "  URL:      ${GREEN}http://localhost:$(get_env_value APP_PORT)${NC}"
 fi
 
-echo "  Network:  ${NETWORK_NAME}"
+echo "  Network:  foodexpress_net (managed by Docker Compose)"
 docker compose "${COMPOSE_FILES[@]}" ps
+
+if [[ "$SETUP_TOKEN_GENERATED" == true ]]; then
+  echo ""
+  SETUP="$(get_env_value SETUP_TOKEN)"
+  warn "Save your SETUP_TOKEN securely — required for the /setup wizard (shown once):"
+  echo -e "  ${YELLOW}SETUP_TOKEN=${SETUP}${NC}"
+  warn "After setup completes, this token is invalidated. Find it later in .env if needed before setup."
+fi
 
 if [[ "$ENV_CREATED" == true ]]; then
   echo ""
   warn "New .env created with random secrets. Back up .env securely — it is gitignored."
-  warn "Demo accounts (if SEED_DEMO_USERS=true): admin@foodexpress.com / Admin@12345"
 fi
 
 echo ""

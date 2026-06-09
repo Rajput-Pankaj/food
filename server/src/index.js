@@ -45,6 +45,18 @@ function assertProductionSecrets() {
     console.error('FATAL: Set a strong POSTGRES_PASSWORD in production.');
     process.exit(1);
   }
+
+  const setupToken = process.env.SETUP_TOKEN || '';
+  if (!setupToken || setupToken.length < 32) {
+    console.error('FATAL: Set SETUP_TOKEN (32+ chars) in production.');
+    process.exit(1);
+  }
+
+  const appUrl = process.env.APP_URL || '';
+  if (appUrl.startsWith('https://') && process.env.COOKIE_SECURE !== 'true') {
+    console.error('FATAL: APP_URL uses HTTPS — set COOKIE_SECURE=true in production.');
+    process.exit(1);
+  }
 }
 
 assertProductionSecrets();

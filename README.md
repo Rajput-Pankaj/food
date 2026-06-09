@@ -37,10 +37,21 @@ The deploy script automatically:
 
 - Checks system requirements (Docker, memory, disk)
 - Detects **Traefik** for automatic HTTPS (when `DOMAIN` is set)
-- Generates `.env` with strong random `POSTGRES_PASSWORD` and `JWT_SECRET`
-- Creates the `foodexpress_net` Docker network
+- Generates `.env` with strong random secrets and `SETUP_TOKEN`
 - Builds and starts PostgreSQL + API + Nginx web
-- Runs DB migrations and seeds menu/blog data
+- Runs DB migrations on API startup
+
+**First visit:** open `/setup` and complete the step-by-step wizard (store info → admin account → launch).
+
+**Other deploy options:**
+
+| Method | Command / action |
+|--------|------------------|
+| SSH one-command | `./scripts/deploy.sh` |
+| Docker Compose only | `docker compose up --build -d` |
+| Coolify / Hostinger Git | Paste repo URL + set env vars (see [DEPLOYMENT.md](docs/DEPLOYMENT.md)) |
+| Generate secrets | `./scripts/generate-secrets.sh` |
+| Remove stack | `./scripts/undeploy.sh` or `./scripts/undeploy.sh --purge` |
 
 **With Traefik SSL:**
 
