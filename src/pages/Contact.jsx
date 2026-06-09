@@ -2,6 +2,8 @@ import { useState } from 'react';
 import PageLayout from '../components/PageLayout';
 import { MdLocationOn, MdPhone, MdEmail, MdAccessTime } from 'react-icons/md';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { contactApi } from '../api';
+import { USE_API } from '../config/api';
 
 function Contact() {
   useDocumentTitle('Contact');
@@ -14,6 +16,7 @@ function Contact() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState({ type: '', message: '' });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,31 +26,31 @@ function Contact() {
     }));
   };
 
-  // ✅ UPDATED handleSubmit (merged)
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus({ type: '', message: '' });
 
-    // validation
     if (!formData.name || !formData.email || !formData.message) {
-      alert("Please fill all required fields ❌");
+      setStatus({ type: 'error', message: 'Please fill all required fields.' });
       return;
     }
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      alert("Message sent successfully ✅");
+    try {
+      if (USE_API) {
+        await contactApi.submit(formData);
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
 
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-
+      setStatus({ type: 'success', message: 'Message sent successfully. We will get back to you soon.' });
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    } catch (err) {
+      setStatus({ type: 'error', message: err.message || 'Unable to send message. Please try again.' });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   const contactInfo = [
@@ -129,6 +132,17 @@ function Contact() {
           <h2 className="text-2xl font-bold mb-4">Send us a Message</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {status.message && (
+              <p
+                className={`text-sm rounded-lg p-3 ${
+                  status.type === 'success'
+                    ? 'bg-green-50 text-green-800 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}
+              >
+                {status.message}
+              </p>
+            )}
 
             <input
               type="text"

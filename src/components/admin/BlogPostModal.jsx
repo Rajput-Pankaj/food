@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdPhotoLibrary } from 'react-icons/md';
 import { BLOG_CATEGORIES, BLOG_PLACEHOLDER_IMAGE } from '../../constants/blog';
 import { slugify } from '../../utils/blogContent';
+import MediaPicker from './MediaPicker';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 const emptyForm = {
   title: '',
@@ -10,7 +12,7 @@ const emptyForm = {
   content: '',
   author: 'FoodExpress Team',
   category: BLOG_CATEGORIES[0],
-  image_url: '',
+  image: '',
   publishedAt: new Date().toISOString().slice(0, 16),
   tagsText: '',
   available: true,
@@ -26,7 +28,7 @@ function postToForm(post) {
     content: post.content || '',
     author: post.author || 'FoodExpress Team',
     category: post.category,
-    image_url: post.image?.startsWith('http') ? post.image : '',
+    image: post.image || '',
     publishedAt: post.publishedAt
       ? new Date(post.publishedAt).toISOString().slice(0, 16)
       : new Date().toISOString().slice(0, 16),
@@ -39,6 +41,7 @@ export default function BlogPostModal({ post, onClose, onSave }) {
   const isEdit = Boolean(post);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [slugTouched, setSlugTouched] = useState(false);
 
   useEffect(() => {
@@ -46,8 +49,6 @@ export default function BlogPostModal({ post, onClose, onSave }) {
     setSlugTouched(Boolean(post?.slug));
     setError('');
   }, [post]);
-
-  const previewImage = form.image_url.trim() || BLOG_PLACEHOLDER_IMAGE;
 
   const handleTitleChange = (title) => {
     setForm((current) => ({
@@ -81,6 +82,8 @@ export default function BlogPostModal({ post, onClose, onSave }) {
     });
   };
 
+  const coverSrc = form.image ? resolveMediaUrl(form.image) : null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <button
@@ -111,12 +114,44 @@ export default function BlogPostModal({ post, onClose, onSave }) {
             </p>
           )}
 
-          <div className="grid sm:grid-cols-[5rem_1fr] gap-4 items-start">
-            <img
-              src={previewImage}
-              alt=""
-              className="w-20 h-20 rounded-lg object-cover border border-gray-200 shrink-0"
-            />
+          <div className="grid sm:grid-cols-[7.5rem_1fr] gap-4 items-start">
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                className="group relative w-full aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-green-500 overflow-hidden bg-gray-50 transition-colors"
+                aria-label={form.image ? 'Change cover image' : 'Choose cover image'}
+              >
+                {coverSrc ? (
+                  <img
+                    src={coverSrc}
+                    alt="Cover preview"
+                    className="w-full h-full object-cover"
+                    onError={(event) => {
+                      event.currentTarget.src = BLOG_PLACEHOLDER_IMAGE;
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-400 px-2">
+                    <MdPhotoLibrary className="w-8 h-8 mb-1" />
+                    <span className="text-[10px] font-medium text-center leading-tight">Choose image</span>
+                  </div>
+                )}
+                <span className="absolute inset-x-0 bottom-0 bg-black/55 text-white text-[10px] py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {form.image ? 'Change' : 'Upload / pick'}
+                </span>
+              </button>
+              {form.image && (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, image: '' })}
+                  className="w-full text-xs text-red-600 hover:text-red-700"
+                >
+                  Remove image
+                </button>
+              )}
+            </div>
+
             <div className="space-y-4">
               <div>
                 <label htmlFor="blog-title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -210,18 +245,6 @@ export default function BlogPostModal({ post, onClose, onSave }) {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="blog-image" className="block text-sm font-medium text-gray-700 mb-1">
-                Cover image URL
-              </label>
-              <input
-                id="blog-image"
-                value={form.image_url}
-                onChange={(event) => setForm({ ...form, image_url: event.target.value })}
-                placeholder="https://..."
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
-              />
-            </div>
-            <div>
               <label htmlFor="blog-date" className="block text-sm font-medium text-gray-700 mb-1">
                 Publish date
               </label>
@@ -276,6 +299,16 @@ export default function BlogPostModal({ post, onClose, onSave }) {
           </button>
         </div>
       </div>
+
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(url) => {
+          setForm((current) => ({ ...current, image: url }));
+          setPickerOpen(false);
+        }}
+        title="Choose Cover Image"
+      />
     </div>
   );
 }

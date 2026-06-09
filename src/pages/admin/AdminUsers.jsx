@@ -1,21 +1,60 @@
-import { useState } from 'react';
-import { getPublicUsers, updateUserRole } from '../../utils/authStorage';
+import { useEffect, useState } from 'react';
+import { usersApi } from '../../api';
+import { USE_API } from '../../config/api';
 import { useAuth } from '../../context/AuthContext';
 import { ROLES } from '../../constants/roles';
+import { getPublicUsers, updateUserRole } from '../../utils/authStorage';
 
 export default function AdminUsers() {
   const { user, refreshUser } = useAuth();
-  const [users, setUsers] = useState(getPublicUsers);
+  const [users, setUsers] = useState(() => (USE_API ? [] : getPublicUsers()));
+  const [loading, setLoading] = useState(USE_API);
+  const [error, setError] = useState('');
 
-  const handleRoleChange = (userId, role) => {
+  const loadUsers = async () => {
+    if (USE_API) {
+      try {
+        const data = await usersApi.list();
+        setUsers(data);
+        setError('');
+      } catch (err) {
+        setError(err.message || 'Failed to load users.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+    setUsers(getPublicUsers());
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const handleRoleChange = async (userId, role) => {
     if (userId === user?.id && role !== ROLES.ADMIN) {
       alert('You cannot remove your own admin access.');
       return;
     }
-    updateUserRole(userId, role);
-    setUsers(getPublicUsers());
-    refreshUser();
+
+    try {
+      if (USE_API) {
+        await usersApi.update(userId, { role });
+        await loadUsers();
+      } else {
+        updateUserRole(userId, role);
+        setUsers(getPublicUsers());
+      }
+      refreshUser();
+    } catch (err) {
+      alert(err.message || 'Could not update user role.');
+    }
   };
+
+  if (loading) {
+    return <div className="text-sm text-gray-500">Loading users...</div>;
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -25,6 +64,10 @@ export default function AdminUsers() {
           Manage customer and admin accounts ({users.length} total)
         </p>
       </div>
+
+      {error && (
+        <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">{error}</p>
+      )}
 
       {/* Mobile & tablet cards */}
       <div className="md:hidden space-y-3">

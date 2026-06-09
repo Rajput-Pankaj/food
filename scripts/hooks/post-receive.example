@@ -1,0 +1,12 @@
+#!/bin/sh
+# Git post-receive hook for auto-deploy on push
+# Install: cp scripts/hooks/post-receive.example /path/to/repo.git/hooks/post-receive && chmod +x ...
+
+DEPLOY_DIR="${DEPLOY_DIR:-$HOME/foodexpress}"
+
+while read -r oldrev newrev refname; do
+  echo "Deploying FoodExpress to ${DEPLOY_DIR}..."
+  cd "$DEPLOY_DIR" || exit 1
+  git pull --ff-only origin "$(echo "$refname" | sed 's|refs/heads/||')"
+  SKIP_GIT_PULL=1 ./scripts/deploy.sh
+done

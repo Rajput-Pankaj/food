@@ -15,6 +15,11 @@ export const DEFAULT_STORE_SETTINGS = {
     keyId: '',
     enabled: false,
   },
+  guestCheckoutEnabled: true,
+  deliveryZones: [],
+  storeEmail: '',
+  storeLogo: '',
+  darkModeEnabled: true,
   updatedAt: null,
 };
 
@@ -54,6 +59,7 @@ export const ORDER_TYPES = {
 
 export const PAYMENT_STATUS_LABELS = {
   pending: 'Payment Pending',
+  pending_verification: 'Awaiting UPI Verification',
   paid: 'Paid',
   failed: 'Payment Failed',
 };

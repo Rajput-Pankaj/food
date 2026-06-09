@@ -14,6 +14,8 @@ import {
 } from '../components/FoodAddToCartPanel';
 import RelatedFoodCarousel from '../components/RelatedFoodCarousel';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../hooks/useFavorites';
 import { useMenuItem } from '../hooks/useMenuItem';
 import { useMenuItems } from '../hooks/useMenuItems';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -32,6 +34,8 @@ export default function FoodDetail() {
   const { item } = useMenuItem(id);
   const { items: menuItems } = useMenuItems();
   const { addItemsToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const [quantity, setQuantity] = useState(1);
 
   useDocumentTitle(item?.food_name || 'Food Details');
@@ -134,7 +138,22 @@ export default function FoodDetail() {
                 {item.food_name}
               </h1>
 
-              <p className="text-2xl sm:text-3xl font-bold text-green-600">Rs.{item.price}/-</p>
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-2xl sm:text-3xl font-bold text-green-600">Rs.{item.price}/-</p>
+                {isAuthenticated && (
+                  <button
+                    type="button"
+                    onClick={() => toggleFavorite(item)}
+                    className={`text-sm font-semibold px-3 py-1.5 rounded-lg border ${
+                      isFavorite(item.id)
+                        ? 'border-red-300 bg-red-50 text-red-600'
+                        : 'border-gray-200 text-gray-600 hover:border-red-200'
+                    }`}
+                  >
+                    {isFavorite(item.id) ? '♥ Saved' : '♡ Save'}
+                  </button>
+                )}
+              </div>
 
               {item.description && (
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{item.description}</p>

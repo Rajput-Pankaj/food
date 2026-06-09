@@ -110,8 +110,8 @@ export default function FoodSearch({
 
   const inputShellClass =
     variant === 'mobile'
-      ? 'flex items-center gap-2 bg-gray-100 px-3 py-3 rounded-xl border border-transparent focus-within:border-green-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-green-100'
-      : 'flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-xl border border-transparent focus-within:border-green-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-green-100 transition-all';
+      ? 'flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-3 rounded-xl border border-transparent focus-within:border-green-400 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:ring-2 focus-within:ring-green-100 dark:focus-within:ring-green-900/30 transition-all duration-200'
+      : 'flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-xl border border-transparent focus-within:border-green-400 focus-within:bg-white dark:focus-within:bg-gray-800 focus-within:ring-2 focus-within:ring-green-100 dark:focus-within:ring-green-900/30 transition-all duration-200';
 
   return (
     <div ref={containerRef} className={shellClass}>
@@ -130,7 +130,7 @@ export default function FoodSearch({
           onFocus={() => value.trim() && setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder="Search dishes, categories..."
-          className="food-search-input bg-transparent outline-none w-full min-w-0 text-sm text-gray-800 placeholder:text-gray-400"
+          className="food-search-input bg-transparent outline-none w-full min-w-0 text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
           aria-label="Search food"
           aria-expanded={showDropdown}
           aria-controls="food-search-results"
@@ -158,7 +158,7 @@ export default function FoodSearch({
         <div
           id="food-search-results"
           role="listbox"
-          className={`absolute z-50 mt-2 bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden ${
+          className={`absolute z-50 mt-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden ${
             variant === 'mobile' ? 'left-0 right-0' : 'left-0 right-0 min-w-[20rem]'
           }`}
         >
@@ -174,8 +174,8 @@ export default function FoodSearch({
                       type="button"
                       onMouseEnter={() => setActiveIndex(index)}
                       onClick={() => handleSelect(item)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                        isActive ? 'bg-green-50' : 'hover:bg-gray-50'
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors duration-200 cursor-pointer ${
+                        isActive ? 'bg-green-50 dark:bg-green-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                     >
                       <img
@@ -187,7 +187,7 @@ export default function FoodSearch({
                         }}
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-gray-800 truncate">
+                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
                           {highlightMatch(item.food_name, value).map((part, partIndex) =>
                             part.match ? (
                               <mark
@@ -233,7 +233,7 @@ export default function FoodSearch({
             </div>
           )}
 
-          <div className="border-t border-gray-100 p-2 bg-gray-50/80">
+          <div className="border-t border-gray-100 dark:border-gray-700 p-2 bg-gray-50/80 dark:bg-gray-900/50">
             <button
               type="button"
               onMouseEnter={() => setActiveIndex(results.length)}

@@ -12,7 +12,7 @@ export default function MenuFilters({
   dietaryFilter,
   onDietaryChange,
   hasProfilePreference = false,
-  edgeFadeClass = 'from-white',
+  edgeFadeClass = 'from-white dark:from-gray-800',
   title = 'Categories',
   embedded = false,
 }) {
@@ -27,7 +27,7 @@ export default function MenuFilters({
 
   const shellClass = embedded
     ? 'space-y-4'
-    : 'bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 space-y-4';
+    : 'bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 sm:p-5 space-y-4 transition-colors duration-200';
 
   return (
     <div className={shellClass}>

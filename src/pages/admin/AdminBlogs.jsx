@@ -18,6 +18,7 @@ import {
   updateBlogPost,
 } from '../../utils/blogStorage';
 import { formatBlogDate } from '../../utils/blogContent';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 export default function AdminBlogs() {
   const { posts, refresh, loading } = useBlogPosts({ admin: true });
@@ -87,7 +88,7 @@ export default function AdminBlogs() {
       content: post.content,
       author: post.author,
       category: post.category,
-      image_url: post.image,
+      image: post.image,
       publishedAt: post.publishedAt,
       tagsText: (post.tags || []).join(', '),
       available: !post.available,
@@ -197,7 +198,7 @@ export default function AdminBlogs() {
               className="bg-white rounded-xl shadow p-4 sm:p-5 flex flex-col sm:flex-row gap-4"
             >
               <img
-                src={post.image}
+                src={resolveMediaUrl(post.image)}
                 alt=""
                 className="w-full sm:w-28 h-40 sm:h-24 rounded-lg object-cover shrink-0 bg-gray-100"
               />

@@ -24,9 +24,11 @@ services:
       - ./server:/app
     environment:
       PORT: 3001
+      NODE_ENV: development
       DATABASE_URL: postgres://foodexpress:foodexpress@db:5432/foodexpress
-      JWT_SECRET: dev-secret-change-me
-      CORS_ORIGIN: http://localhost:5173
+      JWT_SECRET: dev-secret-change-me-for-local-testing-only
+      CORS_ORIGIN: http://localhost:5180
+      SEED_DEMO_USERS: 'true'
     ports:
       - '3001:3001'
     depends_on:

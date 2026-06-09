@@ -10,6 +10,7 @@ const REVIEWS_KEY = 'foodexpress_reviews';
 const BLOG_OVERRIDES_KEY = 'foodexpress_blog_overrides';
 const BLOG_CUSTOM_POSTS_KEY = 'foodexpress_blog_custom_posts';
 const STORE_SETTINGS_KEY = 'foodexpress_store_settings';
+const MEDIA_LIBRARY_KEY = 'foodexpress_media_library';
 
 export function getJson(key, fallback = null) {
   try {
@@ -41,4 +42,5 @@ export const storageKeys = {
   BLOG_OVERRIDES_KEY,
   BLOG_CUSTOM_POSTS_KEY,
   STORE_SETTINGS_KEY,
+  MEDIA_LIBRARY_KEY,
 };

@@ -11,6 +11,11 @@ function mergeSettings(stored) {
     ...stored,
     upi: { ...DEFAULT_STORE_SETTINGS.upi, ...stored.upi },
     razorpay: { ...DEFAULT_STORE_SETTINGS.razorpay, ...stored.razorpay },
+    deliveryZones: stored.deliveryZones || DEFAULT_STORE_SETTINGS.deliveryZones,
+    guestCheckoutEnabled:
+      stored.guestCheckoutEnabled ?? DEFAULT_STORE_SETTINGS.guestCheckoutEnabled,
+    storeLogo: stored.storeLogo || DEFAULT_STORE_SETTINGS.storeLogo,
+    darkModeEnabled: stored.darkModeEnabled ?? DEFAULT_STORE_SETTINGS.darkModeEnabled,
   };
 }
 
@@ -24,17 +29,16 @@ export function getStoreSettings() {
   return mergeSettings(getJson(storageKeys.STORE_SETTINGS_KEY, null));
 }
 
-export async function saveStoreSettings(updates) {
+export async function saveStoreSettings(updates, baseSettings = null) {
   if (USE_API) {
-    const current = getStoreSettings();
-    const next = mergeSettings({
+    const current = baseSettings || (await settingsApi.get());
+    const merged = mergeSettings({
       ...current,
       ...updates,
       upi: { ...current.upi, ...updates.upi },
       razorpay: { ...current.razorpay, ...updates.razorpay },
-      updatedAt: new Date().toISOString(),
     });
-    const saved = await settingsApi.save(next);
+    const saved = await settingsApi.save(merged);
     dispatchSettingsUpdated();
     return saved;
   }

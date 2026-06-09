@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BASE_CATEGORY_ORDER } from '../constants/categories';
 import { getMenuCategoryUrl } from '../utils/menuLinks';
-import { MdFastfood, MdLocationOn, MdPhone, MdEmail, MdExpandMore } from 'react-icons/md';
+import { useStoreSettings } from '../hooks/useStoreSettings';
+import StoreLogo from './StoreLogo';
+import { MdLocationOn, MdPhone, MdEmail, MdExpandMore } from 'react-icons/md';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { LuClock } from 'react-icons/lu';
 
@@ -31,6 +33,8 @@ function FooterSection({ title, children, defaultOpen = false }) {
 }
 
 function Footer() {
+  const { settings } = useStoreSettings();
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
@@ -38,11 +42,9 @@ function Footer() {
           {/* Brand — always visible */}
           <div className="space-y-4 lg:col-span-1 text-center sm:text-left">
             <div className="flex items-center gap-3 justify-center sm:justify-start">
-              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center shrink-0">
-                <MdFastfood className="w-8 h-8 text-white" />
-              </div>
+              <StoreLogo settings={settings} size="lg" showName={false} />
               <div>
-                <h3 className="text-xl font-bold">FoodExpress</h3>
+                <h3 className="text-xl font-bold">{settings.storeName || 'FoodExpress'}</h3>
                 <p className="text-green-400 text-sm">Delicious Food Delivered</p>
               </div>
             </div>

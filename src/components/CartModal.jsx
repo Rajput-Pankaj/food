@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { IoClose } from 'react-icons/io5';
-import { LuArrowRight, LuMinus, LuPlus, LuTrash2 } from 'react-icons/lu';
+import { LuArrowRight, LuMinus, LuPlus, LuTrash2, LuShoppingBag } from 'react-icons/lu';
 import { MdLocalFireDepartment } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
 import { useStoreSettings } from '../hooks/useStoreSettings';
@@ -41,12 +41,12 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
       aria-label="Shopping cart"
     >
       <div
-        className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-lg max-h-[90vh] sm:max-h-[85vh] flex flex-col shadow-2xl"
+        className="bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-lg max-h-[90vh] sm:max-h-[85vh] flex flex-col shadow-2xl transition-colors duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center px-5 sm:px-6 py-4 border-b border-gray-100">
+        <div className="flex justify-between items-center px-5 sm:px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Your Cart</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Your Cart</h2>
             {itemCount > 0 && (
               <p className="text-xs text-gray-500 mt-0.5">
                 {itemCount} item{itemCount !== 1 ? 's' : ''}
@@ -55,7 +55,7 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
             aria-label="Close cart"
           >
             <IoClose size={22} />
@@ -63,9 +63,9 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
         </div>
 
         {cart.length === 0 ? (
-          <div className="text-center text-gray-500 py-12 px-6">
-            <p className="text-4xl mb-3">🛒</p>
-            <p className="text-lg font-semibold text-gray-700">Your cart is empty</p>
+          <div className="text-center text-gray-500 dark:text-gray-400 py-12 px-6">
+            <LuShoppingBag className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
+            <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">Your cart is empty</p>
             <p className="text-sm mb-5 mt-1">Add some delicious food items!</p>
             <Link
               to="/menu"
@@ -82,7 +82,7 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
               {cart.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100"
+                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700"
                 >
                   <img
                     src={item.food_image}
@@ -90,7 +90,7 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
                     className="w-16 h-16 object-cover rounded-xl shrink-0 bg-white"
                   />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800 text-sm line-clamp-2">
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm line-clamp-2">
                       {item.food_name}
                     </h3>
                     <p className="text-green-600 font-bold text-sm mt-0.5">
@@ -104,7 +104,7 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-2 shrink-0">
-                    <div className="flex items-center gap-1.5 bg-white rounded-full border border-gray-200 p-0.5">
+                    <div className="flex items-center gap-1.5 bg-white dark:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-600 p-0.5">
                       <button
                         onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                         className="w-7 h-7 rounded-full flex items-center justify-center text-green-700 hover:bg-green-50"
@@ -133,7 +133,7 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
               ))}
             </div>
 
-            <div className="border-t border-gray-100 px-5 sm:px-6 py-4 bg-white rounded-b-3xl sm:rounded-b-2xl space-y-3">
+            <div className="border-t border-gray-100 dark:border-gray-700 px-5 sm:px-6 py-4 bg-white dark:bg-gray-900 rounded-b-3xl sm:rounded-b-2xl space-y-3">
               {totalCalories > 0 && (
                 <div className="flex justify-between text-sm text-orange-600">
                   <span className="inline-flex items-center gap-1">
@@ -160,8 +160,8 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
                 </p>
               )}
 
-              <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                <span className="text-base font-bold text-gray-900">Estimated total</span>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-gray-700">
+                <span className="text-base font-bold text-gray-900 dark:text-gray-100">Estimated total</span>
                 <span className="text-xl font-bold text-green-600">
                   Rs.{totalAmount + deliveryFee}/-
                 </span>
@@ -169,7 +169,7 @@ function CartModal({ isOpen, onClose, cart, onRemoveItem, onUpdateQuantity }) {
 
               <button
                 onClick={handleCheckout}
-                className="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isAuthenticated && !isCustomer ? 'Go to Admin Panel' : 'Proceed to Checkout'}
                 <LuArrowRight className="w-4 h-4" />

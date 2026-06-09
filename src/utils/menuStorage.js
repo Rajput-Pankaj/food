@@ -41,7 +41,9 @@ function buildDetailsPayload(formData = {}) {
     allergens: formData.allergens?.trim() || '',
     prepTime: parseNutritionNumber(formData.prepTime),
     nutrition: buildNutritionFromForm(formData),
-    galleryImages: parseGalleryText(formData.galleryImagesText),
+    galleryImages:
+      formData.galleryImages ||
+      parseGalleryText(formData.galleryImagesText),
   };
 }
 
@@ -92,7 +94,8 @@ export function setMenuOverride(itemId, override) {
 }
 
 function mergeItem(baseItem, override = {}) {
-  const image = override.food_image_url || baseItem.food_image || MENU_PLACEHOLDER_IMAGE;
+  const image =
+    override.food_image || override.food_image_url || baseItem.food_image || MENU_PLACEHOLDER_IMAGE;
   const details = normalizeItemDetails(baseItem, override);
 
   return {
@@ -155,7 +158,8 @@ export async function addCustomMenuItem(itemData) {
       food_category: itemData.food_category,
       food_type: itemData.food_type,
       food_quantity: 1,
-      food_image: itemData.food_image_url?.trim() || MENU_PLACEHOLDER_IMAGE,
+      food_image: itemData.food_image?.trim() || itemData.food_image_url?.trim() || MENU_PLACEHOLDER_IMAGE,
+      galleryImages: itemData.galleryImages || buildDetailsPayload(itemData).galleryImages,
       price: Number(itemData.price),
       ...details,
       available: itemData.available !== false,
@@ -175,10 +179,10 @@ export async function addCustomMenuItem(itemData) {
     food_category: itemData.food_category,
     food_type: itemData.food_type,
     food_quantity: 1,
-    food_image: itemData.food_image_url?.trim() || MENU_PLACEHOLDER_IMAGE,
+    food_image: itemData.food_image?.trim() || itemData.food_image_url?.trim() || MENU_PLACEHOLDER_IMAGE,
     price: Number(itemData.price),
     ...details,
-    galleryImages: details.galleryImages,
+    galleryImages: itemData.galleryImages || details.galleryImages,
     isCustom: true,
     createdAt: new Date().toISOString(),
   };
@@ -202,7 +206,9 @@ export async function updateMenuItem(itemId, updates) {
       ...(updates.food_name ? { food_name: updates.food_name.trim() } : {}),
       ...(updates.food_category ? { food_category: updates.food_category } : {}),
       ...(updates.food_type ? { food_type: updates.food_type } : {}),
+      ...(updates.food_image ? { food_image: updates.food_image.trim() } : {}),
       ...(updates.food_image_url ? { food_image: updates.food_image_url.trim() } : {}),
+      ...(updates.galleryImages ? { galleryImages: updates.galleryImages } : {}),
       ...(updates.deleted !== undefined ? { deleted: updates.deleted } : {}),
     };
     const saved = await menuApi.update(itemId, payload);
@@ -224,9 +230,10 @@ export async function updateMenuItem(itemId, updates) {
         food_category: updates.food_category ?? item.food_category,
         food_type: updates.food_type ?? item.food_type,
         price: updates.price !== undefined ? Number(updates.price) : item.price,
-        food_image: updates.food_image_url?.trim() || item.food_image,
+        food_image: updates.food_image?.trim() || updates.food_image_url?.trim() || item.food_image,
         ...(detailsPayload || {}),
-        galleryImages: detailsPayload?.galleryImages ?? item.galleryImages,
+        galleryImages:
+          updates.galleryImages ?? detailsPayload?.galleryImages ?? item.galleryImages,
       };
     });
     saveCustomItems(updated);
@@ -238,7 +245,9 @@ export async function updateMenuItem(itemId, updates) {
   if (updates.food_name) overrideFields.food_name = updates.food_name.trim();
   if (updates.food_category) overrideFields.food_category = updates.food_category;
   if (updates.food_type) overrideFields.food_type = updates.food_type;
+  if (updates.food_image) overrideFields.food_image = updates.food_image.trim();
   if (updates.food_image_url) overrideFields.food_image_url = updates.food_image_url.trim();
+  if (updates.galleryImages) overrideFields.galleryImages = updates.galleryImages;
 
   if (Object.keys(overrideFields).length) {
     setMenuOverride(itemId, overrideFields);

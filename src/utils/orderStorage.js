@@ -2,6 +2,7 @@ import { ORDER_STATUS, getNextStatus, normalizeOrderStatus } from '../constants/
 import { ordersApi } from '../api';
 import { USE_API } from '../config/api';
 import { getJson, setJson, storageKeys } from './storage';
+import { buildRevenueTrend } from './revenueTrend.js';
 
 function dispatchOrdersUpdated() {
   if (typeof window !== 'undefined') {
@@ -107,6 +108,15 @@ export async function rejectOrder(orderId, note = 'Order rejected by restaurant'
   return updateOrderStatus(orderId, ORDER_STATUS.REJECTED, note);
 }
 
+export async function confirmOrderPayment(orderId) {
+  if (USE_API) {
+    const updated = await ordersApi.confirmPayment(orderId);
+    dispatchOrdersUpdated();
+    return updated;
+  }
+  return updateOrder(orderId, { paymentStatus: 'paid' });
+}
+
 export async function advanceOrderStatus(orderId, note = '') {
   if (USE_API) {
     const updated = await ordersApi.advance(orderId, note);
@@ -137,11 +147,20 @@ export function getOrderStats() {
     (order) => normalizeOrderStatus(order.status) === ORDER_STATUS.PENDING
   ).length;
 
+  const countable = orders.filter(
+    (order) => normalizeOrderStatus(order.status) !== ORDER_STATUS.REJECTED
+  );
+  const avgOrderValue = countable.length ? Math.round(revenue / countable.length) : 0;
+
+  const revenueTrend = buildRevenueTrend(orders);
+
   return {
     totalOrders: orders.length,
     revenue,
+    avgOrderValue,
     byStatus,
     pendingCount,
-    recentOrders: orders.slice(0, 5),
+    revenueTrend,
+    recentOrders: orders.slice(0, 8),
   };
 }

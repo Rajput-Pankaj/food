@@ -11,6 +11,21 @@ export async function query(text, params) {
   return pool.query(text, params);
 }
 
+export async function withTransaction(fn) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 export async function waitForDatabase(maxAttempts = 30, delayMs = 2000) {
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {

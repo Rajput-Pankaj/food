@@ -13,8 +13,16 @@ export function CartProvider({ children }) {
     setCart(getJson(storageKeys.CART_KEY, []));
   }, []);
 
+  const saveTimer = useRef(null);
+
   useEffect(() => {
-    setJson(storageKeys.CART_KEY, cart);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      setJson(storageKeys.CART_KEY, cart);
+    }, 300);
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
   }, [cart]);
 
   useEffect(() => {

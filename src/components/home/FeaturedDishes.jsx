@@ -16,14 +16,14 @@ export default function FeaturedDishes() {
   if (!featured.length) return null;
 
   return (
-    <section className="py-10 sm:py-14 bg-white">
+    <section className="py-10 sm:py-14 bg-white dark:bg-gray-900 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6 sm:mb-8">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-green-600 mb-1">
               Chef&apos;s picks
             </p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Customer favorites</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Customer favorites</h2>
             <p className="text-sm sm:text-base text-gray-500 mt-1">
               Hand-picked for you — explore the full menu for 50+ dishes.
             </p>
@@ -44,7 +44,7 @@ export default function FeaturedDishes() {
               <Link
                 key={item.id}
                 to={`/food/${item.id}`}
-                className="group rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-lg hover:border-green-100 transition-all"
+                className="group rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg hover:border-green-100 dark:hover:border-green-800 transition-all duration-200 cursor-pointer"
               >
                 <div className="relative h-40 sm:h-44 overflow-hidden bg-gray-100">
                   <img

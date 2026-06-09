@@ -5,7 +5,7 @@
     "food_category": "Breakfast",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image1.avif",
+    "food_image": "/assets/media/image1.avif",
     "price": 499,
     "description": "Fluffy buttermilk pancakes with maple syrup and butter.",
     "details": "Served warm with seasonal fruit garnish and whipped cream on request.",
@@ -23,8 +23,8 @@
       "sodium": 380
     },
     "galleryImages": [
-      "/src/assets/image2.avif",
-      "/src/assets/image3.avif"
+      "/assets/media/image2.avif",
+      "/assets/media/image3.avif"
     ],
     "available": true
   },
@@ -34,7 +34,7 @@
     "food_category": "Soup",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image2.avif",
+    "food_image": "/assets/media/image2.avif",
     "price": 399,
     "description": "Hearty clear chicken broth with vegetables and shredded chicken.",
     "details": "Slow-simmered stock with herbs — light, comforting, and protein-rich.",
@@ -52,8 +52,8 @@
       "sodium": 720
     },
     "galleryImages": [
-      "/src/assets/image3.avif",
-      "/src/assets/image4.avif"
+      "/assets/media/image3.avif",
+      "/assets/media/image4.avif"
     ],
     "available": true
   },
@@ -63,7 +63,7 @@
     "food_category": "Soup",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image3.avif",
+    "food_image": "/assets/media/image3.avif",
     "price": 349,
     "description": "Italian vegetable soup with beans, pasta, and tomato broth.",
     "details": "Topped with parmesan and fresh basil for a rustic finish.",
@@ -81,8 +81,8 @@
       "sodium": 640
     },
     "galleryImages": [
-      "/src/assets/image4.avif",
-      "/src/assets/image5.avif"
+      "/assets/media/image4.avif",
+      "/assets/media/image5.avif"
     ],
     "available": true
   },
@@ -92,7 +92,7 @@
     "food_category": "Pasta",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image4.avif",
+    "food_image": "/assets/media/image4.avif",
     "price": 999,
     "description": "Classic Roman pasta with egg, pecorino, guanciale, and black pepper.",
     "details": "Creamy without cream — finished with aged cheese and cracked pepper.",
@@ -110,8 +110,8 @@
       "sodium": 980
     },
     "galleryImages": [
-      "/src/assets/image5.avif",
-      "/src/assets/image6.avif"
+      "/assets/media/image5.avif",
+      "/assets/media/image6.avif"
     ],
     "available": true
   },
@@ -121,7 +121,7 @@
     "food_category": "Pasta",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image5.avif",
+    "food_image": "/assets/media/image5.avif",
     "price": 899,
     "description": "Fettuccine in rich parmesan cream sauce with sautéed vegetables.",
     "details": "Silky sauce tossed with broccoli, bell pepper, and sweet corn.",
@@ -139,8 +139,8 @@
       "sodium": 840
     },
     "galleryImages": [
-      "/src/assets/image6.avif",
-      "/src/assets/image7.avif"
+      "/assets/media/image6.avif",
+      "/assets/media/image7.avif"
     ],
     "available": true
   },
@@ -150,7 +150,7 @@
     "food_category": "Pasta",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image6.avif",
+    "food_image": "/assets/media/image6.avif",
     "price": 1099,
     "description": "Grilled chicken strips over fettuccine in creamy alfredo sauce.",
     "details": "Finished with parsley and extra parmesan for a indulgent main.",
@@ -168,8 +168,8 @@
       "sodium": 920
     },
     "galleryImages": [
-      "/src/assets/image7.avif",
-      "/src/assets/image8.avif"
+      "/assets/media/image7.avif",
+      "/assets/media/image8.avif"
     ],
     "available": true
   },
@@ -179,7 +179,7 @@
     "food_category": "Main Course",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image7.avif",
+    "food_image": "/assets/media/image7.avif",
     "price": 799,
     "description": "Cottage cheese cubes in rich tomato-butter gravy with fenugreek.",
     "details": "North Indian favourite — pairs well with naan or jeera rice.",
@@ -197,8 +197,8 @@
       "sodium": 780
     },
     "galleryImages": [
-      "/src/assets/image8.avif",
-      "/src/assets/image9.avif"
+      "/assets/media/image8.avif",
+      "/assets/media/image9.avif"
     ],
     "available": true
   },
@@ -208,7 +208,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image8.avif",
+    "food_image": "/assets/media/image8.avif",
     "price": 1199,
     "description": "Fragrant basmati rice layered with spiced chicken and caramelized onions.",
     "details": "Dum-cooked with saffron, mint, and fried onions — served with raita.",
@@ -226,8 +226,8 @@
       "sodium": 890
     },
     "galleryImages": [
-      "/src/assets/image9.avif",
-      "/src/assets/image10.avif"
+      "/assets/media/image9.avif",
+      "/assets/media/image10.avif"
     ],
     "available": true
   },
@@ -237,7 +237,7 @@
     "food_category": "Pizza",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image9.avif",
+    "food_image": "/assets/media/image9.avif",
     "price": 649,
     "description": "Thin crust pizza with tomato sauce, mozzarella, and fresh basil.",
     "details": "Wood-fired style crust with San Marzano-style tomato base.",
@@ -255,8 +255,8 @@
       "sodium": 1120
     },
     "galleryImages": [
-      "/src/assets/image10.avif",
-      "/src/assets/image11.avif"
+      "/assets/media/image10.avif",
+      "/assets/media/image11.avif"
     ],
     "available": true
   },
@@ -266,7 +266,7 @@
     "food_category": "Pizza",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image10.avif",
+    "food_image": "/assets/media/image10.avif",
     "price": 749,
     "description": "Classic pepperoni pizza with mozzarella on a crisp crust.",
     "details": "Generous pepperoni slices with oregano and chili flakes.",
@@ -284,8 +284,8 @@
       "sodium": 1380
     },
     "galleryImages": [
-      "/src/assets/image11.avif",
-      "/src/assets/image12.avif"
+      "/assets/media/image11.avif",
+      "/assets/media/image12.avif"
     ],
     "available": true
   },
@@ -295,7 +295,7 @@
     "food_category": "Burger",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image11.avif",
+    "food_image": "/assets/media/image11.avif",
     "price": 499,
     "description": "Grilled vegetable patty with lettuce, tomato, and house sauce.",
     "details": "Served in a toasted brioche bun with crispy fries on the side.",
@@ -313,8 +313,8 @@
       "sodium": 980
     },
     "galleryImages": [
-      "/src/assets/image12.avif",
-      "/src/assets/image13.avif"
+      "/assets/media/image12.avif",
+      "/assets/media/image13.avif"
     ],
     "available": true
   },
@@ -324,7 +324,7 @@
     "food_category": "Burger",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image12.avif",
+    "food_image": "/assets/media/image12.avif",
     "price": 599,
     "description": "Crispy fried chicken fillet with coleslaw and spicy mayo.",
     "details": "Double-layer crunch with melted cheese optional on request.",
@@ -342,8 +342,8 @@
       "sodium": 1100
     },
     "galleryImages": [
-      "/src/assets/image13.avif",
-      "/src/assets/image14.webp"
+      "/assets/media/image13.avif",
+      "/assets/media/image14.webp"
     ],
     "available": true
   },
@@ -353,7 +353,7 @@
     "food_category": "Soup",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image13.avif",
+    "food_image": "/assets/media/image13.avif",
     "price": 299,
     "description": "Creamy roasted tomato soup with a hint of basil.",
     "details": "Blended smooth and finished with a swirl of cream.",
@@ -371,8 +371,8 @@
       "sodium": 580
     },
     "galleryImages": [
-      "/src/assets/image14.webp",
-      "/src/assets/image15.avif"
+      "/assets/media/image14.webp",
+      "/assets/media/image15.avif"
     ],
     "available": true
   },
@@ -382,7 +382,7 @@
     "food_category": "Breakfast",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image14.webp",
+    "food_image": "/assets/media/image14.webp",
     "price": 349,
     "description": "Fluffy scrambled eggs in toasted multigrain bread.",
     "details": "With cheddar, tomato, and microgreens — perfect morning bite.",
@@ -400,8 +400,8 @@
       "sodium": 620
     },
     "galleryImages": [
-      "/src/assets/image15.avif",
-      "/src/assets/image16.avif"
+      "/assets/media/image15.avif",
+      "/assets/media/image16.avif"
     ],
     "available": true
   },
@@ -411,7 +411,7 @@
     "food_category": "Soup",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image15.avif",
+    "food_image": "/assets/media/image15.avif",
     "price": 349,
     "description": "Creamy wild mushroom soup with thyme and cracked pepper.",
     "details": "Made with button and shiitake mushrooms for depth of flavour.",
@@ -429,8 +429,8 @@
       "sodium": 520
     },
     "galleryImages": [
-      "/src/assets/image16.avif",
-      "/src/assets/image17.avif"
+      "/assets/media/image16.avif",
+      "/assets/media/image17.avif"
     ],
     "available": true
   },
@@ -440,7 +440,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image16.avif",
+    "food_image": "/assets/media/image16.avif",
     "price": 1199,
     "description": "Char-grilled chicken tikka in creamy tomato-onion gravy.",
     "details": "British-Indian classic with bell pepper and kasuri methi.",
@@ -458,8 +458,8 @@
       "sodium": 860
     },
     "galleryImages": [
-      "/src/assets/image17.avif",
-      "/src/assets/image18.avif"
+      "/assets/media/image17.avif",
+      "/assets/media/image18.avif"
     ],
     "available": true
   },
@@ -469,7 +469,7 @@
     "food_category": "Breakfast",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image17.avif",
+    "food_image": "/assets/media/image17.avif",
     "price": 399,
     "description": "Three-egg omelette folded with cheddar and herbs.",
     "details": "Served with buttered toast and grilled tomato.",
@@ -487,8 +487,8 @@
       "sodium": 740
     },
     "galleryImages": [
-      "/src/assets/image18.avif",
-      "/src/assets/image19.avif"
+      "/assets/media/image18.avif",
+      "/assets/media/image19.avif"
     ],
     "available": true
   },
@@ -498,7 +498,7 @@
     "food_category": "Pasta",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image18.avif",
+    "food_image": "/assets/media/image18.avif",
     "price": 949,
     "description": "Wide ribbon pasta in classic butter and parmesan sauce.",
     "details": "Simple, rich, and finished with nutmeg and parsley.",
@@ -516,8 +516,8 @@
       "sodium": 780
     },
     "galleryImages": [
-      "/src/assets/image19.avif",
-      "/src/assets/image20.avif"
+      "/assets/media/image19.avif",
+      "/assets/media/image20.avif"
     ],
     "available": true
   },
@@ -527,7 +527,7 @@
     "food_category": "Pizza",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image19.avif",
+    "food_image": "/assets/media/image19.avif",
     "price": 299,
     "description": "Toasted baguette slices with garlic butter and herbs.",
     "details": "Topped with melted mozzarella — ideal as a side or starter.",
@@ -545,8 +545,8 @@
       "sodium": 680
     },
     "galleryImages": [
-      "/src/assets/image20.avif",
-      "/src/assets/image21.avif"
+      "/assets/media/image20.avif",
+      "/assets/media/image21.avif"
     ],
     "available": true
   },
@@ -556,7 +556,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image20.avif",
+    "food_image": "/assets/media/image20.avif",
     "price": 1099,
     "description": "Beer-battered cod with golden fries and tartar sauce.",
     "details": "Crispy outside, flaky inside — pub-style comfort food.",
@@ -574,8 +574,8 @@
       "sodium": 1020
     },
     "galleryImages": [
-      "/src/assets/image21.avif",
-      "/src/assets/image22.avif"
+      "/assets/media/image21.avif",
+      "/assets/media/image22.avif"
     ],
     "available": true
   },
@@ -585,7 +585,7 @@
     "food_category": "Breakfast",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image21.avif",
+    "food_image": "/assets/media/image21.avif",
     "price": 249,
     "description": "Crispy shredded potato patties fried until golden.",
     "details": "Seasoned with salt, pepper, and a touch of onion.",
@@ -603,8 +603,8 @@
       "sodium": 420
     },
     "galleryImages": [
-      "/src/assets/image22.avif",
-      "/src/assets/image23.avif"
+      "/assets/media/image22.avif",
+      "/assets/media/image23.avif"
     ],
     "available": true
   },
@@ -614,7 +614,7 @@
     "food_category": "Soup",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image22.avif",
+    "food_image": "/assets/media/image22.avif",
     "price": 329,
     "description": "Seasonal mixed vegetable soup in light herb broth.",
     "details": "Low-calorie, colourful, and packed with garden vegetables.",
@@ -632,8 +632,8 @@
       "sodium": 480
     },
     "galleryImages": [
-      "/src/assets/image23.avif",
-      "/src/assets/image24.avif"
+      "/assets/media/image23.avif",
+      "/assets/media/image24.avif"
     ],
     "available": true
   },
@@ -643,7 +643,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image23.avif",
+    "food_image": "/assets/media/image23.avif",
     "price": 599,
     "description": "Wok-tossed jasmine rice with egg, spring onion, and soy.",
     "details": "Smoky high-heat stir fry with carrots and green peas.",
@@ -661,8 +661,8 @@
       "sodium": 920
     },
     "galleryImages": [
-      "/src/assets/image24.avif",
-      "/src/assets/image25.avif"
+      "/assets/media/image24.avif",
+      "/assets/media/image25.avif"
     ],
     "available": true
   },
@@ -672,7 +672,7 @@
     "food_category": "Pizza",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image24.avif",
+    "food_image": "/assets/media/image24.avif",
     "price": 799,
     "description": "Ham and pineapple pizza with mozzarella on tomato base.",
     "details": "Sweet and savoury combo with a crisp crust edge.",
@@ -690,8 +690,8 @@
       "sodium": 1240
     },
     "galleryImages": [
-      "/src/assets/image25.avif",
-      "/src/assets/image1.avif"
+      "/assets/media/image25.avif",
+      "/assets/media/image1.avif"
     ],
     "available": true
   },
@@ -701,7 +701,7 @@
     "food_category": "Pasta",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image25.avif",
+    "food_image": "/assets/media/image25.avif",
     "price": 899,
     "description": "Penne with seasonal vegetables in light olive oil and herb sauce.",
     "details": "Colourful medley of zucchini, cherry tomato, and asparagus.",
@@ -719,8 +719,8 @@
       "sodium": 520
     },
     "galleryImages": [
-      "/src/assets/image1.avif",
-      "/src/assets/image2.avif"
+      "/assets/media/image1.avif",
+      "/assets/media/image2.avif"
     ],
     "available": true
   },
@@ -730,7 +730,7 @@
     "food_category": "Breakfast",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image1.avif",
+    "food_image": "/assets/media/image1.avif",
     "price": 429,
     "description": "Thick brioche slices dipped in cinnamon custard and pan-fried.",
     "details": "Dusted with icing sugar and served with berry compote.",
@@ -748,8 +748,8 @@
       "sodium": 420
     },
     "galleryImages": [
-      "/src/assets/image2.avif",
-      "/src/assets/image3.avif"
+      "/assets/media/image2.avif",
+      "/assets/media/image3.avif"
     ],
     "available": true
   },
@@ -759,7 +759,7 @@
     "food_category": "Breakfast",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image2.avif",
+    "food_image": "/assets/media/image2.avif",
     "price": 379,
     "description": "Crispy rice crepe filled with spiced potato masala.",
     "details": "Served with coconut chutney and sambar on the side.",
@@ -777,8 +777,8 @@
       "sodium": 580
     },
     "galleryImages": [
-      "/src/assets/image3.avif",
-      "/src/assets/image4.avif"
+      "/assets/media/image3.avif",
+      "/assets/media/image4.avif"
     ],
     "available": true
   },
@@ -788,7 +788,7 @@
     "food_category": "Soup",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image6.avif",
+    "food_image": "/assets/media/image6.avif",
     "price": 319,
     "description": "Hearty red lentil soup with cumin and lemon.",
     "details": "Protein-packed, vegan-friendly, and naturally gluten-free.",
@@ -806,8 +806,8 @@
       "sodium": 520
     },
     "galleryImages": [
-      "/src/assets/image7.avif",
-      "/src/assets/image8.avif"
+      "/assets/media/image7.avif",
+      "/assets/media/image8.avif"
     ],
     "available": true
   },
@@ -817,7 +817,7 @@
     "food_category": "Pasta",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image11.avif",
+    "food_image": "/assets/media/image11.avif",
     "price": 849,
     "description": "Penne in spicy tomato sauce with garlic and chili.",
     "details": "Vegan option available on request — bold and fiery.",
@@ -835,8 +835,8 @@
       "sodium": 620
     },
     "galleryImages": [
-      "/src/assets/image12.avif",
-      "/src/assets/image13.avif"
+      "/assets/media/image12.avif",
+      "/assets/media/image13.avif"
     ],
     "available": true
   },
@@ -846,7 +846,7 @@
     "food_category": "Pasta",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image12.avif",
+    "food_image": "/assets/media/image12.avif",
     "price": 879,
     "description": "Fusilli tossed in fresh basil pesto with pine nuts.",
     "details": "Topped with cherry tomatoes and shaved parmesan.",
@@ -864,8 +864,8 @@
       "sodium": 580
     },
     "galleryImages": [
-      "/src/assets/image13.avif",
-      "/src/assets/image14.webp"
+      "/assets/media/image13.avif",
+      "/assets/media/image14.webp"
     ],
     "available": true
   },
@@ -875,7 +875,7 @@
     "food_category": "Main Course",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image16.avif",
+    "food_image": "/assets/media/image16.avif",
     "price": 649,
     "description": "Slow-cooked black lentils in creamy tomato-butter gravy.",
     "details": "Overnight simmered for authentic smoky depth.",
@@ -893,8 +893,8 @@
       "sodium": 620
     },
     "galleryImages": [
-      "/src/assets/image17.avif",
-      "/src/assets/image18.avif"
+      "/assets/media/image17.avif",
+      "/assets/media/image18.avif"
     ],
     "available": true
   },
@@ -904,7 +904,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image17.avif",
+    "food_image": "/assets/media/image17.avif",
     "price": 999,
     "description": "Tandoori chicken in velvety tomato-butter masala.",
     "details": "Mild, creamy curry — our most ordered main course.",
@@ -922,8 +922,8 @@
       "sodium": 780
     },
     "galleryImages": [
-      "/src/assets/image18.avif",
-      "/src/assets/image19.avif"
+      "/assets/media/image18.avif",
+      "/assets/media/image19.avif"
     ],
     "available": true
   },
@@ -933,7 +933,7 @@
     "food_category": "Main Course",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image18.avif",
+    "food_image": "/assets/media/image18.avif",
     "price": 699,
     "description": "Cottage cheese cubes in spiced spinach purée.",
     "details": "Healthy North Indian classic with garlic tempering.",
@@ -951,8 +951,8 @@
       "sodium": 640
     },
     "galleryImages": [
-      "/src/assets/image19.avif",
-      "/src/assets/image20.avif"
+      "/assets/media/image19.avif",
+      "/assets/media/image20.avif"
     ],
     "available": true
   },
@@ -962,7 +962,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image19.avif",
+    "food_image": "/assets/media/image19.avif",
     "price": 1299,
     "description": "Kashmiri-style lamb curry with aromatic whole spices.",
     "details": "Tender lamb slow-braised in rich red gravy.",
@@ -980,8 +980,8 @@
       "sodium": 820
     },
     "galleryImages": [
-      "/src/assets/image20.avif",
-      "/src/assets/image21.avif"
+      "/assets/media/image20.avif",
+      "/assets/media/image21.avif"
     ],
     "available": true
   },
@@ -991,7 +991,7 @@
     "food_category": "Main Course",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image20.avif",
+    "food_image": "/assets/media/image20.avif",
     "price": 1399,
     "description": "Atlantic salmon fillet with lemon butter and asparagus.",
     "details": "Pan-seared to medium with herb roasted potatoes.",
@@ -1009,8 +1009,8 @@
       "sodium": 580
     },
     "galleryImages": [
-      "/src/assets/image21.avif",
-      "/src/assets/image22.avif"
+      "/assets/media/image21.avif",
+      "/assets/media/image22.avif"
     ],
     "available": true
   },
@@ -1020,7 +1020,7 @@
     "food_category": "Pizza",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image21.avif",
+    "food_image": "/assets/media/image21.avif",
     "price": 849,
     "description": "Smoky BBQ sauce base with grilled chicken and red onion.",
     "details": "Topped with mozzarella and fresh cilantro.",
@@ -1038,8 +1038,8 @@
       "sodium": 1180
     },
     "galleryImages": [
-      "/src/assets/image22.avif",
-      "/src/assets/image23.avif"
+      "/assets/media/image22.avif",
+      "/assets/media/image23.avif"
     ],
     "available": true
   },
@@ -1049,7 +1049,7 @@
     "food_category": "Pizza",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image22.avif",
+    "food_image": "/assets/media/image22.avif",
     "price": 799,
     "description": "White base pizza with mozzarella, cheddar, gorgonzola, and parmesan.",
     "details": "Creamy, indulgent, and baked until golden.",
@@ -1067,8 +1067,8 @@
       "sodium": 1320
     },
     "galleryImages": [
-      "/src/assets/image23.avif",
-      "/src/assets/image24.avif"
+      "/assets/media/image23.avif",
+      "/assets/media/image24.avif"
     ],
     "available": true
   },
@@ -1078,7 +1078,7 @@
     "food_category": "Pizza",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image23.avif",
+    "food_image": "/assets/media/image23.avif",
     "price": 749,
     "description": "Loaded veggie pizza with bell pepper, corn, olive, and onion.",
     "details": "Tomato base with generous mozzarella on thin crust.",
@@ -1096,8 +1096,8 @@
       "sodium": 1060
     },
     "galleryImages": [
-      "/src/assets/image24.avif",
-      "/src/assets/image25.avif"
+      "/assets/media/image24.avif",
+      "/assets/media/image25.avif"
     ],
     "available": true
   },
@@ -1107,7 +1107,7 @@
     "food_category": "Burger",
     "food_type": "non_veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image24.avif",
+    "food_image": "/assets/media/image24.avif",
     "price": 749,
     "description": "Two smashed beef patties with double cheese and special sauce.",
     "details": "Stacked high with caramelized onion and pickles.",
@@ -1125,8 +1125,8 @@
       "sodium": 1420
     },
     "galleryImages": [
-      "/src/assets/image25.avif",
-      "/src/assets/image1.avif"
+      "/assets/media/image25.avif",
+      "/assets/media/image1.avif"
     ],
     "available": true
   },
@@ -1136,7 +1136,7 @@
     "food_category": "Burger",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image25.avif",
+    "food_image": "/assets/media/image25.avif",
     "price": 549,
     "description": "Marinated grilled paneer patty with mint mayo and lettuce.",
     "details": "Spiced tandoori-style paneer in a soft sesame bun.",
@@ -1154,8 +1154,8 @@
       "sodium": 880
     },
     "galleryImages": [
-      "/src/assets/image1.avif",
-      "/src/assets/image2.avif"
+      "/assets/media/image1.avif",
+      "/assets/media/image2.avif"
     ],
     "available": true
   },
@@ -1165,7 +1165,7 @@
     "food_category": "Dessert",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image3.avif",
+    "food_image": "/assets/media/image3.avif",
     "price": 299,
     "description": "Warm fudge brownie with dark chocolate chunks.",
     "details": "Served with vanilla ice cream scoop optional (+Rs.80).",
@@ -1183,8 +1183,8 @@
       "sodium": 180
     },
     "galleryImages": [
-      "/src/assets/image4.avif",
-      "/src/assets/image5.avif"
+      "/assets/media/image4.avif",
+      "/assets/media/image5.avif"
     ],
     "available": true
   },
@@ -1194,7 +1194,7 @@
     "food_category": "Dessert",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image4.avif",
+    "food_image": "/assets/media/image4.avif",
     "price": 249,
     "description": "Soft milk-solid dumplings soaked in cardamom sugar syrup.",
     "details": "Served warm — two pieces per portion.",
@@ -1212,8 +1212,8 @@
       "sodium": 120
     },
     "galleryImages": [
-      "/src/assets/image5.avif",
-      "/src/assets/image6.avif"
+      "/assets/media/image5.avif",
+      "/assets/media/image6.avif"
     ],
     "available": true
   },
@@ -1223,7 +1223,7 @@
     "food_category": "Dessert",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image5.avif",
+    "food_image": "/assets/media/image5.avif",
     "price": 349,
     "description": "Vanilla ice cream with chocolate sauce, nuts, and cherry.",
     "details": "Classic diner-style sundae in a glass bowl.",
@@ -1241,8 +1241,8 @@
       "sodium": 140
     },
     "galleryImages": [
-      "/src/assets/image6.avif",
-      "/src/assets/image7.avif"
+      "/assets/media/image6.avif",
+      "/assets/media/image7.avif"
     ],
     "available": true
   },
@@ -1252,7 +1252,7 @@
     "food_category": "Dessert",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image6.avif",
+    "food_image": "/assets/media/image6.avif",
     "price": 399,
     "description": "Creamy baked cheesecake on a buttery biscuit base.",
     "details": "Topped with berry compote and mint.",
@@ -1270,8 +1270,8 @@
       "sodium": 320
     },
     "galleryImages": [
-      "/src/assets/image7.avif",
-      "/src/assets/image8.avif"
+      "/assets/media/image7.avif",
+      "/assets/media/image8.avif"
     ],
     "available": true
   },
@@ -1281,7 +1281,7 @@
     "food_category": "Dessert",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image7.avif",
+    "food_image": "/assets/media/image7.avif",
     "price": 429,
     "description": "Espresso-soaked ladyfingers with mascarpone cream.",
     "details": "Dusted with cocoa — Italian classic done right.",
@@ -1299,8 +1299,8 @@
       "sodium": 95
     },
     "galleryImages": [
-      "/src/assets/image8.avif",
-      "/src/assets/image9.avif"
+      "/assets/media/image8.avif",
+      "/assets/media/image9.avif"
     ],
     "available": true
   },
@@ -1310,7 +1310,7 @@
     "food_category": "Beverages",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image8.avif",
+    "food_image": "/assets/media/image8.avif",
     "price": 199,
     "description": "Thick yogurt smoothie blended with Alphonso mango.",
     "details": "Refreshing, cooling, and lightly sweetened.",
@@ -1328,8 +1328,8 @@
       "sodium": 85
     },
     "galleryImages": [
-      "/src/assets/image9.avif",
-      "/src/assets/image10.avif"
+      "/assets/media/image9.avif",
+      "/assets/media/image10.avif"
     ],
     "available": true
   },
@@ -1339,7 +1339,7 @@
     "food_category": "Beverages",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image9.avif",
+    "food_image": "/assets/media/image9.avif",
     "price": 179,
     "description": "Chilled espresso blended with milk, ice, and vanilla.",
     "details": "Topped with whipped cream on request.",
@@ -1357,8 +1357,8 @@
       "sodium": 95
     },
     "galleryImages": [
-      "/src/assets/image10.avif",
-      "/src/assets/image11.avif"
+      "/assets/media/image10.avif",
+      "/assets/media/image11.avif"
     ],
     "available": true
   },
@@ -1368,7 +1368,7 @@
     "food_category": "Beverages",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image10.avif",
+    "food_image": "/assets/media/image10.avif",
     "price": 149,
     "description": "Freshly squeezed lime with soda — sweet or salted.",
     "details": "Perfect palate cleanser with mint leaves.",
@@ -1386,8 +1386,8 @@
       "sodium": 120
     },
     "galleryImages": [
-      "/src/assets/image11.avif",
-      "/src/assets/image12.avif"
+      "/assets/media/image11.avif",
+      "/assets/media/image12.avif"
     ],
     "available": true
   },
@@ -1397,7 +1397,7 @@
     "food_category": "Beverages",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image11.avif",
+    "food_image": "/assets/media/image11.avif",
     "price": 129,
     "description": "Indian spiced tea brewed with milk, ginger, and cardamom.",
     "details": "Served hot in a traditional cutting glass.",
@@ -1415,8 +1415,8 @@
       "sodium": 65
     },
     "galleryImages": [
-      "/src/assets/image12.avif",
-      "/src/assets/image13.avif"
+      "/assets/media/image12.avif",
+      "/assets/media/image13.avif"
     ],
     "available": true
   },
@@ -1426,7 +1426,7 @@
     "food_category": "Beverages",
     "food_type": "veg",
     "food_quantity": 1,
-    "food_image": "/src/assets/image12.avif",
+    "food_image": "/assets/media/image12.avif",
     "price": 219,
     "description": "Mixed berry smoothie with banana, yogurt, and honey.",
     "details": "Packed with antioxidants — no added artificial flavours.",
@@ -1444,8 +1444,8 @@
       "sodium": 55
     },
     "galleryImages": [
-      "/src/assets/image13.avif",
-      "/src/assets/image14.webp"
+      "/assets/media/image13.avif",
+      "/assets/media/image14.webp"
     ],
     "available": true
   }

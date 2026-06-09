@@ -34,6 +34,8 @@ dist-ssr
 
 # Docker / OS
 .docker/
+docker-compose.override.generated.yml
+server/uploads/
 
 # Test / coverage
 coverage

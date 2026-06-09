@@ -1,0 +1,17 @@
+{
+  "name": "FoodExpress",
+  "short_name": "FoodExpress",
+  "description": "Order delicious food online with fast delivery",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

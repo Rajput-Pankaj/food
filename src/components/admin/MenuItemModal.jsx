@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdPhotoLibrary } from 'react-icons/md';
 import { FOOD_CATEGORIES, FOOD_TYPES, MENU_PLACEHOLDER_IMAGE } from '../../constants/menu';
 import { NUTRITION_FIELDS } from '../../constants/nutrition';
+import MediaPicker from './MediaPicker';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 const emptyForm = {
   food_name: '',
@@ -21,8 +23,8 @@ const emptyForm = {
   fiber: '',
   sugar: '',
   sodium: '',
-  food_image_url: '',
-  galleryImagesText: '',
+  food_image: '',
+  galleryImages: [],
   available: true,
 };
 
@@ -49,13 +51,8 @@ function itemToForm(item) {
     fiber: nutrition.fiber ?? '',
     sugar: nutrition.sugar ?? '',
     sodium: nutrition.sodium ?? '',
-    food_image_url:
-      typeof item.food_image === 'string' && item.food_image.startsWith('http')
-        ? item.food_image
-        : '',
-    galleryImagesText: (item.galleryImages || [])
-      .filter((url) => url && url !== item.food_image)
-      .join('\n'),
+    food_image: item.food_image || '',
+    galleryImages: (item.galleryImages || []).filter((url) => url && url !== item.food_image),
     available: item.available,
   };
 }
@@ -64,13 +61,15 @@ export default function MenuItemModal({ item, onClose, onSave }) {
   const isEdit = Boolean(item);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState('');
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [galleryPickerOpen, setGalleryPickerOpen] = useState(false);
 
   useEffect(() => {
     setForm(itemToForm(item));
     setError('');
   }, [item]);
 
-  const previewImage = form.food_image_url.trim() || MENU_PLACEHOLDER_IMAGE;
+  const previewImage = form.food_image.trim() || MENU_PLACEHOLDER_IMAGE;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -125,27 +124,37 @@ export default function MenuItemModal({ item, onClose, onSave }) {
           <section className="space-y-4">
             <h4 className="text-sm font-semibold text-gray-800 uppercase tracking-wide">Basic Info</h4>
 
-            <div className="flex gap-4">
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="w-20 h-20 rounded-lg object-cover border border-gray-200 shrink-0"
-                onError={(event) => {
-                  event.currentTarget.src = MENU_PLACEHOLDER_IMAGE;
-                }}
-              />
-              <div className="flex-1 min-w-0">
-                <label htmlFor="menu-image-url" className="block text-sm font-medium text-gray-700 mb-1">
-                  Image URL
-                </label>
-                <input
-                  id="menu-image-url"
-                  type="url"
-                  value={form.food_image_url}
-                  onChange={(event) => setForm({ ...form, food_image_url: event.target.value })}
-                  placeholder="https://example.com/food.jpg"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700">Featured Image</label>
+              <div className="flex gap-4 items-start">
+                <img
+                  src={resolveMediaUrl(previewImage)}
+                  alt="Preview"
+                  className="w-24 h-24 rounded-lg object-cover border border-gray-200 shrink-0"
+                  onError={(event) => {
+                    event.currentTarget.src = MENU_PLACEHOLDER_IMAGE;
+                  }}
                 />
+                <div className="flex-1 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setPickerOpen(true)}
+                    className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700"
+                  >
+                    <MdPhotoLibrary className="w-4 h-4" />
+                    {form.food_image ? 'Change Image' : 'Choose from Media Library'}
+                  </button>
+                  {form.food_image && (
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, food_image: '' })}
+                      className="block text-xs text-red-600 hover:text-red-700"
+                    >
+                      Remove image
+                    </button>
+                  )}
+                  <p className="text-xs text-gray-500">Upload or pick a local image — no external URLs needed.</p>
+                </div>
               </div>
             </div>
 
@@ -230,20 +239,44 @@ export default function MenuItemModal({ item, onClose, onSave }) {
             </div>
 
             <div>
-              <label htmlFor="menu-gallery" className="block text-sm font-medium text-gray-700 mb-1">
-                Additional Gallery Images
-              </label>
-              <textarea
-                id="menu-gallery"
-                rows={3}
-                value={form.galleryImagesText}
-                onChange={(event) => setForm({ ...form, galleryImagesText: event.target.value })}
-                placeholder={'One image URL per line\nhttps://example.com/image-2.jpg'}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-green-500 font-mono"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                Optional extra photos for the food detail page gallery. Primary image URL is above.
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">Gallery Images</label>
+                <button
+                  type="button"
+                  onClick={() => setGalleryPickerOpen(true)}
+                  className="text-sm font-semibold text-green-600 hover:text-green-700"
+                >
+                  + Add from library
+                </button>
+              </div>
+              {form.galleryImages.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {form.galleryImages.map((url) => (
+                    <div key={url} className="relative">
+                      <img
+                        src={resolveMediaUrl(url)}
+                        alt="Gallery"
+                        className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm({
+                            ...form,
+                            galleryImages: form.galleryImages.filter((item) => item !== url),
+                          })
+                        }
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white rounded-full text-xs"
+                        aria-label="Remove"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400">Optional extra photos for the food detail page.</p>
+              )}
             </div>
 
             <div>
@@ -396,6 +429,21 @@ export default function MenuItemModal({ item, onClose, onSave }) {
           </div>
         </form>
       </div>
+
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(url) => setForm({ ...form, food_image: url })}
+        title="Choose Featured Image"
+      />
+      <MediaPicker
+        open={galleryPickerOpen}
+        onClose={() => setGalleryPickerOpen(false)}
+        multiple
+        selectedUrls={form.galleryImages}
+        onSelect={(urls) => setForm({ ...form, galleryImages: urls })}
+        title="Choose Gallery Images"
+      />
     </div>
   );
 }

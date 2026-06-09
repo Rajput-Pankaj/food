@@ -1,8 +1,11 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { LuArrowLeft, LuMapPin, LuStore } from 'react-icons/lu';
 import PageLayout from '../../components/PageLayout';
 import OrderTimeline from '../../components/orders/OrderTimeline';
 import OrderStatusBadge from '../../components/orders/OrderStatusBadge';
+import { ordersApi } from '../../api';
+import { USE_API } from '../../config/api';
 import { useAuth } from '../../context/AuthContext';
 import { useOrder } from '../../hooks/useOrders';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
@@ -17,27 +20,217 @@ import {
 } from '../../constants/orders';
 import { PAYMENT_METHOD_LABELS } from '../../constants/roles';
 import { PAYMENT_STATUS_LABELS } from '../../constants/storeSettings';
+import { getOrderById } from '../../utils/orderStorage';
+
+const POLL_INTERVAL_MS = 15_000;
+
+function isPollingStatus(status) {
+  return !isTerminalStatus(status);
+}
+
+function GuestTrackForm({ initialPhone, initialEmail, onSubmit, loading, error }) {
+  const [phone, setPhone] = useState(initialPhone);
+  const [email, setEmail] = useState(initialEmail);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSubmit({ phone: phone.trim(), email: email.trim() });
+  };
+
+  return (
+    <PageLayout mainClassName="max-w-md mx-auto px-4 py-16">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Track Your Order</h1>
+      <p className="text-sm text-gray-500 mb-6">
+        Enter the phone number or email used when placing the order.
+      </p>
+
+      {error && (
+        <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+          {error}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
+        <div>
+          <label htmlFor="track-phone" className="block text-sm font-medium text-gray-700 mb-1">
+            Phone number
+          </label>
+          <input
+            id="track-phone"
+            type="tel"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            placeholder="+91 98765 43210"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:border-green-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="track-email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            id="track-email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@example.com"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:border-green-500"
+          />
+        </div>
+        <p className="text-xs text-gray-400">Provide at least one of phone or email.</p>
+        <button
+          type="submit"
+          disabled={loading || (!phone.trim() && !email.trim())}
+          className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 disabled:opacity-60"
+        >
+          {loading ? 'Looking up order...' : 'Track Order'}
+        </button>
+      </form>
+    </PageLayout>
+  );
+}
 
 export default function OrderTracking() {
   const { orderId } = useParams();
-  const { user } = useAuth();
-  const { order } = useOrder(orderId);
+  const [searchParams] = useSearchParams();
+  const { user, isAuthenticated } = useAuth();
+  const phoneParam = searchParams.get('phone') || '';
+  const emailParam = searchParams.get('email') || '';
+
+  const isGuest = !isAuthenticated;
+  const { order: authOrder, loading: authLoading } = useOrder(isGuest ? null : orderId);
+
+  const [guestOrder, setGuestOrder] = useState(null);
+  const [guestLoading, setGuestLoading] = useState(false);
+  const [guestError, setGuestError] = useState('');
+  const [guestCredentials, setGuestCredentials] = useState(() =>
+    phoneParam || emailParam ? { phone: phoneParam, email: emailParam } : null
+  );
+
+  const fetchGuestOrder = useCallback(
+    async (credentials) => {
+      if (!USE_API) {
+        const localOrder = getOrderById(orderId);
+        if (!localOrder) {
+          setGuestError('Order not found.');
+          setGuestOrder(null);
+          return null;
+        }
+        setGuestOrder(localOrder);
+        setGuestError('');
+        return localOrder;
+      }
+
+      setGuestLoading(true);
+      setGuestError('');
+      try {
+        const data = await ordersApi.track({
+          orderId,
+          phone: credentials.phone || undefined,
+          email: credentials.email || undefined,
+        });
+        setGuestOrder(data);
+        return data;
+      } catch (err) {
+        setGuestError(err.message || 'Could not find order.');
+        setGuestOrder(null);
+        return null;
+      } finally {
+        setGuestLoading(false);
+      }
+    },
+    [orderId]
+  );
+
+  useEffect(() => {
+    if (!isGuest || !guestCredentials) return undefined;
+
+    let cancelled = false;
+    let pollTimer = null;
+
+    const run = async () => {
+      const data = await fetchGuestOrder(guestCredentials);
+      if (cancelled || !data) return;
+
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+      if (USE_API && isPollingStatus(data.status)) {
+        pollTimer = setInterval(() => fetchGuestOrder(guestCredentials), POLL_INTERVAL_MS);
+      }
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+      if (pollTimer) clearInterval(pollTimer);
+    };
+  }, [isGuest, guestCredentials, fetchGuestOrder]);
+
+  const handleGuestSubmit = (credentials) => {
+    setGuestCredentials(credentials);
+  };
+
+  const order = isGuest ? guestOrder : authOrder;
+  const loading = isGuest ? guestLoading && !guestOrder : authLoading;
 
   useDocumentTitle(order ? `Track Order #${order.id.slice(0, 8)}` : 'Track Order');
 
-  if (!order) {
+  if (isGuest && !guestCredentials) {
+    return (
+      <GuestTrackForm
+        initialPhone={phoneParam}
+        initialEmail={emailParam}
+        onSubmit={handleGuestSubmit}
+        loading={guestLoading}
+        error={guestError}
+      />
+    );
+  }
+
+  if (loading && !order) {
     return (
       <PageLayout mainClassName="max-w-3xl mx-auto px-4 py-16 text-center">
-        <p className="text-gray-600 mb-4">Order not found.</p>
-        <Link to="/dashboard?tab=orders" className="text-green-600 font-semibold hover:underline">
-          Back to orders
-        </Link>
+        <p className="text-gray-500">Loading order...</p>
       </PageLayout>
     );
   }
 
-  if (order.userId !== user?.id) {
-    return <Navigate to="/dashboard" replace />;
+  if (!order) {
+    return (
+      <PageLayout mainClassName="max-w-3xl mx-auto px-4 py-16 text-center">
+        <p className="text-gray-600 mb-4">{guestError || 'Order not found.'}</p>
+        {isGuest ? (
+          <button
+            type="button"
+            onClick={() => {
+              setGuestCredentials(null);
+              setGuestError('');
+            }}
+            className="text-green-600 font-semibold hover:underline"
+          >
+            Try again
+          </button>
+        ) : (
+          <Link to="/dashboard?tab=orders" className="text-green-600 font-semibold hover:underline">
+            Back to orders
+          </Link>
+        )}
+      </PageLayout>
+    );
+  }
+
+  if (!isGuest && order.userId && order.userId !== user?.id) {
+    return (
+      <PageLayout mainClassName="max-w-3xl mx-auto px-4 py-16 text-center">
+        <p className="text-gray-600 mb-4">You do not have access to this order.</p>
+        <Link to="/dashboard" className="text-green-600 font-semibold hover:underline">
+          Back to dashboard
+        </Link>
+      </PageLayout>
+    );
   }
 
   const status = normalizeOrderStatus(order.status);
@@ -54,15 +247,24 @@ export default function OrderTracking() {
         ? 'bg-amber-50 border-amber-200 text-amber-900'
         : 'bg-blue-50 border-blue-200 text-blue-900';
 
+  const backLink = isGuest ? (
+    <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-green-600 mb-5">
+      <LuArrowLeft className="w-4 h-4" />
+      Back to home
+    </Link>
+  ) : (
+    <Link
+      to="/dashboard?tab=orders"
+      className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-green-600 mb-5"
+    >
+      <LuArrowLeft className="w-4 h-4" />
+      Back to orders
+    </Link>
+  );
+
   return (
     <PageLayout mainClassName="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
-      <Link
-        to="/dashboard?tab=orders"
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-green-600 mb-5"
-      >
-        <LuArrowLeft className="w-4 h-4" />
-        Back to orders
-      </Link>
+      {backLink}
 
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>

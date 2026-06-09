@@ -18,6 +18,7 @@ import {
   getAvailablePaymentMethods,
   getDeliveryFee,
 } from '../utils/settingsStorage';
+import { paymentsApi, promosApi } from '../api';
 import { openRazorpayCheckout } from '../utils/razorpay';
 import { ORDER_TYPES, PAYMENT_METHODS } from '../constants/storeSettings';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -25,7 +26,8 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 export default function Checkout() {
   useDocumentTitle('Checkout');
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const isGuest = !isAuthenticated;
   const { cart, cartTotal, clearCart } = useCart();
   const { settings } = useStoreSettings();
 
@@ -42,7 +44,7 @@ export default function Checkout() {
   useEffect(() => {
     if (!USE_API) return;
     fetchCustomerCheckoutDefaults().then(setCheckoutDefaults).catch(() => {});
-  }, [user.id]);
+  }, [user?.id]);
 
   const availablePaymentMethods = useMemo(
     () => getAvailablePaymentMethods(settings),
@@ -75,24 +77,45 @@ export default function Checkout() {
   }, [checkoutDefaults.address, checkoutDefaults.phone]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [guestInfo, setGuestInfo] = useState({ guestName: '', guestEmail: '' });
+  const [scheduledFor, setScheduledFor] = useState('');
 
   const deliveryFee =
     orderType === 'takeaway' ? 0 : getDeliveryFee(cartTotal, settings);
-  const orderTotal = cartTotal + deliveryFee;
+  const orderTotal = Math.max(0, cartTotal + deliveryFee - discount);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const applyPromo = async () => {
+    if (!promoCode.trim() || !USE_API) return;
+    try {
+      const result = await promosApi.validate(promoCode.trim(), cartTotal);
+      setDiscount(result.discount || 0);
+      setError('');
+    } catch (err) {
+      setDiscount(0);
+      setError(err.message);
+    }
+  };
+
   const buildOrder = (paymentMeta = {}) => ({
     id: pendingOrderId,
-    userId: user.id,
-    userEmail: user.email,
+    userId: user?.id,
+    userEmail: user?.email,
+    guestName: isGuest ? guestInfo.guestName.trim() : undefined,
+    guestEmail: isGuest ? guestInfo.guestEmail.trim() : undefined,
     items: cart,
     subtotal: cartTotal,
     deliveryFee,
+    discount,
+    promoCode: promoCode.trim() || null,
     total: orderTotal,
+    scheduledFor: scheduledFor || null,
     orderType,
     address:
       orderType === 'takeaway'
@@ -103,12 +126,21 @@ export default function Checkout() {
     paymentStatus: paymentMeta.paymentStatus || 'pending',
     razorpayPaymentId: paymentMeta.razorpayPaymentId || null,
     razorpayOrderId: paymentMeta.razorpayOrderId || null,
+    razorpaySignature: paymentMeta.razorpaySignature || null,
     notes: formData.notes.trim(),
     status: 'pending',
     createdAt: new Date().toISOString(),
   });
 
   const validateForm = () => {
+    if (isGuest && !settings.guestCheckoutEnabled) {
+      setError('Please sign in to checkout.');
+      return false;
+    }
+    if (isGuest && (!guestInfo.guestName.trim() || !guestInfo.guestEmail.trim())) {
+      setError('Please provide your name and email for guest checkout.');
+      return false;
+    }
     if (!formData.phone.trim()) {
       setError('Please provide your phone number.');
       return false;
@@ -143,6 +175,8 @@ export default function Checkout() {
         orderType,
         paymentMethod: formData.paymentMethod,
         paymentStatus: order.paymentStatus,
+        phone: formData.phone.trim(),
+        guestEmail: guestInfo.guestEmail.trim(),
       },
     });
   };
@@ -161,16 +195,26 @@ export default function Checkout() {
           keyId: settings.razorpay.keyId,
           amount: orderTotal,
           orderId: pendingOrderId,
-          customerName: user.name,
-          customerEmail: user.email,
+          customerName: user?.name || guestInfo.guestName,
+          customerEmail: user?.email || guestInfo.guestEmail,
           customerPhone: formData.phone.trim(),
           storeName: settings.storeName,
         });
+
+        if (USE_API) {
+          await paymentsApi.verifyRazorpay({
+            razorpayPaymentId: payment.razorpayPaymentId,
+            razorpayOrderId: payment.razorpayOrderId,
+            razorpaySignature: payment.razorpaySignature,
+            amount: orderTotal,
+          });
+        }
 
         await finalizeOrder({
           paymentStatus: 'paid',
           razorpayPaymentId: payment.razorpayPaymentId,
           razorpayOrderId: payment.razorpayOrderId,
+          razorpaySignature: payment.razorpaySignature,
         });
         return;
       }
@@ -219,6 +263,58 @@ export default function Checkout() {
               {error}
             </p>
           )}
+
+          {isGuest && settings.guestCheckoutEnabled && (
+            <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6 space-y-3">
+              <h2 className="text-lg font-bold text-gray-900">Guest details</h2>
+              <input
+                placeholder="Your name"
+                value={guestInfo.guestName}
+                onChange={(e) => setGuestInfo({ ...guestInfo, guestName: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={guestInfo.guestEmail}
+                onChange={(e) => setGuestInfo({ ...guestInfo, guestEmail: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2"
+                required
+              />
+              <p className="text-xs text-gray-500">
+                <Link to="/login" className="text-green-600 font-semibold">Sign in</Link> for faster checkout next time.
+              </p>
+            </section>
+          )}
+
+          {USE_API && (
+            <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-3">Promo code</h2>
+              <div className="flex gap-2">
+                <input
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  placeholder="SAVE10"
+                  className="flex-1 border rounded-lg px-3 py-2"
+                />
+                <button type="button" onClick={applyPromo} className="bg-gray-900 text-white px-4 rounded-lg font-semibold">
+                  Apply
+                </button>
+              </div>
+              {discount > 0 && <p className="text-sm text-green-600 mt-2">Discount: ₹{discount}</p>}
+            </section>
+          )}
+
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-3">Schedule (optional)</h2>
+            <input
+              type="datetime-local"
+              value={scheduledFor}
+              onChange={(e) => setScheduledFor(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2"
+            />
+          </section>
 
           {(settings.deliveryEnabled || settings.takeawayEnabled) && (
             <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">

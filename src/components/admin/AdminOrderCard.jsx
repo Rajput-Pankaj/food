@@ -21,6 +21,7 @@ import { PAYMENT_STATUS_LABELS } from '../../constants/storeSettings';
 import {
   acceptOrder,
   advanceOrderStatus,
+  confirmOrderPayment,
   rejectOrder,
 } from '../../utils/orderStorage';
 
@@ -51,6 +52,14 @@ export default function AdminOrderCard({ order, defaultExpanded = false }) {
     await advanceOrderStatus(order.id);
     setActionMessage(`Moved to: ${getNextStatusLabel(order) || 'next step'}`);
   };
+
+  const handleConfirmPayment = async () => {
+    await confirmOrderPayment(order.id);
+    setActionMessage('UPI payment confirmed.');
+  };
+
+  const needsPaymentConfirm =
+    order.paymentMethod === 'upi' && order.paymentStatus === 'pending_verification';
 
   return (
     <article
@@ -105,6 +114,18 @@ export default function AdminOrderCard({ order, defaultExpanded = false }) {
             </p>
           </div>
         </div>
+
+        {needsPaymentConfirm && (
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={handleConfirmPayment}
+              className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700"
+            >
+              Confirm UPI Payment
+            </button>
+          </div>
+        )}
 
         {isPending && (
           <div className="mt-4 flex flex-col sm:flex-row gap-2">

@@ -1,6 +1,13 @@
 import { Router } from 'express';
+import crypto from 'crypto';
 import { query } from '../db.js';
 import { authRequired } from '../middleware/auth.js';
+import {
+  parseBody,
+  customerProfileSchema,
+  addressSchema,
+  reviewSchema,
+} from '../lib/validation.js';
 
 const router = Router();
 
@@ -10,13 +17,15 @@ router.get('/profile', authRequired, async (req, res) => {
 });
 
 router.put('/profile', authRequired, async (req, res) => {
-  const payload = req.body;
+  const parsed = parseBody(customerProfileSchema, req.body);
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+
   await query(
     `INSERT INTO customer_profiles (user_id, payload) VALUES ($1, $2)
      ON CONFLICT (user_id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW()`,
-    [req.user.id, JSON.stringify(payload)]
+    [req.user.id, JSON.stringify(parsed.data)]
   );
-  return res.json(payload);
+  return res.json(parsed.data);
 });
 
 router.get('/addresses', authRequired, async (req, res) => {
@@ -28,8 +37,11 @@ router.get('/addresses', authRequired, async (req, res) => {
 });
 
 router.post('/addresses', authRequired, async (req, res) => {
-  const id = req.body.id || crypto.randomUUID();
-  const payload = { ...req.body, id };
+  const parsed = parseBody(addressSchema, req.body);
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+
+  const id = parsed.data.id || crypto.randomUUID();
+  const payload = { ...parsed.data, id };
   await query(
     `INSERT INTO customer_addresses (id, user_id, payload) VALUES ($1, $2, $3)`,
     [id, req.user.id, JSON.stringify(payload)]
@@ -38,7 +50,10 @@ router.post('/addresses', authRequired, async (req, res) => {
 });
 
 router.put('/addresses/:id', authRequired, async (req, res) => {
-  const payload = { ...req.body, id: req.params.id };
+  const parsed = parseBody(addressSchema, { ...req.body, id: req.params.id });
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+
+  const payload = { ...parsed.data, id: req.params.id };
   await query(
     'UPDATE customer_addresses SET payload = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3',
     [JSON.stringify(payload), req.params.id, req.user.id]
@@ -57,9 +72,14 @@ router.delete('/addresses/:id', authRequired, async (req, res) => {
 router.get('/reviews', authRequired, async (req, res) => {
   const isAdmin = req.user.role === 'admin';
   const result = isAdmin
-    ? await query('SELECT id, user_id, payload, created_at FROM reviews ORDER BY created_at DESC')
+    ? await query(
+        `SELECT r.id, r.user_id, r.payload, r.created_at, u.name AS user_name, u.email AS user_email
+         FROM reviews r
+         LEFT JOIN users u ON u.id = r.user_id
+         ORDER BY r.created_at DESC`
+      )
     : await query(
-        'SELECT id, user_id, payload, created_at FROM reviews WHERE user_id = $1 ORDER BY created_at DESC',
+        `SELECT id, user_id, payload, created_at FROM reviews WHERE user_id = $1 ORDER BY created_at DESC`,
         [req.user.id]
       );
   return res.json(
@@ -67,14 +87,24 @@ router.get('/reviews', authRequired, async (req, res) => {
       ...row.payload,
       id: row.id,
       userId: row.user_id,
+      userName: row.user_name || row.payload?.userName || 'Customer',
+      userEmail: row.user_email || row.payload?.userEmail || '',
       createdAt: row.created_at,
     }))
   );
 });
 
 router.post('/reviews', authRequired, async (req, res) => {
-  const id = req.body.id || crypto.randomUUID();
-  const payload = { ...req.body, id, userId: req.user.id, createdAt: new Date().toISOString() };
+  const parsed = parseBody(reviewSchema, req.body);
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+
+  const id = parsed.data.id || crypto.randomUUID();
+  const payload = {
+    ...parsed.data,
+    id,
+    userId: req.user.id,
+    createdAt: new Date().toISOString(),
+  };
   await query(
     `INSERT INTO reviews (id, user_id, payload) VALUES ($1, $2, $3)
      ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW()`,

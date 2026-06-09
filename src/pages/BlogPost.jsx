@@ -7,6 +7,7 @@ import BlogContent from '../components/blog/BlogContent';
 import { BLOG_CATEGORY_COLORS } from '../constants/blog';
 import { useBlogPost } from '../hooks/useBlogPost';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { resolveMediaUrl } from '../utils/mediaUrl';
 import { formatBlogDate } from '../utils/blogContent';
 import { getRelatedBlogPosts } from '../utils/blogStorage';
 
@@ -91,7 +92,7 @@ export default function BlogPost() {
         <div className="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-gray-100">
             <img
-              src={post.image}
+              src={resolveMediaUrl(post.image)}
               alt={post.title}
               className="w-full h-52 sm:h-72 lg:h-[28rem] object-cover"
             />

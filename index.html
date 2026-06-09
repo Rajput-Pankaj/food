@@ -8,8 +8,20 @@
       name="description"
       content="FoodExpress — order delicious food online with fast delivery in Kanpur. Browse menu, add to cart, and checkout easily."
     />
-    <meta name="theme-color" content="#16a34a" />
+    <meta name="theme-color" content="#16a34a" id="theme-color-meta" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>FoodExpress | Food Delivery</title>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('foodexpress_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            var meta = document.getElementById('theme-color-meta');
+            if (meta) meta.setAttribute('content', '#030712');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-E60XQ8JBZZ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
