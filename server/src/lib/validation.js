@@ -122,7 +122,12 @@ export const setupSchema = z.object({
   storeName: z.string().trim().min(1).max(120),
   storeAddress: z.string().trim().min(1).max(500),
   storePhone: z.string().trim().min(1).max(30),
-  storeEmail: z.string().trim().email().optional().default(''),
+  storeEmail: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => v ?? '')
+    .pipe(z.union([z.literal(''), z.string().email()])),
   adminName: z.string().trim().min(1).max(120),
   adminEmail: z.string().trim().email(),
   adminPassword: passwordField,

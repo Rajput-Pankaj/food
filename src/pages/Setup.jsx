@@ -31,7 +31,11 @@ const schemas = [
     storeName: Yup.string().trim().required('Store name is required'),
     storeAddress: Yup.string().trim().required('Store address is required'),
     storePhone: Yup.string().trim().required('Store phone is required'),
-    storeEmail: Yup.string().trim().email('Invalid email').optional(),
+    storeEmail: Yup.string()
+      .trim()
+      .transform((v) => v || undefined)
+      .email('Invalid email')
+      .optional(),
   }),
   Yup.object({
     adminName: Yup.string().trim().required('Admin name is required'),
@@ -86,6 +90,7 @@ export default function Setup() {
       setSubmitting(true);
       try {
         const { confirmPassword: _confirm, ...payload } = values;
+        if (!payload.storeEmail?.trim()) delete payload.storeEmail;
         await setupApi.complete(payload);
         setNeedsSetup(false);
         navigate('/login', {
