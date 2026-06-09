@@ -17,6 +17,7 @@ import ResetPassword from './pages/ResetPassword';
 import RoleRoute from './components/RoleRoute';
 import SetupGate from './components/SetupGate';
 import ScrollToTop from './components/ScrollToTop';
+import FaviconUpdater from './components/FaviconUpdater';
 import CartModal from './components/CartModal';
 import Notification from './components/Notification';
 import { useCart } from './context/CartContext';
@@ -164,6 +165,7 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
+      <FaviconUpdater />
       <ScrollToTop />
       <AppRoutes />
     </Router>

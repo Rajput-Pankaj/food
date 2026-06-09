@@ -138,6 +138,13 @@ fi
 [[ -z "$(get_env_value JWT_EXPIRES_IN)" ]] && set_env_value JWT_EXPIRES_IN "7d"
 [[ -z "$(get_env_value NODE_ENV)" ]] && set_env_value NODE_ENV "production"
 [[ -z "$(get_env_value SEED_DEMO_USERS)" ]] && set_env_value SEED_DEMO_USERS "false"
+[[ -z "$(get_env_value ENABLE_SETUP_ENV_WRITE)" ]] && set_env_value ENABLE_SETUP_ENV_WRITE "true"
+
+if [[ "$TRAEFIK_DETECTED" == true ]]; then
+  set_env_value TRAEFIK_AVAILABLE "true"
+else
+  set_env_value TRAEFIK_AVAILABLE "false"
+fi
 
 DOMAIN="${DOMAIN:-$(get_env_value DOMAIN)}"
 if [[ -n "$DOMAIN" ]]; then
@@ -221,18 +228,18 @@ ok "═════════════════════════�
 if [[ "$USE_TRAEFIK_VAL" == "true" && -n "$DOMAIN" ]]; then
   echo -e "  URL:      ${GREEN}https://${DOMAIN}${NC}"
 else
-  echo -e "  URL:      ${GREEN}http://localhost:$(get_env_value APP_PORT)${NC}"
+  PUBLIC_IP="$(curl -sf --max-time 3 ifconfig.me 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}' || echo localhost)"
+  echo -e "  URL:      ${GREEN}http://${PUBLIC_IP}:$(get_env_value APP_PORT)${NC}"
 fi
+
+echo -e "  Setup:    ${GREEN}Open /setup in your browser — no manual token needed${NC}"
 
 echo "  Network:  foodexpress_net (managed by Docker Compose)"
 docker compose "${COMPOSE_FILES[@]}" ps
 
 if [[ "$SETUP_TOKEN_GENERATED" == true ]]; then
   echo ""
-  SETUP="$(get_env_value SETUP_TOKEN)"
-  warn "Save your SETUP_TOKEN securely — required for the /setup wizard (shown once):"
-  echo -e "  ${YELLOW}SETUP_TOKEN=${SETUP}${NC}"
-  warn "After setup completes, this token is invalidated. Find it later in .env if needed before setup."
+  warn "SETUP_TOKEN was generated in .env (used internally — you do not need to paste it in the browser)."
 fi
 
 if [[ "$ENV_CREATED" == true ]]; then

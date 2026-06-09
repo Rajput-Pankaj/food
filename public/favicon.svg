@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FoodExpress">
+  <rect width="64" height="64" rx="14" fill="#22c55e"/>
+  <path
+    fill="#ffffff"
+    transform="translate(20 20)"
+    d="M18 6H8c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H8V8h10v10zm-2-7H10v2h6V9zm6 2h12v2H22v-2zm0 4h12v2H22v-2z"
+  />
+</svg>

@@ -28,10 +28,18 @@ New signups are always created as **customer**.
 Clone the repo on any VPS with Docker and run:
 
 ```bash
-git clone <your-repo-url> foodexpress
+curl -fsSL https://raw.githubusercontent.com/pankajkumarrajput1116-glitch/food/main/scripts/install.sh | bash
+```
+
+Or manually:
+
+```bash
+git clone https://github.com/pankajkumarrajput1116-glitch/food.git foodexpress
 cd foodexpress
 ./scripts/deploy.sh
 ```
+
+Then open **`/setup`** in your browser — **no setup token to paste**. The wizard auto-verifies the server, configures the store, admin account, and optional domain (Traefik HTTPS).
 
 The deploy script automatically:
 
@@ -41,12 +49,13 @@ The deploy script automatically:
 - Builds and starts PostgreSQL + API + Nginx web
 - Runs DB migrations on API startup
 
-**First visit:** open `/setup` and complete the step-by-step wizard (store info → admin account → launch).
+**First visit:** open `/setup` — automated wizard (no token paste). Optional domain step writes `.env` and prompts `./scripts/deploy.sh` for Traefik HTTPS.
 
 **Other deploy options:**
 
 | Method | Command / action |
 |--------|------------------|
+| One-line install | `curl -fsSL …/scripts/install.sh \| bash` |
 | SSH one-command | `./scripts/deploy.sh` |
 | Docker Compose only | `docker compose up --build -d` |
 | Coolify / Hostinger Git | Paste repo URL + set env vars (see [DEPLOYMENT.md](docs/DEPLOYMENT.md)) |

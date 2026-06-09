@@ -17,6 +17,8 @@ export const authApi = {
 
 export const setupApi = {
   status: () => apiRequest('/setup/status'),
+  context: () => apiRequest('/setup/context'),
+  begin: () => apiRequest('/setup/begin', { method: 'POST', body: '{}' }),
   verifyToken: (setupToken) =>
     apiRequest('/setup/verify-token', {
       method: 'POST',

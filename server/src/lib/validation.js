@@ -133,6 +133,23 @@ export const setupSchema = z.object({
   adminPassword: passwordField,
   loadSampleMenu: z.boolean().optional().default(true),
   setupToken: z.string().min(1).optional(),
+  domain: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .optional()
+    .transform((v) => v ?? '')
+    .pipe(
+      z.union([
+        z.literal(''),
+        z
+          .string()
+          .regex(
+            /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/,
+            'Invalid domain name.'
+          ),
+      ])
+    ),
 });
 
 export const orderTrackSchema = z.object({

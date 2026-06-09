@@ -2,7 +2,18 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { LuArrowLeft, LuArrowRight, LuCheck, LuLoader, LuRocket, LuShieldCheck, LuStore, LuX } from 'react-icons/lu';
+import {
+  LuArrowLeft,
+  LuArrowRight,
+  LuCheck,
+  LuGlobe,
+  LuLoader,
+  LuRocket,
+  LuShieldCheck,
+  LuSparkles,
+  LuStore,
+  LuX,
+} from 'react-icons/lu';
 import { setupApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
@@ -11,10 +22,10 @@ import PasswordField from '../components/auth/PasswordField';
 import SetupLayout from '../components/setup/SetupLayout';
 
 const STEPS = [
-  { id: 'token', title: 'Security', subtitle: 'Verify deploy token' },
+  { id: 'welcome', title: 'Welcome', subtitle: 'Auto-connect & verify' },
   { id: 'store', title: 'Your store', subtitle: 'Restaurant details' },
   { id: 'admin', title: 'Admin account', subtitle: 'Owner login' },
-  { id: 'launch', title: 'Launch', subtitle: 'Review & go live' },
+  { id: 'launch', title: 'Domain & launch', subtitle: 'Go live' },
 ];
 
 const passwordSchema = Yup.string()
@@ -23,10 +34,17 @@ const passwordSchema = Yup.string()
   .matches(/[0-9]/, 'Must include a number')
   .required('Password is required');
 
+const domainField = Yup.string()
+  .trim()
+  .transform((v) => v || undefined)
+  .matches(
+    /^$|^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/,
+    'Enter a valid domain like food.example.com'
+  )
+  .optional();
+
 const schemas = [
-  Yup.object({
-    setupToken: Yup.string().trim().required('Setup token is required'),
-  }),
+  Yup.object({}),
   Yup.object({
     storeName: Yup.string().trim().required('Store name is required'),
     storeAddress: Yup.string().trim().required('Store address is required'),
@@ -45,7 +63,9 @@ const schemas = [
       .oneOf([Yup.ref('adminPassword')], 'Passwords must match')
       .required('Please confirm your password'),
   }),
-  Yup.object({}),
+  Yup.object({
+    domain: domainField,
+  }),
 ];
 
 function StepHeader({ icon, title, description }) {
@@ -61,32 +81,25 @@ function StepHeader({ icon, title, description }) {
   );
 }
 
-function TokenStatusMessage({ tokenCheck }) {
-  if (tokenCheck.status === 'idle') return null;
-
-  const styles = {
-    checking: 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100',
-    valid: 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-100',
-    invalid: 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-100',
-  };
-
-  const icons = {
-    checking: LuLoader,
-    valid: LuCheck,
-    invalid: LuX,
-  };
-
-  const Icon = icons[tokenCheck.status];
-
+function StatusRow({ ok, label, detail }) {
   return (
-    <div
-      className={`mt-3 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm ${styles[tokenCheck.status]}`}
-      role="status"
-      aria-live="polite"
-    >
-      <Icon className={`w-4 h-4 shrink-0 mt-0.5 ${tokenCheck.status === 'checking' ? 'animate-spin' : ''}`} />
-      <span>{tokenCheck.message}</span>
-    </div>
+    <li className="flex items-start gap-3 text-sm">
+      <span
+        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+          ok === true
+            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+            : ok === false
+              ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+              : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+        }`}
+      >
+        {ok === true ? <LuCheck className="w-3.5 h-3.5" /> : ok === false ? <LuX className="w-3.5 h-3.5" /> : <LuLoader className="w-3.5 h-3.5 animate-spin" />}
+      </span>
+      <span>
+        <span className="font-medium text-gray-900 dark:text-gray-100">{label}</span>
+        {detail && <span className="block text-gray-500 dark:text-gray-400 text-xs mt-0.5">{detail}</span>}
+      </span>
+    </li>
   );
 }
 
@@ -96,11 +109,13 @@ export default function Setup() {
   const { setNeedsSetup } = useAuth();
   const [step, setStep] = useState(0);
   const [error, setError] = useState('');
-  const [tokenCheck, setTokenCheck] = useState({ status: 'idle', message: '' });
+  const [bootStatus, setBootStatus] = useState('loading');
+  const [bootMessage, setBootMessage] = useState('');
+  const [context, setContext] = useState(null);
+  const [redeployNote, setRedeployNote] = useState('');
 
   const formik = useFormik({
     initialValues: {
-      setupToken: '',
       storeName: 'FoodExpress',
       storeAddress: '',
       storePhone: '',
@@ -109,6 +124,7 @@ export default function Setup() {
       adminEmail: '',
       adminPassword: '',
       confirmPassword: '',
+      domain: '',
       loadSampleMenu: true,
     },
     validationSchema: schemas[step],
@@ -120,12 +136,18 @@ export default function Setup() {
       try {
         const { confirmPassword: _confirm, ...payload } = values;
         if (!payload.storeEmail?.trim()) delete payload.storeEmail;
-        await setupApi.complete(payload);
+        if (!payload.domain?.trim()) delete payload.domain;
+
+        const result = await setupApi.complete(payload);
         setNeedsSetup(false);
-        navigate('/login', {
-          replace: true,
-          state: { message: 'Setup complete. Sign in with your admin account.' },
-        });
+
+        let message = 'Setup complete. Sign in with your admin account.';
+        if (result.redeployRequired) {
+          message = `Setup complete! Run "${result.redeployCommand}" on your server to apply HTTPS/domain, then sign in.`;
+          setRedeployNote(message);
+        }
+
+        navigate('/login', { replace: true, state: { message } });
       } catch (err) {
         setError(err.message || 'Setup failed.');
       } finally {
@@ -133,6 +155,42 @@ export default function Setup() {
       }
     },
   });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function bootstrap() {
+      setBootStatus('loading');
+      setBootMessage('Connecting to server and preparing database…');
+
+      try {
+        const ctx = await setupApi.context();
+        if (cancelled) return;
+        setContext(ctx);
+
+        if (ctx.setupComplete) {
+          setBootStatus('done');
+          navigate('/login', { replace: true });
+          return;
+        }
+
+        await setupApi.begin();
+        if (cancelled) return;
+
+        setBootStatus('ready');
+        setBootMessage('Server verified. Database is ready. Continue to configure your restaurant.');
+      } catch (err) {
+        if (cancelled) return;
+        setBootStatus('error');
+        setBootMessage(err.message || 'Could not start setup. Is the API running?');
+      }
+    }
+
+    bootstrap();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
 
   const validateCurrentStep = async () => {
     const schema = schemas[step];
@@ -155,13 +213,10 @@ export default function Setup() {
 
   const handleNext = async () => {
     setError('');
+    if (step === 0 && bootStatus !== 'ready') return;
+
     const valid = await validateCurrentStep();
     if (!valid) return;
-
-    if (step === 0 && tokenCheck.status !== 'valid') {
-      setError(tokenCheck.message || 'Verify your setup token before continuing.');
-      return;
-    }
 
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   };
@@ -172,54 +227,11 @@ export default function Setup() {
   };
 
   useEffect(() => {
-    if (step !== 0) return undefined;
-
-    const trimmed = formik.values.setupToken.trim();
-
-    if (!trimmed) {
-      setTokenCheck({ status: 'idle', message: '' });
-      return undefined;
-    }
-
-    if (trimmed.length < 32) {
-      setTokenCheck({
-        status: 'invalid',
-        message: 'Token looks too short. Paste the full SETUP_TOKEN from your server (usually 48 characters).',
-      });
-      return undefined;
-    }
-
-    setTokenCheck({ status: 'checking', message: 'Verifying token with server…' });
-
-    const timer = setTimeout(async () => {
-      try {
-        const result = await setupApi.verifyToken(trimmed);
-        if (result.valid) {
-          setTokenCheck({ status: 'valid', message: 'Token verified. You can continue to the next step.' });
-        } else {
-          setTokenCheck({
-            status: 'invalid',
-            message: result.error || 'Invalid setup token. Check grep SETUP_TOKEN .env on your server.',
-          });
-        }
-      } catch (err) {
-        setTokenCheck({
-          status: 'invalid',
-          message: err.message || 'Could not verify token. Check your connection and try again.',
-        });
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [formik.values.setupToken, step]);
-
-  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [step]);
 
   const isLastStep = step === STEPS.length - 1;
-  const canContinueFromToken = step !== 0 || tokenCheck.status === 'valid';
-  const showContinue = !isLastStep && canContinueFromToken;
+  const showContinue = !isLastStep && (step !== 0 || bootStatus === 'ready');
 
   return (
     <SetupLayout steps={STEPS} currentStep={step}>
@@ -229,39 +241,57 @@ export default function Setup() {
         </div>
       )}
 
+      {redeployNote && (
+        <div className="mb-5 text-amber-800 text-sm bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+          {redeployNote}
+        </div>
+      )}
+
       <form onSubmit={formik.handleSubmit} noValidate>
         {step === 0 && (
           <>
             <StepHeader
-              icon={LuShieldCheck}
-              title="Verify your setup token"
-              description="This one-time token proves you control the server. Find SETUP_TOKEN in your .env file or deploy logs."
+              icon={LuSparkles}
+              title="Welcome to FoodExpress"
+              description="Deploy is done. We will verify your server automatically — no setup token to copy."
             />
-            <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800 p-4 mb-5 text-sm text-amber-900 dark:text-amber-100">
-              <p className="font-medium mb-1">Where to find it</p>
-              <ul className="list-disc list-inside space-y-1 text-amber-800 dark:text-amber-200/90">
-                <li>SSH: <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 rounded">grep SETUP_TOKEN .env</code></li>
-                <li>Docker / Coolify / Hostinger: check environment variables for the API service</li>
-              </ul>
-            </div>
-            <AuthFormField
-              label="Setup token"
-              id="setupToken"
-              name="setupToken"
-              type="text"
-              placeholder="Paste the full token — do not truncate"
-              autoComplete="off"
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.setupToken}
-              error={formik.touched.setupToken && !formik.values.setupToken.trim() ? formik.errors.setupToken : undefined}
-              touched={formik.touched.setupToken}
-            />
-            <TokenStatusMessage tokenCheck={tokenCheck} />
-            {step === 0 && formik.values.setupToken.trim() && tokenCheck.status !== 'valid' && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Continue will appear once your token is verified.
-              </p>
+            <ul className="rounded-xl border border-gray-200 dark:border-gray-600 divide-y divide-gray-100 dark:divide-gray-700 mb-5">
+              <li className="p-4">
+                <StatusRow
+                  ok={bootStatus === 'ready' ? true : bootStatus === 'error' ? false : null}
+                  label="Server & database"
+                  detail={bootMessage}
+                />
+              </li>
+              <li className="p-4">
+                <StatusRow
+                  ok={bootStatus === 'ready'}
+                  label="Secure setup session"
+                  detail={
+                    bootStatus === 'ready'
+                      ? 'Authorized for 30 minutes from this browser.'
+                      : 'Starting automatically…'
+                  }
+                />
+              </li>
+              {context?.traefikAvailable && (
+                <li className="p-4">
+                  <StatusRow
+                    ok={true}
+                    label="Traefik detected"
+                    detail="You can connect a custom domain on the last step for automatic HTTPS."
+                  />
+                </li>
+              )}
+            </ul>
+            {bootStatus === 'error' && (
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="text-sm text-green-600 font-semibold hover:underline"
+              >
+                Retry connection
+              </button>
             )}
           </>
         )}
@@ -395,24 +425,57 @@ export default function Setup() {
         {step === 3 && (
           <>
             <StepHeader
-              icon={LuRocket}
-              title="Ready to launch"
-              description="Review your settings, then complete setup."
+              icon={LuGlobe}
+              title="Domain & launch"
+              description="Optionally connect your domain. Traefik will enable HTTPS automatically when detected."
             />
+
+            <AuthFormField
+              label="Custom domain (optional)"
+              id="domain"
+              name="domain"
+              type="text"
+              placeholder="food.yourdomain.com"
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.domain}
+              error={formik.errors.domain}
+              touched={formik.touched.domain}
+            />
+
+            {context?.traefikAvailable ? (
+              <p className="text-xs text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-5">
+                Traefik is available. After setup, run <code className="font-mono">./scripts/deploy.sh</code> on the server to apply HTTPS for your domain.
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
+                Point your domain DNS to this server. Without Traefik, the app stays on port {context?.appPort || '8080'}.
+              </p>
+            )}
+
+            {formik.values.domain && context?.deployEnvWritable === false && (
+              <p className="text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 mb-5">
+                Set <code className="font-mono">DOMAIN={formik.values.domain}</code> in your platform env vars, then redeploy.
+              </p>
+            )}
+
             <dl className="rounded-xl border border-gray-200 dark:border-gray-600 divide-y divide-gray-200 dark:divide-gray-600 mb-6 text-sm">
               <div className="flex justify-between gap-4 px-4 py-3">
                 <dt className="text-gray-500 dark:text-gray-400">Store</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.storeName}</dd>
               </div>
               <div className="flex justify-between gap-4 px-4 py-3">
-                <dt className="text-gray-500 dark:text-gray-400">Phone</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.storePhone}</dd>
-              </div>
-              <div className="flex justify-between gap-4 px-4 py-3">
                 <dt className="text-gray-500 dark:text-gray-400">Admin</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.adminEmail}</dd>
               </div>
+              {formik.values.domain && (
+                <div className="flex justify-between gap-4 px-4 py-3">
+                  <dt className="text-gray-500 dark:text-gray-400">Domain</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{formik.values.domain}</dd>
+                </div>
+              )}
             </dl>
+
             <label className="flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-600 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <input
                 type="checkbox"
@@ -426,7 +489,7 @@ export default function Setup() {
                   Load sample menu & blog posts
                 </span>
                 <span className="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  50 demo dishes and blog content — great for testing. You can edit or remove them later.
+                  50 demo dishes and blog content — great for testing.
                 </span>
               </span>
             </label>
@@ -450,7 +513,7 @@ export default function Setup() {
           {isLastStep ? (
             <button
               type="submit"
-              disabled={formik.isSubmitting}
+              disabled={formik.isSubmitting || bootStatus !== 'ready'}
               className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-60 transition-colors shadow-sm"
             >
               <LuRocket className="w-5 h-5" />
@@ -460,7 +523,6 @@ export default function Setup() {
             <button
               type="button"
               onClick={handleNext}
-              disabled={tokenCheck.status === 'checking'}
               className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-60 transition-colors shadow-sm"
             >
               Continue

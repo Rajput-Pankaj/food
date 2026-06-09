@@ -1,6 +1,9 @@
+import { SETUP_SESSION_COOKIE } from './setupSession.js';
+
 export const ACCESS_COOKIE = 'fe_access';
 export const REFRESH_COOKIE = 'fe_refresh';
 export const CSRF_COOKIE = 'fe_csrf';
+export { SETUP_SESSION_COOKIE };
 
 /** Whether auth/CSRF cookies should use the Secure flag. */
 export function cookieSecure(req) {
@@ -54,6 +57,21 @@ export function setCsrfCookie(res, token, req) {
     path: '/',
     maxAge: 24 * 60 * 60 * 1000,
   });
+}
+
+export function setSetupSessionCookie(res, token, req) {
+  const secure = cookieSecure(req);
+  res.cookie(SETUP_SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure,
+    sameSite: secure ? 'strict' : 'lax',
+    path: '/',
+    maxAge: 30 * 60 * 1000,
+  });
+}
+
+export function clearSetupSessionCookie(res) {
+  res.clearCookie(SETUP_SESSION_COOKIE, { path: '/' });
 }
 
 export function clearAuthCookies(res) {
