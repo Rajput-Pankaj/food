@@ -14,10 +14,13 @@ const STATUS_COLORS = {
 
 export function RevenueBarChart({ data = [] }) {
   const maxRevenue = Math.max(...data.map((d) => d.revenue), 1);
+  // With dense series (hourly / long ranges) only label every nth bar
+  const labelStep = Math.max(1, Math.ceil(data.length / 8));
+  const gapClass = data.length > 16 ? 'gap-0.5 sm:gap-1' : 'gap-2 sm:gap-3';
 
   return (
-    <div className="h-52 flex items-end gap-2 sm:gap-3 pt-4">
-      {data.map((day) => {
+    <div className={`h-52 flex items-end ${gapClass} pt-4`}>
+      {data.map((day, index) => {
         const height = Math.max((day.revenue / maxRevenue) * 100, day.revenue > 0 ? 8 : 4);
         return (
           <div key={day.date} className="flex-1 flex flex-col items-center gap-2 min-w-0">
@@ -33,7 +36,7 @@ export function RevenueBarChart({ data = [] }) {
               </div>
             </div>
             <span className="text-[10px] sm:text-xs text-gray-500 font-medium truncate w-full text-center">
-              {day.label}
+              {index % labelStep === 0 ? day.label : '\u00A0'}
             </span>
           </div>
         );

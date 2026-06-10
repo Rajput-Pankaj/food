@@ -107,7 +107,14 @@ export const blogsApi = {
 };
 
 export const adminApi = {
-  stats: () => apiRequest('/admin/stats'),
+  stats: (params = {}) => {
+    const search = new URLSearchParams();
+    if (params.from) search.set('from', params.from);
+    if (params.to) search.set('to', params.to);
+    if (params.tz) search.set('tz', params.tz);
+    const qs = search.toString();
+    return apiRequest(`/admin/stats${qs ? `?${qs}` : ''}`);
+  },
   audit: (limit = 100) => apiRequest(`/admin/audit?limit=${limit}`),
   contacts: () => apiRequest('/admin/contacts'),
   markContactRead: (id) =>

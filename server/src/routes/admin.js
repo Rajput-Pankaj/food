@@ -23,35 +23,66 @@ router.post('/seed', authRequired, adminRequired, async (req, res) => {
   return res.json({ ok: true, message: 'Demo data reset and re-seeded.' });
 });
 
-async function computeStats() {
+function parseDateParam(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function safeTimeZone(tz) {
+  if (!tz || typeof tz !== 'string') return 'UTC';
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: tz });
+    return tz;
+  } catch {
+    return 'UTC';
+  }
+}
+
+const HOUR_BUCKET_MAX_MS = 48 * 3600 * 1000;
+
+async function computeStats({ from, to, tz }) {
+  const hasRange = Boolean(from && to);
+  const rangeParams = hasRange ? [from.toISOString(), to.toISOString()] : [];
+  const where = hasRange ? 'WHERE created_at >= $1 AND created_at <= $2' : '';
+
+  const bucket = hasRange && to - from <= HOUR_BUCKET_MAX_MS ? 'hour' : 'day';
+  const bucketFormat = bucket === 'hour' ? 'YYYY-MM-DD"T"HH24' : 'YYYY-MM-DD';
+  const trendWhere = hasRange
+    ? `${where} AND payload->>'status' NOT IN ('rejected', 'cancelled')`
+    : `WHERE created_at >= NOW() - INTERVAL '6 days' AND payload->>'status' NOT IN ('rejected', 'cancelled')`;
+  const tzIndex = rangeParams.length + 1;
+
   const [totals, byStatus, trend, recent] = await Promise.all([
-    query(`
-      SELECT
-        COUNT(*)::int AS total_orders,
-        COUNT(*) FILTER (WHERE payload->>'status' = 'pending')::int AS pending_count,
-        COALESCE(SUM((payload->>'total')::numeric) FILTER (
-          WHERE payload->>'status' NOT IN ('rejected', 'cancelled')
-        ), 0)::float AS revenue
-      FROM orders
-    `),
-    query(`
-      SELECT payload->>'status' AS status, COUNT(*)::int AS count
-      FROM orders GROUP BY payload->>'status'
-    `),
-    query(`
-      SELECT
-        to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD') AS day,
-        COUNT(*)::int AS orders,
-        COALESCE(SUM((payload->>'total')::numeric), 0)::float AS revenue
-      FROM orders
-      WHERE created_at >= NOW() - INTERVAL '6 days'
-        AND payload->>'status' NOT IN ('rejected', 'cancelled')
-      GROUP BY day ORDER BY day
-    `),
-    query(`
-      SELECT id, user_id, payload, created_at FROM orders
-      ORDER BY created_at DESC LIMIT 8
-    `),
+    query(
+      `SELECT
+         COUNT(*)::int AS total_orders,
+         COUNT(*) FILTER (WHERE payload->>'status' = 'pending')::int AS pending_count,
+         COALESCE(SUM((payload->>'total')::numeric) FILTER (
+           WHERE payload->>'status' NOT IN ('rejected', 'cancelled')
+         ), 0)::float AS revenue
+       FROM orders ${where}`,
+      rangeParams
+    ),
+    query(
+      `SELECT payload->>'status' AS status, COUNT(*)::int AS count
+       FROM orders ${where} GROUP BY payload->>'status'`,
+      rangeParams
+    ),
+    query(
+      `SELECT
+         to_char(created_at AT TIME ZONE $${tzIndex}, '${bucketFormat}') AS key,
+         COUNT(*)::int AS orders,
+         COALESCE(SUM((payload->>'total')::numeric), 0)::float AS revenue
+       FROM orders ${trendWhere}
+       GROUP BY key ORDER BY key`,
+      [...rangeParams, tz]
+    ),
+    query(
+      `SELECT id, user_id, payload, created_at FROM orders ${where}
+       ORDER BY created_at DESC LIMIT 8`,
+      rangeParams
+    ),
   ]);
 
   const row = totals.rows[0];
@@ -67,23 +98,11 @@ async function computeStats() {
     return acc;
   }, {});
 
-  const revenueTrend = [];
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const trendMap = Object.fromEntries(trend.rows.map((r) => [r.day, r]));
-
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    const key = date.toISOString().slice(0, 10);
-    const dayData = trendMap[key];
-    revenueTrend.push({
-      date: key,
-      label: date.toLocaleDateString('en-IN', { weekday: 'short' }),
-      shortLabel: date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-      revenue: Number(dayData?.revenue) || 0,
-      orders: dayData?.orders || 0,
-    });
-  }
+  const revenueTrend = trend.rows.map((r) => ({
+    date: r.key,
+    revenue: Number(r.revenue) || 0,
+    orders: r.orders || 0,
+  }));
 
   const recentOrders = recent.rows.map((r) => ({
     ...r.payload,
@@ -99,16 +118,30 @@ async function computeStats() {
     byStatus: statusMap,
     pendingCount,
     revenueTrend,
+    trendBucket: bucket,
+    range: {
+      from: from ? from.toISOString() : null,
+      to: to ? to.toISOString() : null,
+    },
     recentOrders,
   };
 }
 
-router.get('/stats', authRequired, adminRequired, async (_req, res) => {
-  const cached = getCachedStats();
+router.get('/stats', authRequired, adminRequired, async (req, res) => {
+  let from = parseDateParam(req.query.from);
+  let to = parseDateParam(req.query.to);
+  const tz = safeTimeZone(req.query.tz);
+  if (!from || !to || from > to) {
+    from = null;
+    to = null;
+  }
+
+  const cacheKey = `${from?.toISOString() || 'all'}|${to?.toISOString() || 'all'}|${tz}`;
+  const cached = getCachedStats(cacheKey);
   if (cached) return res.json(cached);
 
-  const stats = await computeStats();
-  setCachedStats(stats);
+  const stats = await computeStats({ from, to, tz });
+  setCachedStats(cacheKey, stats);
   return res.json(stats);
 });
 

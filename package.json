@@ -20,6 +20,8 @@
     "verify": "npm test && node scripts/vite-build.mjs",
     "preview": "vite preview",
     "seed:validate": "node scripts/validate-menu-seed.mjs",
+    "seed:demo": "npm --prefix server run seed:demo",
+    "dev:local": "./scripts/dev-local.sh",
     "export:seeds": "node scripts/export-seeds.mjs",
     "media:sync": "mkdir -p public/assets/media/blog && cp src/assets/image*.avif public/assets/media/ 2>/dev/null; cp src/assets/image14.webp public/assets/media/ 2>/dev/null; cp public/assets/media/image{1,6,10,15,20,22,8,12}.avif public/assets/media/blog/ 2>/dev/null; test -f public/assets/media/placeholder.svg || cp public/media/placeholder.svg public/assets/media/ 2>/dev/null; echo 'Media synced to public/assets/media/'",
     "deploy": "./scripts/deploy.sh",

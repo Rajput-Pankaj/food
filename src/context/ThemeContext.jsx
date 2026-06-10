@@ -22,7 +22,7 @@ function applyTheme(theme) {
 
 export function ThemeProvider({ children }) {
   const { settings } = useStoreSettings();
-  const darkModeAllowed = settings.darkModeEnabled !== false;
+  const darkModeAllowed = settings.darkModeEnabled === true;
   const [theme, setTheme] = useState(getStoredTheme);
 
   useEffect(() => {

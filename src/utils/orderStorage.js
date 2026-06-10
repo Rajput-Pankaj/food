@@ -131,8 +131,14 @@ export async function advanceOrderStatus(orderId, note = '') {
   return updateOrderStatus(orderId, next, note || `Marked as ${next}`);
 }
 
-export function getOrderStats() {
-  const orders = getAllOrders();
+export function getOrderStats(range) {
+  let orders = getAllOrders();
+  if (range?.from) {
+    orders = orders.filter((order) => new Date(order.createdAt) >= range.from);
+  }
+  if (range?.to) {
+    orders = orders.filter((order) => new Date(order.createdAt) <= range.to);
+  }
   const revenue = orders
     .filter((order) => normalizeOrderStatus(order.status) !== ORDER_STATUS.REJECTED)
     .reduce((sum, order) => sum + (order.total || 0), 0);

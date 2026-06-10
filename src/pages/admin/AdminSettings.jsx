@@ -24,7 +24,7 @@ function mapSettingsToForm(current) {
     upiPayeeName: current.upi?.payeeName || '',
     razorpayKeyId: current.razorpay?.keyId || '',
     razorpayEnabled: current.razorpay?.enabled ?? false,
-    darkModeEnabled: current.darkModeEnabled ?? true,
+    darkModeEnabled: current.darkModeEnabled ?? false,
   };
 }
 
