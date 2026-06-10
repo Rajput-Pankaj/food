@@ -19,7 +19,7 @@ export const DEFAULT_STORE_SETTINGS = {
   deliveryZones: [],
   storeEmail: '',
   storeLogo: '',
-  darkModeEnabled: true,
+  darkModeEnabled: false,
   updatedAt: null,
 };
 

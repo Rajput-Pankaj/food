@@ -13,6 +13,7 @@ import {
   MdFastfood,
   MdMenu,
   MdClose,
+  MdMoreHoriz,
 } from 'react-icons/md';
 import { useAuth } from '../../context/AuthContext';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
@@ -21,10 +22,10 @@ import { getUserGreeting } from '../../utils/userDisplay';
 import { LuSun, LuMoon } from 'react-icons/lu';
 
 const navItems = [
-  { path: '/admin', label: 'Dashboard', shortLabel: 'Home', icon: MdDashboard, end: true },
-  { path: '/admin/orders', label: 'Orders', shortLabel: 'Orders', icon: MdReceiptLong },
-  { path: '/admin/kitchen', label: 'Kitchen', shortLabel: 'Kitchen', icon: MdFastfood },
-  { path: '/admin/menu', label: 'Menu', shortLabel: 'Menu', icon: MdRestaurantMenu },
+  { path: '/admin', label: 'Dashboard', shortLabel: 'Home', icon: MdDashboard, end: true, mobileQuick: true },
+  { path: '/admin/orders', label: 'Orders', shortLabel: 'Orders', icon: MdReceiptLong, mobileQuick: true },
+  { path: '/admin/kitchen', label: 'Kitchen', shortLabel: 'Kitchen', icon: MdFastfood, mobileQuick: true },
+  { path: '/admin/menu', label: 'Menu', shortLabel: 'Menu', icon: MdRestaurantMenu, mobileQuick: true },
   { path: '/admin/promos', label: 'Promos', shortLabel: 'Promos', icon: MdStar },
   { path: '/admin/reviews', label: 'Reviews', shortLabel: 'Reviews', icon: MdStar },
   { path: '/admin/blogs', label: 'Blogs', shortLabel: 'Blogs', icon: MdArticle },
@@ -50,6 +51,9 @@ export default function AdminLayout() {
 
   const currentPage =
     navItems.find((item) => isActive(item.path, item.end))?.label ?? 'Admin';
+
+  const mobileQuickItems = navItems.filter((item) => item.mobileQuick);
+  const isMoreActive = !mobileQuickItems.some((item) => isActive(item.path, item.end));
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -211,15 +215,15 @@ export default function AdminLayout() {
         className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-gray-900 border-t border-gray-800 safe-area-pb"
         aria-label="Admin navigation"
       >
-        <div className="grid grid-cols-4">
-          {navItems.map((item) => {
+        <div className="grid grid-cols-5">
+          {mobileQuickItems.map((item) => {
             const NavIcon = item.icon;
             const active = isActive(item.path, item.end);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center py-2.5 px-1 text-[10px] sm:text-xs transition-colors ${
+                className={`flex flex-col items-center justify-center py-2.5 px-1 text-[10px] transition-colors ${
                   active ? 'text-green-400' : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
@@ -228,6 +232,17 @@ export default function AdminLayout() {
               </Link>
             );
           })}
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className={`flex flex-col items-center justify-center py-2.5 px-1 text-[10px] transition-colors ${
+              isMoreActive ? 'text-green-400' : 'text-gray-400 hover:text-gray-200'
+            }`}
+            aria-label="More admin pages"
+          >
+            <MdMoreHoriz className={`w-5 h-5 mb-0.5 ${isMoreActive ? 'text-green-400' : ''}`} />
+            <span className="truncate w-full text-center">More</span>
+          </button>
         </div>
       </nav>
     </div>

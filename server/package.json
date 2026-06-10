@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
+    "seed:demo": "node src/db/seed-demo.js",
     "build": "node -e \"console.log('API has no compile step (runs with Node directly). Run npm run build from the project root for the frontend.')\"",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -174,7 +174,7 @@ router.post('/complete', setupLimiter, async (req, res) => {
         takeawayEnabled: true,
         enabledPaymentMethods: ['cod', 'upi', 'razorpay'],
         guestCheckoutEnabled: true,
-        darkModeEnabled: true,
+        darkModeEnabled: false,
         storeLogo: '',
         upi: { vpa: '', payeeName: storeName },
         razorpay: { keyId: '', enabled: false },

@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import { query } from '../db.js';
+import { seedDemoContent } from './seedDemoData.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const seedDir = path.join(__dirname, '../../seed');
@@ -23,7 +24,7 @@ const DEFAULT_SETTINGS = {
   deliveryZones: [],
   storeEmail: '',
   storeLogo: '',
-  darkModeEnabled: true,
+  darkModeEnabled: false,
   updatedAt: null,
 };
 
@@ -123,6 +124,10 @@ export async function seedDatabase() {
         }),
       ]
     );
+  }
+
+  if (seedDemoUsers) {
+    await seedDemoContent();
   }
 
   await query(
