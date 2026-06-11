@@ -24,9 +24,7 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
-.cursor/*
-!.cursor/rules/
-!.cursor/rules/**
+.cursor/
 .DS_Store
 *.suo
 *.ntvs*
