@@ -1,5 +1,12 @@
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import { query } from '../db.js';
+
+const DEMO_CUSTOMER = {
+  name: 'Demo Customer',
+  email: 'customer@foodexpress.com',
+  password: 'Customer@123',
+};
 
 const DELIVERY_FEE = 49;
 const FREE_DELIVERY_THRESHOLD = 500;
@@ -162,15 +169,24 @@ function buildOrder(plan, customer, menuMap) {
   };
 }
 
-export async function seedDemoContent() {
-  const { rows: customerRows } = await query(
-    `SELECT id, email FROM users WHERE email = 'customer@foodexpress.com'`
+async function ensureDemoCustomer() {
+  const { rows } = await query(`SELECT id, email FROM users WHERE email = $1`, [DEMO_CUSTOMER.email]);
+  if (rows[0]) return rows[0];
+
+  const passwordHash = await bcrypt.hash(DEMO_CUSTOMER.password, 12);
+  const { rows: inserted } = await query(
+    `INSERT INTO users (name, email, password_hash, role, is_seed)
+     VALUES ($1, $2, $3, 'customer', TRUE)
+     ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name
+     RETURNING id, email`,
+    [DEMO_CUSTOMER.name, DEMO_CUSTOMER.email, passwordHash]
   );
-  const customer = customerRows[0];
-  if (!customer) {
-    console.log('Demo customer not found — skipping demo orders/promos/inbox seed.');
-    return;
-  }
+  console.log(`Created demo customer ${DEMO_CUSTOMER.email} for order seeding.`);
+  return inserted[0];
+}
+
+export async function seedDemoContent() {
+  const customer = await ensureDemoCustomer();
 
   const { rows: menuRows } = await query('SELECT id, payload FROM menu_items');
   const menuMap = new Map(menuRows.map((row) => [row.id, row.payload]));

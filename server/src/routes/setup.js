@@ -37,9 +37,13 @@ const beginLimiter = rateLimit({
 });
 
 async function isSetupComplete() {
-  const { rows } = await query(`SELECT COUNT(*)::int AS count FROM users WHERE role = 'admin'`);
   const meta = await query(`SELECT value FROM app_meta WHERE key = 'setup_complete'`);
-  return rows[0].count > 0 || meta.rows[0]?.value?.done === true;
+  if (meta.rows[0]?.value?.done === true) return true;
+  // Ignore demo/seed admins — only a real setup-created admin marks setup done
+  const { rows } = await query(
+    `SELECT COUNT(*)::int AS count FROM users WHERE role = 'admin' AND COALESCE(is_seed, FALSE) = FALSE`
+  );
+  return rows[0].count > 0;
 }
 
 async function isSetupAuthorized(req) {
@@ -140,7 +144,7 @@ router.post('/complete', setupLimiter, async (req, res) => {
       await client.query('SELECT pg_advisory_xact_lock(867530901)');
 
       const adminCount = await client.query(
-        `SELECT COUNT(*)::int AS count FROM users WHERE role = 'admin'`
+        `SELECT COUNT(*)::int AS count FROM users WHERE role = 'admin' AND COALESCE(is_seed, FALSE) = FALSE`
       );
       const meta = await client.query(`SELECT value FROM app_meta WHERE key = 'setup_complete'`);
       const complete = adminCount.rows[0].count > 0 || meta.rows[0]?.value?.done === true;

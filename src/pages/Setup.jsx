@@ -216,6 +216,13 @@ export default function Setup() {
     validateOnBlur: true,
     onSubmit: async (values, { setSubmitting }) => {
       setError('');
+
+      // Enter on earlier steps must not submit setup — only step 4 (domain) completes
+      if (step !== STEPS.length - 1) {
+        await handleNext();
+        return;
+      }
+
       setSubmitting(true);
       try {
         const { confirmPassword: _confirm, ...payload } = values;
